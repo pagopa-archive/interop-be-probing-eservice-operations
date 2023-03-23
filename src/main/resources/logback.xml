@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>DENY</onMatch>
+		</filter>
+		<encoder>
+			<pattern>%d{YYYY-MM-dd HH:mm:ss:SSS} %(%-5level) [%(%logger{20})] %X{trace_id} - %msg %n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="STDERR"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<encoder>
+			<pattern>%d{YYYY-MM-dd HH:mm:ss:SSS} %(%-5level) [%(%logger{20})] - [%X{trace_id}] - %msg %n</pattern>
+		</encoder>
+		<target>System.err</target>
+	</appender>
+
+	<appender name="ASYNC_STDOUT"
+		class="ch.qos.logback.classic.AsyncAppender">
+		<queueSize>8192</queueSize>
+		<neverBlock>true</neverBlock>
+		<appender-ref ref="STDOUT" />
+	</appender>
+
+	<appender name="ASYNC_STDERR"
+		class="ch.qos.logback.classic.AsyncAppender">
+		<queueSize>8192</queueSize>
+		<neverBlock>true</neverBlock>
+		<appender-ref ref="STDERR" />
+	</appender>
+
+	<logger name="org.springframework.boot" level="WARN" />
+	<logger name="javax.xml.bind" level="WARN" />
+	<logger name="io.springfox" level="WARN" />
+	<logger name="org.postgresql" level="WARN" />
+	<logger name="org.openapitools" level="WARN" />
+	<logger name="com.fasterxml.jackson.dataformat" level="WARN" />
+	<logger name="org.junit.jupiter" level="WARN" />
+	<logger name="org.mockito" level="WARN" />
+	<logger name="org.projectlombok" level="WARN" />
+	<logger name="org.apache.commons" level="WARN" />
+	<logger name="org.hsqldb" level="WARN" />
+	<logger name="com.fasterxml.jackson.core" level="WARN" />
+	<logger name="org.mapstruct" level="WARN" />
+	<logger name="org.flywaydb" level="WARN" />
+
+	<logger name="it.pagopa.interop.probing.probingapi" level="INFO" />
+
+	<root name="application" level="INFO">
+		<appender-ref ref="ASYNC_STDOUT" />
+		<appender-ref ref="ASYNC_STDERR" />
+	</root>
+
+</configuration>
