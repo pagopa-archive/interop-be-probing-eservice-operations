@@ -1,7 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.filter;
 
 import java.io.IOException;
-
 import java.util.UUID;
 
 import javax.servlet.FilterChain;

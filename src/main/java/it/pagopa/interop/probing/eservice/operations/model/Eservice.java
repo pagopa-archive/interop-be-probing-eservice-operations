@@ -105,6 +105,6 @@ public class Eservice implements Serializable {
 	@Column(name = "version")
 	private Integer version;
 	
-	@Column(name="versionNumber")
+	@Column(name="version_number")
 	private Integer versionNumber;
 }

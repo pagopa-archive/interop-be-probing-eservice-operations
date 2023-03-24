@@ -1,5 +1,27 @@
+/**************************************************************************
+*
+* Copyright 2023 (C) DXC
+*
+* Created on  : 24 Mar 2023
+* Author      : dxc technology
+* Project Name: interop-be-probing-eservice-operations 
+* Package     : it.pagopa.interop.probing.eservice.operations.service
+* File Name   : EserviceService.java
+*
+*-----------------------------------------------------------------------------
+* Revision History (Release )
+*-----------------------------------------------------------------------------
+* VERSION     DESCRIPTION OF CHANGE
+*-----------------------------------------------------------------------------
+** --/1.0  |  Initial Create.
+**---------|------------------------------------------------------------------
+***************************************************************************/
 package it.pagopa.interop.probing.eservice.operations.service;
 
+import java.util.List;
+
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceProbingStateDto;
@@ -39,5 +61,20 @@ public interface EserviceService {
 	 *                                   database
 	 */
 	void updateEserviceFrequency(UpdateEserviceFrequencyDto inputData) throws EserviceNotFoundException;
+
+	/**
+	 * Retrive the eservices by input filter.
+	 *
+	 * @param limit the limit
+	 * @param offset the offset
+	 * @param eserviceName    the eservice name
+	 * @param eserviceProducerName the eservice producer name
+	 * @param versionNumber the version number
+	 * @param eServiceState   the e service state
+	 * @return the SearchEserviceResponse which contain eserviceList and pagination
+	 *         parameter
+	 */
+	public SearchEserviceResponse searchEservices(Integer limit, Integer offset, String eserviceName,
+			String eserviceProducerName, Integer versionNumber, List<EserviceState> eServiceState);
 
 }

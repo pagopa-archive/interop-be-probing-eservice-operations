@@ -1,228 +1,327 @@
 openapi: 3.0.3
 info:
-  title: E-Service Monitor Interop API specifications
+  title: 'E-Service Monitor Interop API specifications'
   version: 1.0.0
-  x-summary: E-Service Monitor APIs
-  description: OpenAPI specification for E-Service Monitor's services exposed for the Interop platform
+  x-summary: 'E-Service Monitor APIs'
+  description: >- 
+    OpenAPI specification for E-Service Monitor's services exposed for the Interop platform
   termsOfService: https://www.e-serviceurl-example.com/terms
   contact:
     name: contactToDefinePagoPa
     email: toDefinePagoPa@pagopa.it
   license:
     name: Interop's licence
-    url: https://to-define/
+    url: 'https://to-define/'
 servers:
-- url: https://to-define/
+- url: 'https://to-define/'
   description: Development environment
 tags:
-- name: EServices
-  description: Operations on EServices registry
-- name: Probing
-  description: Operations on probing settings
+  - name: EServices
+    description: >-
+      Operations on EServices registry
+  - name: Probing
+    description: >-
+      Operations on probing settings
+
 paths:
-  /eservices/{eserviceId}/versions/{versionId}/updateState:
+   '/eservices/{eserviceId}/versions/{versionId}/updateState':
     post:
       summary: Updates the state of an e-service.
-      description: Updates the state of the e-service identified by its id and version id.
+      description: >-
+        Updates the state of the e-service identified by its id and version id.
       tags:
-      - Write
+        - Write
       operationId: updateEserviceState
       parameters:
-      - name: eserviceId
-        in: path
-        required: true
-        description: The e-service name
-        schema:
-          type: string
-          format: uuid
-      - name: versionId
-        in: path
-        required: true
-        description: the e-service version
-        schema:
-          type: string
-          format: uuid
+        - name: eserviceId
+          in: path
+          required: true
+          description: The e-service name
+          schema:
+            type: string
+            format: uuid
+        - name: versionId
+          in: path
+          required: true
+          description: the e-service version
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChangeEserviceStateRequest'
+                $ref: '#/components/schemas/ChangeEserviceStateRequest'
       responses:
         '204':
-          description: The update has been successfully completed
+          description: >-
+            The update has been successfully completed
         '400':
-          description: The provided input data is invalid
+          description: >-
+            The provided input data is invalid
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
         '404':
-          description: The e-service hasn't been found
+          description: >-
+            The e-service hasn't been found
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        '500':
-          description: A managed error has occured during the request elaboration
-          content:
+        '500':                  
+          description: >-
+            A managed error has occured during the request elaboration
+          content:                        
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
               example:
                 type: string
-                status: 500
-                title: Internal Server Error
-                detail: There is a problem processing the request on the server.
-                traceId: string
-                errors:
-                - code: 000-1234
-                  detail: The server is currently down for maintenance. Please try again later.
-  /eservices/{eserviceId}/versions/{versionId}/probing/updateState:
+                status: 500 
+                title: 'Internal Server Error'
+                detail: 'There is a problem processing the request on the server.'
+                traceId: 'string'
+                errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please try again later.'}]
+                
+   '/eservices/{eserviceId}/versions/{versionId}/probing/updateState':
     post:
       summary: Activates or deactivates the probing polling process for an e-service.
-      description: Activates or deactivates the probing polling process for the e-service identified by its id and version id
+      description: >-
+        Activates or deactivates the probing polling process for the e-service identified by its id and version id
       tags:
-      - Write
+        - Write
       operationId: updateEserviceProbingState
       parameters:
-      - name: eserviceId
-        in: path
-        required: true
-        description: The e-service name
-        schema:
-          type: string
-          format: uuid
-      - name: versionId
-        in: path
-        required: true
-        description: the e-service version
-        schema:
-          type: string
-          format: uuid
+        - name: eserviceId
+          in: path
+          required: true
+          description: The e-service name
+          schema:
+            type: string
+            format: uuid
+        - name: versionId
+          in: path
+          required: true
+          description: the e-service version
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChangeProbingStateRequest'
+                $ref: '#/components/schemas/ChangeProbingStateRequest'
       responses:
         '204':
-          description: The update has been successfully completed
+          description: >-
+            The update has been successfully completed
         '400':
-          description: The provided input data is invalid
+          description: >-
+            The provided input data is invalid
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
         '404':
-          description: The e-service hasn't been found
+          description: >-
+            The e-service hasn't been found
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        '500':
-          description: A managed error has occured during the request elaboration
-          content:
+        '500':                  
+          description: >-
+            A managed error has occured during the request elaboration
+          content:                        
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
               example:
                 type: string
-                status: 500
-                title: Internal Server Error
-                detail: There is a problem processing the request on the server.
-                traceId: string
-                errors:
-                - code: 000-1234
-                  detail: The server is currently down for maintenance. Please try again later.
-  /eservices/{eserviceId}/versions/{versionId}/updateFrequency:
+                status: 500 
+                title: 'Internal Server Error'
+                detail: 'There is a problem processing the request on the server.'
+                traceId: 'string'
+                errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please try again later.'}]    
+                
+   '/eservices/{eserviceId}/versions/{versionId}/updateFrequency':
     post:
       summary: Updates the frequency and the time interval of an e-service's polling process.
-      description: Updates the frequency and the time interval of the polling process for the e-service identified by its id and version id
+      description: >-
+        Updates the frequency and the time interval of the polling process for the e-service identified by its id and version id
       tags:
-      - Write
+        - Write
       operationId: updateEserviceFrequency
       parameters:
-      - name: eserviceId
-        in: path
-        required: true
-        description: The e-service name
-        schema:
-          type: string
-          format: uuid
-      - name: versionId
-        in: path
-        required: true
-        description: the e-service version
-        schema:
-          type: string
-          format: uuid
+        - name: eserviceId
+          in: path
+          required: true
+          description: The e-service name
+          schema:
+            type: string
+            format: uuid
+        - name: versionId
+          in: path
+          required: true
+          description: the e-service version
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChangeProbingFrequencyRequest'
+                $ref: '#/components/schemas/ChangeProbingFrequencyRequest'
       responses:
         '204':
-          description: The update has been successfully completed
+          description: >-
+            The update has been successfully completed
         '400':
-          description: The provided input data is invalid
+          description: >-
+            The provided input data is invalid
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
         '404':
-          description: The e-service hasn't been found
+          description: >-
+            The e-service hasn't been found
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        '500':
-          description: A managed error has occured during the request elaboration
-          content:
+        '500':                  
+          description: >-
+            A managed error has occured during the request elaboration
+          content:                        
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
               example:
                 type: string
-                status: 500
-                title: Internal Server Error
-                detail: There is a problem processing the request on the server.
-                traceId: string
-                errors:
-                - code: 000-1234
-                  detail: The server is currently down for maintenance. Please try again later.
+                status: 500 
+                title: 'Internal Server Error'
+                detail: 'There is a problem processing the request on the server.'
+                traceId: 'string'
+                errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please try again later.'}]
+                
+   '/eservices/searchEservices':
+    get:
+      summary: Retrive e-services by filters
+      description: >-
+        Retrive e-services by filters : eserviceName , producerName, versionNumber , eservice-state 
+      tags:
+        - Read
+      operationId: searchEservices
+      parameters:
+        - name: limit
+          in: query
+          required: true
+          description: the e-service's page limit
+          schema:
+            type: string
+            format: integer
+        - name: offset
+          in: query
+          required: true
+          description: the page's offset
+          schema:
+            type: string
+            format: integer
+        - name: eserviceName
+          in: query
+          required: false
+          description: the page's number
+          schema:
+            type: string
+            format: string
+        - name: versionNumber
+          in: query
+          required: false
+          description: the e-service's version
+          schema:
+            type: string
+            format: integer
+        - name: eserviceProducerName
+          in: query
+          required: false
+          description: the e-service's producer name
+          schema:
+            type: string
+            format: string
+        - name: eServiceState
+          in: query
+          required: false
+          description: the page's number
+          schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/EserviceState'
+      responses:
+        '200':
+          description: >-
+            The search has been successfully performed 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchEserviceResponse'
+        '400':
+          description: >-
+            The provided input data is invalid
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':                  
+          description: >-
+            A managed error has occured during the request elaboration
+          content:                        
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: string
+                status: 500 
+                title: 'Internal Server Error'
+                detail: 'There is a problem processing the request on the server.'
+                traceId: 'string'
+                errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please try again later.'}]
+
 components:
   schemas:
     ChangeProbingStateRequest:
       type: object
       required:
-      - probingEnabled
+        - probingEnabled
       properties:
         probingEnabled:
           type: boolean
+          
     ChangeEserviceStateRequest:
       type: object
       required:
-      - eServiceState
+        - eServiceState
       properties:
         eServiceState:
           $ref: '#/components/schemas/EserviceState'
+          
     ChangeProbingFrequencyRequest:
       type: object
       required:
-      - frequency
-      - startTime
-      - endTime
+        - frequency
+        - startTime
+        - endTime
       properties:
         frequency:
           title: Service verification frequency in minutes
           type: integer
-          format: int32
-          default: 5
-          minimum: 1
+          default : 5
+          minimum : 1
         startTime:
           title: Service verification start time
           type: string
@@ -231,11 +330,56 @@ components:
           title: Service verification end time
           type: string
           format: time
+          
+    EserviceViewDTO:
+      type: object
+      properties:
+        id:
+          title: Service name
+          type: string
+        eserviceName:
+          title: Service name
+          type: string
+        responseReceived:
+          title: last response date
+          type: string
+          format: date-time
+        state:
+          $ref: '#/components/schemas/EserviceState'
+        versionNumber:
+          title: the e-service's version
+          type: integer
+          format: int64
+          
+    EserviceViewDtos:
+      type: array
+      items:
+        type: 
+        $ref: '#/components/schemas/EserviceViewDTO'
+          
+    SearchEserviceResponse:
+      type: object
+      properties:
+        content:
+          title: eservice dto list
+          $ref: '#/components/schemas/EserviceViewDtos'
+        offset:
+          title: page offset
+          type: integer
+        limit:
+          title: page limit
+          type: integer
+        totalElements:
+          title: total elements
+          type: integer
+          format: int64
+
     EserviceState:
       type: string
       enum:
-      - ACTIVE
-      - INACTIVE
+        - ACTIVE 
+        - INACTIVE
+        
     Problem:
       properties:
         type:
@@ -253,13 +397,13 @@ components:
           description: A short, summary of the problem type. Written in english and readable
           example: Service Unavailable
           maxLength: 64
-          pattern: ^[ -~]{0,64}$
+          pattern: '^[ -~]{0,64}$'
           type: string
         detail:
           description: A human readable explanation of the problem.
           example: Request took too long to complete.
           maxLength: 4096
-          pattern: ^.{0,1024}$
+          pattern: '^.{0,1024}$'
           type: string
         traceId:
           type: string
@@ -270,10 +414,11 @@ components:
           items:
             $ref: '#/components/schemas/ProblemError'
       additionalProperties: false
-      required:
-      - status
-      - title
-      - errors
+      required:       
+        - status
+        - title
+        - errors
+
     ProblemError:
       properties:
         code:
@@ -281,14 +426,14 @@ components:
           example: 123-4567
           minLength: 8
           maxLength: 8
-          pattern: ^[0-9]{3}-[0-9]{4}$
+          pattern: '^[0-9]{3}-[0-9]{4}$'
           type: string
         detail:
           description: A human readable explanation specific to this occurrence of the problem.
           example: Parameter not valid
           maxLength: 4096
-          pattern: ^.{0,1024}$
+          pattern: '^.{0,1024}$'
           type: string
       required:
-      - code
-      - detail
+        - code
+        - detail   
