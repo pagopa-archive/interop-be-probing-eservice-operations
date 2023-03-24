@@ -23,6 +23,7 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.springframework.data.annotation.Version;
 
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.util.EserviceTechnology;
@@ -84,7 +85,7 @@ public class Eservice implements Serializable {
 
 	@NotNull
 	@Column(name = "probing_enabled")
-	private boolean probingEnabled;
+	private boolean probingEnabled = true;
 
 	@NotBlank
 	@Size(max = 255)
@@ -99,4 +100,11 @@ public class Eservice implements Serializable {
 	@NotNull
 	@Column(name = "version_id")
 	private UUID versionId;
+
+	@Version
+	@Column(name = "version")
+	private Integer version;
+	
+	@Column(name="versionNumber")
+	private Integer versionNumber;
 }
