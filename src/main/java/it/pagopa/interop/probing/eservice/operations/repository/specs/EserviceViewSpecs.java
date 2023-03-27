@@ -33,7 +33,7 @@ public class EserviceViewSpecs {
 
 	public static Specification<EserviceView> versionNumberEquals(Integer version) {
 		return (root, query, builder) -> version == null ? builder.conjunction()
-				: builder.equal(root.get("version"), version);
+				: builder.equal(root.get("versionNumber"), version);
 	}
 
 	public static Specification<EserviceView> eServiceStateIn(List<EserviceState> eServiceState) {

@@ -340,6 +340,9 @@ components:
         eserviceName:
           title: Service name
           type: string
+        producerName:
+          title: Service name
+          type: string
         responseReceived:
           title: last response date
           type: string
@@ -349,7 +352,6 @@ components:
         versionNumber:
           title: the e-service's version
           type: integer
-          format: int64
           
     EserviceViewDtos:
       type: array
