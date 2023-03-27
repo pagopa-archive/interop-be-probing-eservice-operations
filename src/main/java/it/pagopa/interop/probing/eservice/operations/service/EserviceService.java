@@ -31,7 +31,7 @@ public interface EserviceService {
 
 	/**
 	 * Updates the state of the e-service identified by the input eserviceId and
-	 * versioneId
+	 * versionId
 	 * 
 	 * @param inputData the input data DTO containing the e-service id, version id
 	 *                  and the probing new state
@@ -42,7 +42,7 @@ public interface EserviceService {
 
 	/**
 	 * Updates the probing state of the e-service identified by the input eserviceId
-	 * and versioneId
+	 * and versionId
 	 * 
 	 * @param inputData the input data DTO containing the e-service id, version id
 	 *                  and the probing enabling/disabling
@@ -53,7 +53,7 @@ public interface EserviceService {
 
 	/**
 	 * Updates the frequency, pollingStartTime and pollingStartTime of the e-service
-	 * identified by the input eserviceId and versioneId
+	 * identified by the input eserviceId and versionId
 	 * 
 	 * @param inputData the input data DTO containing the e-service id, version id,
 	 *                  the new frequency and new time interval for polling

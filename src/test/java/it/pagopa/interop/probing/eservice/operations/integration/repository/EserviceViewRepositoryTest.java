@@ -50,7 +50,8 @@ class EserviceViewRepositoryTest {
 	}
 
 	@Test
-	void testFindAll() {
+	@DisplayName("the retrieved list of e-services is not empty")
+	void testFindAll_whenExistsEservicesOnDatabase_thenReturnTheListNotEmpty() {
 		List<EserviceState> listEservice = new ArrayList<>();
 		listEservice.add(EserviceState.ACTIVE);
 		Specification<EserviceView> specs = EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 1,
@@ -65,7 +66,7 @@ class EserviceViewRepositoryTest {
 
 	@Test
 	@DisplayName("the retrieved list of e-services is empty")
-	void testFindAllEmpty() {
+	void testFindAll_whenNotExistsEservicesOnDatabase_thenReturnTheListEmpty() {
 		List<EserviceState> listEservice = new ArrayList<>();
 		listEservice.add(EserviceState.ACTIVE);
 		Specification<EserviceView> specs = EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 0,
