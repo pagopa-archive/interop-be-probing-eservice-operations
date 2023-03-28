@@ -11,10 +11,10 @@ public class OffsetLimitPageable implements Pageable {
 
 	public OffsetLimitPageable(int offset, int limit, Sort sort) {
 		if (offset < 0)
-			throw new IllegalArgumentException("Offset must not be less than zero!");
+			throw new IllegalArgumentException("Offset must not be less than zero");
 
-		if (limit < 1)
-			throw new IllegalArgumentException("Limit must not be less than one!");
+		if (limit <= 0)
+			throw new IllegalArgumentException("Limit must be greater than zero");
 
 		this.offset = offset;
 		this.limit = limit;
@@ -50,8 +50,9 @@ public class OffsetLimitPageable implements Pageable {
 	}
 
 	public OffsetLimitPageable previous() {
-		return hasPrevious() ? new OffsetLimitPageable((int) getOffset() - getPageSize(), getPageSize(), getSort())
-				: this;
+		int value = (int) getOffset() - getPageSize();
+		value = value >= 0 ? value : 0;
+		return hasPrevious() ? new OffsetLimitPageable(value - getPageSize(), getPageSize(), getSort()) : this;
 	}
 
 	@Override
@@ -72,7 +73,7 @@ public class OffsetLimitPageable implements Pageable {
 
 	@Override
 	public boolean hasPrevious() {
-		return offset > limit;
+		return offset > 0;
 	}
 
 }
