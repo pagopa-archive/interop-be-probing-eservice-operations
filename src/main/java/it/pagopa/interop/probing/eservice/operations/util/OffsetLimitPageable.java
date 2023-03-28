@@ -67,8 +67,7 @@ public class OffsetLimitPageable implements Pageable {
 
 	@Override
 	public Pageable withPage(int pageNumber) {
-		offset = getPageSize() * pageNumber;
-		return new OffsetLimitPageable(offset + getPageSize(), getPageSize(), getSort());
+		return new OffsetLimitPageable(getPageSize() * pageNumber, getPageSize(), getSort());
 	}
 
 	@Override
