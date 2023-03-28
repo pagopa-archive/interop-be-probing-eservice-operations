@@ -299,7 +299,7 @@ paths:
         - Read
       operationId: getEservicesProducers
       parameters:
-        - name: eserviceProducerName
+        - name: producerName
           in: query
           required: false
           description: the e-service's producer name
