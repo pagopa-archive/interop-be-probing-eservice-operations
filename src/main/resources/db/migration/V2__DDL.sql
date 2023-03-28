@@ -9,7 +9,7 @@ ALTER TABLE public.eservice_probing_responses ADD CONSTRAINT fkoyntlrnuvx1wo1suj
 delete from eservice_probing_responses ;
 delete from eservices;
 
-ALTER TABLE public.eservices ADD version int NOT NULL;
+ALTER TABLE public.eservices ADD lock_version int NOT NULL;
 ALTER TABLE public.eservices ADD version_number int NOT NULL;
 
 
