@@ -43,7 +43,7 @@ class EserviceViewRepositoryTest {
 		eserviceView.setProducerName("Producer Name");
 		eserviceView.setProbingEnabled(true);
 		eserviceView.setVersionNumber(1);
-		eserviceView.setState(EserviceState.ACTIVE);
+		eserviceView.setState(EserviceState.ONLINE);
 		eserviceView.setResponseReceived(OffsetDateTime.parse("2023-03-21T00:00:15.995Z"));
 		eserviceView.setId(10L);
 		testEntityManager.persistAndFlush(eserviceView);
@@ -53,7 +53,7 @@ class EserviceViewRepositoryTest {
 	@DisplayName("the retrieved list of e-services is not empty")
 	void testFindAll_whenExistsEservicesOnDatabase_thenReturnTheListNotEmpty() {
 		List<EserviceState> listEservice = new ArrayList<>();
-		listEservice.add(EserviceState.ACTIVE);
+		listEservice.add(EserviceState.ONLINE);
 		Specification<EserviceView> specs = EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 1,
 				listEservice);
 
@@ -68,7 +68,7 @@ class EserviceViewRepositoryTest {
 	@DisplayName("the retrieved list of e-services is empty")
 	void testFindAll_whenNotExistsEservicesOnDatabase_thenReturnTheListEmpty() {
 		List<EserviceState> listEservice = new ArrayList<>();
-		listEservice.add(EserviceState.ACTIVE);
+		listEservice.add(EserviceState.ONLINE);
 		Specification<EserviceView> specs = EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 0,
 				listEservice);
 

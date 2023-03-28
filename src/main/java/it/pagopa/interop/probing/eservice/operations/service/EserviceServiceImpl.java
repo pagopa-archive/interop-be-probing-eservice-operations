@@ -8,11 +8,13 @@ import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceProbingStateDto;
@@ -96,9 +98,9 @@ public class EserviceServiceImpl implements EserviceService {
 	}
 
 	public SearchEserviceResponse searchEservices(Integer limit, Integer offset, String eserviceName,
-			String eserviceProducerName, Integer versionNumber, List<EserviceState> eServiceState) {
+			String producerName, Integer versionNumber, List<EserviceState> state) {
 		Page<EserviceView> eserviceList = eserviceViewRepository.findAll(
-				EserviceViewSpecs.searchSpecBuilder(eserviceName, eserviceProducerName, versionNumber, eServiceState),
+				EserviceViewSpecs.searchSpecBuilder(eserviceName, producerName, versionNumber, state),
 				new OffsetLimitPageable(offset, limit, Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()));
 		return SearchEserviceResponse.builder()
 				.content(mapstructMapper.toSearchEserviceResponse(eserviceList.getContent()))
@@ -106,4 +108,8 @@ public class EserviceServiceImpl implements EserviceService {
 				.totalElements(eserviceList.getTotalElements()).build();
 	}
 
+	@Override
+	public List<SearchProducerNameResponse> getEservicesProducers(String producerName) {
+		return eserviceViewRepository.getEservicesProducers(producerName.toUpperCase(), PageRequest.of(0, 10));
+	}
 }

@@ -14,7 +14,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import it.pagopa.interop.probing.eservice.operations.util.constant.LoggingPlaceholders;
 
-
 @Component
 public class MDCWebFilter extends OncePerRequestFilter {
 
@@ -22,6 +21,13 @@ public class MDCWebFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		try {
+			response.addHeader("Access-Control-Allow-Origin", "*");
+			response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+			response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, x-requested-with");
+			response.addHeader("Access-Control-Max-Age", "3600");
+			if ("OPTIONS".equals(request.getMethod())) {
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
 			MDC.put(LoggingPlaceholders.TRACE_ID_PLACEHOLDER,
 					"- [CID= " + UUID.randomUUID().toString().toLowerCase() + "]");
 

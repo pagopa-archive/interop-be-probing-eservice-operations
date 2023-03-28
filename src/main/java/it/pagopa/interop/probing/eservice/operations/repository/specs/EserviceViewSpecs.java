@@ -9,15 +9,23 @@ import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 
 public class EserviceViewSpecs {
 
-	public static Specification<EserviceView> searchSpecBuilder(String eserviceName, String eserviceVersion,
-			Integer versionNumber, List<EserviceState> eServiceState) {
-		return Specification.where(eserviceNameEquals(eserviceName)).and(eserviceVersionEquals(eserviceVersion))
-				.and(versionNumberEquals(versionNumber)).and(eServiceStateIn(eServiceState));
+	private EserviceViewSpecs() {
+	}
+
+	public static Specification<EserviceView> searchSpecBuilder(String eserviceName, String producerName,
+			Integer versionNumber, List<EserviceState> state) {
+		return Specification.where(eserviceNameEquals(eserviceName)).and(producerNameEquals(producerName))
+				.and(versionNumberEquals(versionNumber)).and(eserviceStateIn(state));
 	}
 
 	public static Specification<EserviceView> eserviceNameEquals(String eserviceName) {
 		return ((root, query, builder) -> eserviceName == null ? builder.conjunction()
-				: builder.equal(root.get("eserviceName"), eserviceName));
+				: builder.equal(builder.upper(root.get("eserviceName")), eserviceName.toUpperCase()));
+	}
+
+	public static Specification<EserviceView> producerNameEquals(String producerName) {
+		return ((root, query, builder) -> producerName == null ? builder.conjunction()
+				: builder.equal(builder.upper(root.get("producerName")), producerName.toUpperCase()));
 	}
 
 	public static Specification<EserviceView> eserviceVersionEquals(String eserviceVersion) {
@@ -36,9 +44,9 @@ public class EserviceViewSpecs {
 				: builder.equal(root.get("versionNumber"), version);
 	}
 
-	public static Specification<EserviceView> eServiceStateIn(List<EserviceState> eServiceState) {
-		return (root, query, builder) -> eServiceState == null || eServiceState.isEmpty() ? builder.conjunction()
-				: root.get("state").in(eServiceState);
+	public static Specification<EserviceView> eserviceStateIn(List<EserviceState> state) {
+		return (root, query, builder) -> state == null || state.isEmpty() ? builder.conjunction()
+				: root.get("state").in(state);
 	}
 
 }

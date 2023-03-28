@@ -90,7 +90,7 @@ class EserviceControllerTest {
 	@BeforeEach
 	void setup() {
 		changeEserviceStateRequest = new ChangeEserviceStateRequest();
-		changeEserviceStateRequest.seteServiceState(EserviceState.INACTIVE);
+		changeEserviceStateRequest.seteServiceState(EserviceState.OFFLINE);
 		updateEserviceStateDto = new UpdateEserviceStateDto();
 		updateEserviceStateDto.setEserviceId(eServiceId);
 		updateEserviceStateDto.setVersionId(versionId);
@@ -123,7 +123,7 @@ class EserviceControllerTest {
 		eserviceViewDTO.setEserviceName("Eservice-Name");
 		eserviceViewDTO.setVersionNumber(1);
 		eserviceViewDTO.setProducerName("Eservice-Producer-Name");
-		eserviceViewDTO.setState(EserviceState.ACTIVE);
+		eserviceViewDTO.setState(EserviceState.ONLINE);
 
 		List<EserviceViewDTO> eservices = Arrays.asList(eserviceViewDTO);
 		expectedSearchEserviceResponse.setContent(eservices);
@@ -288,17 +288,16 @@ class EserviceControllerTest {
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentNotEmpty()
 			throws Exception {
 
-		List<EserviceState> listEservice=new ArrayList<>();
-		listEservice.add(EserviceState.ACTIVE);
-		
+		List<EserviceState> listEservice = new ArrayList<>();
+		listEservice.add(EserviceState.OFFLINE);
+
 		Mockito.doReturn(expectedSearchEserviceResponse).when(service).searchEservices(2, 0, "Eservice-Name",
 				"Eservice-Producer-Name", 1, null);
 
 		MockHttpServletResponse response = mockMvc
 				.perform(get(apiSearchEserviceUrl).params(getMockRequestParamsUpdateEserviceState("2", "0",
-						"Eservice-Name", "Eservice-Producer-Name", "1", null)))
+						"Eservice-Name", "1", "Eservice-Producer-Name", null)))
 				.andReturn().getResponse();
-
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		assertThat(response.getContentAsString()).isNotEmpty();
 		assertThat(response.getContentAsString()).contains("totalElements");
@@ -309,24 +308,22 @@ class EserviceControllerTest {
 		assertThat(searchEserviceResponse.getContent()).isNotEmpty();
 		assertEquals(searchEserviceResponse, expectedSearchEserviceResponse);
 	}
-	
-	
 
 	@Test
 	@DisplayName("the retrieved list of e-services is empty")
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentEmpty()
 			throws Exception {
-		
-		List<EserviceState> listEservice=new ArrayList<>();
-		listEservice.add(EserviceState.ACTIVE);
+
+		List<EserviceState> listEservice = new ArrayList<>();
+		listEservice.add(EserviceState.ONLINE);
 
 		expectedSearchEserviceResponse.setContent(new ArrayList<>());
-		Mockito.doReturn(expectedSearchEserviceResponse).when(service).searchEservices(2, 0, "Eservice-Name",
-				"Eservice-Producer-Name", 1, listEservice);
+		Mockito.when(service.searchEservices(2, 0, "Eservice-Name", "Eservice-Producer-Name", 1,
+				new ArrayList<>(Arrays.asList(EserviceState.ONLINE)))).thenReturn(expectedSearchEserviceResponse);
 
 		MockHttpServletResponse response = mockMvc
 				.perform(get(apiSearchEserviceUrl).params(getMockRequestParamsUpdateEserviceState("2", "0",
-						"Eservice-Name", "Eservice-Producer-Name", "1", "ACTIVE")))
+						"Eservice-Name", "1", "Eservice-Producer-Name", "ONLINE")))
 				.andReturn().getResponse();
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -343,31 +340,30 @@ class EserviceControllerTest {
 	@Test
 	@DisplayName("bad request exception is thrown because size request parameter is missing")
 	void testSearchEservice_whenSizeParameterIsMissing_thenThrows400Exception() throws Exception {
-		Mockito.doThrow(BadRequest.class).when(service).searchEservices(Mockito.anyInt(), Mockito.anyInt(),
-				Mockito.anyString(), Mockito.any(), Mockito.anyInt(), Mockito.any());
+		Mockito.when(service.searchEservices(null, 0, "Eservice-Name", "Eservice-Producer-Name", 1,
+				new ArrayList<>(Arrays.asList(EserviceState.ONLINE)))).thenThrow(BadRequest.class);
 		mockMvc.perform(get(apiSearchEserviceUrl).params(getMockRequestParamsUpdateEserviceState(null, "0",
-				"Eservice-Name", "Eservice-Version", "false", "ACTIVE"))).andExpect(status().isBadRequest());
+				"Eservice-Name", "1", "Eservice-Producer-Name", "ONLINE"))).andExpect(status().isBadRequest());
 	}
 
 	@Test
 	@DisplayName("bad request exception is thrown because pageNumber request parameter is missing")
 	void testUpdateEserviceState_whenVersionIdParameterIsMissing_thenThrows400Exception() throws Exception {
-		Mockito.doThrow(BadRequest.class).when(service).searchEservices(Mockito.anyInt(), Mockito.anyInt(),
-				Mockito.anyString(), Mockito.any(), Mockito.anyInt(), Mockito.any());
+		Mockito.when(service.searchEservices(2, null, "Eservice-Name", "Eservice-Producer-Name", 1,
+				new ArrayList<>(Arrays.asList(EserviceState.ONLINE)))).thenThrow(BadRequest.class);
 		mockMvc.perform(get(apiSearchEserviceUrl).params(getMockRequestParamsUpdateEserviceState("2", null,
-				"Eservice-Name", "Eservice-Version", "false", "ACTIVE"))).andExpect(status().isBadRequest());
+				"Eservice-Name", "1", "Eservice-Producer-Name", "ONLINE"))).andExpect(status().isBadRequest());
 	}
 
-	private LinkedMultiValueMap<String, String> getMockRequestParamsUpdateEserviceState(String limit,
-			String offset, String eserviceName, String producerName, String versionNumber,
-			String eServiceState) {
+	private LinkedMultiValueMap<String, String> getMockRequestParamsUpdateEserviceState(String limit, String offset,
+			String eserviceName, String versionNumber, String producerName, String eServiceState) {
 		LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
 		requestParams.add("offset", offset);
 		requestParams.add("limit", limit);
 		requestParams.add("eserviceName", eserviceName);
-		requestParams.add("eserviceProducerName", producerName);
 		requestParams.add("versionNumber", versionNumber);
-		requestParams.add("eServiceState", eServiceState);
+		requestParams.add("producerName", producerName);
+		requestParams.add("state", eServiceState);
 		return requestParams;
 	}
 

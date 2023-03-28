@@ -67,11 +67,11 @@ class EserviceServiceImplTest {
 	@BeforeEach
 	void setup() {
 		testService = new Eservice();
-		testService.setState(EserviceState.ACTIVE);
+		testService.setState(EserviceState.ONLINE);
 		updateEserviceStateDto = new UpdateEserviceStateDto();
 		updateEserviceStateDto.setEserviceId(eServiceId);
 		updateEserviceStateDto.setVersionId(versionId);
-		updateEserviceStateDto.setNewEServiceState(EserviceState.fromValue("INACTIVE"));
+		updateEserviceStateDto.setNewEServiceState(EserviceState.fromValue("OFFLINE"));
 
 		updateEserviceProbingStateDto = new UpdateEserviceProbingStateDto();
 		updateEserviceProbingStateDto.setProbingEnabled(false);
@@ -89,7 +89,7 @@ class EserviceServiceImplTest {
 		eserviceView.setEserviceName("Eservice-Name");
 		eserviceView.setProducerName("Eservice-Producer-Name");
 		eserviceView.setVersionNumber(1);
-		eserviceView.setState(EserviceState.ACTIVE);
+		eserviceView.setState(EserviceState.ONLINE);
 
 		eservicesView = Arrays.asList(eserviceView);
 	}
@@ -102,7 +102,7 @@ class EserviceServiceImplTest {
 				.thenReturn(Optional.of(testService));
 		Mockito.when(eserviceRepository.save(Mockito.any(Eservice.class))).thenReturn(testService);
 		service.updateEserviceState(updateEserviceStateDto);
-		assertEquals(EserviceState.INACTIVE, testService.getState(), "e-service state should be INACTIVE");
+		assertEquals(EserviceState.OFFLINE, testService.getState(), "e-service state should be INACTIVE");
 	}
 
 	@Test
@@ -161,7 +161,7 @@ class EserviceServiceImplTest {
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentNotEmpty() {
 
 		List<EserviceState> listEservice = new ArrayList<>();
-		listEservice.add(EserviceState.ACTIVE);
+		listEservice.add(EserviceState.OFFLINE);
 
 		Mockito.when(eserviceViewRepository.findAll(ArgumentMatchers.<Specification<EserviceView>>any(),
 				ArgumentMatchers.any(Pageable.class))).thenReturn(new PageImpl<EserviceView>(eservicesView));
@@ -170,7 +170,7 @@ class EserviceServiceImplTest {
 		eserviceViewDTO.setEserviceName("Eservice-Name");
 		eserviceViewDTO.setProducerName("Eservice-Producer-Name");
 		eserviceViewDTO.setVersionNumber(1);
-		eserviceViewDTO.setState(EserviceState.ACTIVE);
+		eserviceViewDTO.setState(EserviceState.OFFLINE);
 
 		List<EserviceViewDTO> eservicesViewDTO = Arrays.asList(eserviceViewDTO);
 		Mockito.when(mapstructMapper.toSearchEserviceResponse(Mockito.any())).thenReturn(eservicesViewDTO);

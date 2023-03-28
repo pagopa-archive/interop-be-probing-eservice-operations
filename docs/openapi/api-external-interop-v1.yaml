@@ -208,13 +208,12 @@ paths:
                 title: 'Internal Server Error'
                 detail: 'There is a problem processing the request on the server.'
                 traceId: 'string'
-                errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please try again later.'}]
-                
+                errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please try again later.'}]             
    '/eservices/searchEservices':
     get:
       summary: Retrive e-services by filters
       description: >-
-        Retrive e-services by filters : eserviceName , producerName, versionNumber , eservice-state 
+        Retrive e-services by filters : eserviceName , producerName, versionNumber, eservice-state 
       tags:
         - Read
       operationId: searchEservices
@@ -236,7 +235,14 @@ paths:
         - name: eserviceName
           in: query
           required: false
-          description: the page's number
+          description:  the e-service's name
+          schema:
+            type: string
+            format: string
+        - name: producerName
+          in: query
+          required: false
+          description: the e-service's producer name
           schema:
             type: string
             format: string
@@ -247,17 +253,10 @@ paths:
           schema:
             type: string
             format: integer
-        - name: eserviceProducerName
+        - name: state
           in: query
           required: false
-          description: the e-service's producer name
-          schema:
-            type: string
-            format: string
-        - name: eServiceState
-          in: query
-          required: false
-          description: the page's number
+          description:  the e-service's state
           schema:
               type: array
               items:
@@ -291,7 +290,53 @@ paths:
                 detail: 'There is a problem processing the request on the server.'
                 traceId: 'string'
                 errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please try again later.'}]
-
+   '/eservices/getProducers':
+    get:
+      summary: Retrive e-services producers
+      description: >-
+        Retrive e-services producers : producerName
+      tags:
+        - Read
+      operationId: getEservicesProducers
+      parameters:
+        - name: eserviceProducerName
+          in: query
+          required: false
+          description: the e-service's producer name
+          schema:
+            type: string
+            format: string
+      responses:
+        '200':
+          description: >-
+            The search for the list of producers has been performed successfully
+          content:
+            application/json:
+              schema:
+               type: array
+               items:
+                $ref: '#/components/schemas/SearchProducerNameResponse'
+        '400':
+          description: >-
+            The provided input data is invalid
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':                  
+          description: >-
+            A managed error has occured during the request elaboration
+          content:                        
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: string
+                status: 500 
+                title: 'Internal Server Error'
+                detail: 'There is a problem processing the request on the server.'
+                traceId: 'string'
+                errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please try again later.'}]
 components:
   schemas:
     ChangeProbingStateRequest:
@@ -375,12 +420,23 @@ components:
           title: total elements
           type: integer
           format: int64
-
+          
+    SearchProducerNameResponse:
+      type: object
+      properties:
+        label:
+          title: label of producer's name
+          type: string
+        value:
+          title: value of producer's name
+          type: string
+          
     EserviceState:
       type: string
       enum:
-        - ACTIVE 
-        - INACTIVE
+        - ONLINE 
+        - OFFLINE
+        - N/D
         
     Problem:
       properties:
