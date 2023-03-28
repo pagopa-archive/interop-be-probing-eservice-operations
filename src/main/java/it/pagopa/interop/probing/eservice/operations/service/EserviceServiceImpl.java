@@ -99,8 +99,7 @@ public class EserviceServiceImpl implements EserviceService {
 			String eserviceProducerName, Integer versionNumber, List<EserviceState> eServiceState) {
 		Page<EserviceView> eserviceList = eserviceViewRepository.findAll(
 				EserviceViewSpecs.searchSpecBuilder(eserviceName, eserviceProducerName, versionNumber, eServiceState),
-				OffsetLimitPageable.builder().offset(offset).limit(limit)
-						.sort(Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()).build());
+				new OffsetLimitPageable(offset, limit, Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()));
 		return SearchEserviceResponse.builder()
 				.content(mapstructMapper.toSearchEserviceResponse(eserviceList.getContent()))
 				.offset(eserviceList.getNumber()).limit(eserviceList.getSize())
