@@ -57,8 +57,8 @@ class EserviceViewRepositoryTest {
 		Specification<EserviceView> specs = EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 1,
 				listEservice);
 
-		Page<EserviceView> result = repository.findAll(specs, OffsetLimitPageable.builder().offset(0).limit(2)
-				.sort(Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()).build());
+		Page<EserviceView> result = repository.findAll(specs,
+				new OffsetLimitPageable(0, 2, Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()));
 
 		assertNotNull(result);
 		assertEquals(1, result.getTotalElements());
@@ -72,8 +72,8 @@ class EserviceViewRepositoryTest {
 		Specification<EserviceView> specs = EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 0,
 				listEservice);
 
-		Page<EserviceView> result = repository.findAll(specs, OffsetLimitPageable.builder().offset(0).limit(2)
-				.sort(Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()).build());
+		Page<EserviceView> result = repository.findAll(specs,
+				new OffsetLimitPageable(0, 2, Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()));
 
 		assertNotNull(result);
 		assertEquals(0, result.getTotalElements());

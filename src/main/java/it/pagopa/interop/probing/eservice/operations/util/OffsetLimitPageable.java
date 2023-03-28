@@ -13,8 +13,8 @@ public class OffsetLimitPageable implements Pageable {
 		if (offset < 0)
 			throw new IllegalArgumentException("Offset must not be less than zero!");
 
-		if (limit < 0)
-			throw new IllegalArgumentException("Limit must not be less than zero!");
+		if (limit < 1)
+			throw new IllegalArgumentException("Limit must not be less than one!");
 
 		this.offset = offset;
 		this.limit = limit;
@@ -61,7 +61,7 @@ public class OffsetLimitPageable implements Pageable {
 
 	@Override
 	public Pageable first() {
-		return this;
+		return new OffsetLimitPageable(0, getPageSize(), getSort());
 	}
 
 	@Override
