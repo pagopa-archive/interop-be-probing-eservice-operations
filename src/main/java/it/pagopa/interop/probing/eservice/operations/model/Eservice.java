@@ -102,7 +102,7 @@ public class Eservice implements Serializable {
 	private UUID versionId;
 
 	@Version
-	@Column(name = "lockVersion")
+	@Column(name = "lock_version")
 	private Integer lockVersion;
 	
 	@Column(name="version_number")

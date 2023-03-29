@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
-import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,9 +42,6 @@ public class EserviceServiceImpl implements EserviceService {
 
 	@Autowired
 	MapStructMapper mapstructMapper;
-
-	@Autowired
-	Validator validator;
 
 	@Override
 	public void updateEserviceState(UpdateEserviceStateDto inputData) throws EserviceNotFoundException {
@@ -102,6 +98,7 @@ public class EserviceServiceImpl implements EserviceService {
 		Page<EserviceView> eserviceList = eserviceViewRepository.findAll(
 				EserviceViewSpecs.searchSpecBuilder(eserviceName, producerName, versionNumber, state),
 				new OffsetLimitPageable(offset, limit, Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()));
+
 		return SearchEserviceResponse.builder()
 				.content(mapstructMapper.toSearchEserviceResponse(eserviceList.getContent()))
 				.offset(eserviceList.getNumber()).limit(eserviceList.getSize())
