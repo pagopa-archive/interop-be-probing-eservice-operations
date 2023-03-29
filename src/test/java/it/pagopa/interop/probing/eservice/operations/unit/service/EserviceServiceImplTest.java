@@ -3,6 +3,7 @@ package it.pagopa.interop.probing.eservice.operations.unit.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
 
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
@@ -24,7 +25,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceViewDTO;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
@@ -62,16 +65,31 @@ class EserviceServiceImplTest {
 
 	private UpdateEserviceFrequencyDto updateEserviceFrequencyDto;
 
+	private EserviceSaveRequest eserviceSaveRequest;
+
 	private List<EserviceView> eservicesView;
 
 	@BeforeEach
 	void setup() {
 		testService = new Eservice();
-		testService.setState(EserviceState.ACTIVE);
+		testService.setState(EserviceState.ONLINE);
+		testService.setLockVersion(1);
+		testService.setId(1L);
+
+		eserviceSaveRequest = new EserviceSaveRequest();
+		eserviceSaveRequest.setBasePath(new ArrayList<String>());
+		eserviceSaveRequest.setEserviceId(eServiceId.toString());
+		eserviceSaveRequest.setName("Eservice name test");
+		eserviceSaveRequest.setProducerName("Eservice producer test");
+		eserviceSaveRequest.setTechnology(EserviceTechnology.fromValue("REST"));
+		eserviceSaveRequest.setVersionId(versionId.toString());
+		eserviceSaveRequest.setVersionNumber("1");
+		eserviceSaveRequest.setState(EserviceState.fromValue("OFFLINE"));
+
 		updateEserviceStateDto = new UpdateEserviceStateDto();
 		updateEserviceStateDto.setEserviceId(eServiceId);
 		updateEserviceStateDto.setVersionId(versionId);
-		updateEserviceStateDto.setNewEServiceState(EserviceState.fromValue("INACTIVE"));
+		updateEserviceStateDto.setNewEServiceState(EserviceState.fromValue("OFFLINE"));
 
 		updateEserviceProbingStateDto = new UpdateEserviceProbingStateDto();
 		updateEserviceProbingStateDto.setProbingEnabled(false);
@@ -89,9 +107,30 @@ class EserviceServiceImplTest {
 		eserviceView.setEserviceName("Eservice-Name");
 		eserviceView.setProducerName("Eservice-Producer-Name");
 		eserviceView.setVersionNumber(1);
-		eserviceView.setState(EserviceState.ACTIVE);
+		eserviceView.setState(EserviceState.ONLINE);
 
 		eservicesView = Arrays.asList(eserviceView);
+	}
+
+	@Test
+	@DisplayName("e-service correctly updated")
+	void testSaveEservice_whenEserviceIsFoundGivenCorrectEserviceSaveRequest_thenEserviceIsUpdated() {
+		Mockito.when(eserviceRepository.findByEserviceIdAndVersionId(eServiceId, versionId))
+				.thenReturn(Optional.of(testService));
+		Mockito.when(eserviceRepository.save(Mockito.any(Eservice.class))).thenReturn(testService);
+		service.saveEservice(eserviceSaveRequest);
+		assertEquals(testService.getId(), service.saveEservice(eserviceSaveRequest), "e-service has been updated");
+	}
+
+	@Test
+	@DisplayName("e-service to save when no eservice was found")
+	void testSaveEservice_whenNoEserviceIsFoundGivenCorrectEserviceSaveRequest_thenEserviceIsSaved() {
+		Mockito.when(eserviceRepository.findByEserviceIdAndVersionId(eServiceId, versionId))
+				.thenReturn(Optional.empty());
+		Mockito.when(eserviceRepository.save(Mockito.any(Eservice.class))).thenReturn(testService);
+		service.saveEservice(eserviceSaveRequest);
+		verify(eserviceRepository).save(Mockito.any(Eservice.class));
+		assertEquals(testService.getId(), service.saveEservice(eserviceSaveRequest), "e-service has been saved");
 	}
 
 	@Test
@@ -102,7 +141,7 @@ class EserviceServiceImplTest {
 				.thenReturn(Optional.of(testService));
 		Mockito.when(eserviceRepository.save(Mockito.any(Eservice.class))).thenReturn(testService);
 		service.updateEserviceState(updateEserviceStateDto);
-		assertEquals(EserviceState.INACTIVE, testService.getState(), "e-service state should be INACTIVE");
+		assertEquals(EserviceState.OFFLINE, testService.getState(), "e-service state should be OFFLINE");
 	}
 
 	@Test
@@ -161,7 +200,7 @@ class EserviceServiceImplTest {
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentNotEmpty() {
 
 		List<EserviceState> listEservice = new ArrayList<>();
-		listEservice.add(EserviceState.ACTIVE);
+		listEservice.add(EserviceState.ONLINE);
 
 		Mockito.when(eserviceViewRepository.findAll(ArgumentMatchers.<Specification<EserviceView>>any(),
 				ArgumentMatchers.any(Pageable.class))).thenReturn(new PageImpl<EserviceView>(eservicesView));
@@ -170,7 +209,7 @@ class EserviceServiceImplTest {
 		eserviceViewDTO.setEserviceName("Eservice-Name");
 		eserviceViewDTO.setProducerName("Eservice-Producer-Name");
 		eserviceViewDTO.setVersionNumber(1);
-		eserviceViewDTO.setState(EserviceState.ACTIVE);
+		eserviceViewDTO.setState(EserviceState.ONLINE);
 
 		List<EserviceViewDTO> eservicesViewDTO = Arrays.asList(eserviceViewDTO);
 		Mockito.when(mapstructMapper.toSearchEserviceResponse(Mockito.any())).thenReturn(eservicesViewDTO);

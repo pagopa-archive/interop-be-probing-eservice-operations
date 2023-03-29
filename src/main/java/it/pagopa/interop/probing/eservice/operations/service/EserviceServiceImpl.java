@@ -1,7 +1,9 @@
 package it.pagopa.interop.probing.eservice.operations.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 import javax.validation.Validator;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
@@ -44,6 +47,33 @@ public class EserviceServiceImpl implements EserviceService {
 
 	@Autowired
 	Validator validator;
+
+	@Override
+	public Long saveEservice(EserviceSaveRequest inputData) {
+		UUID eserviceId = UUID.fromString(inputData.getEserviceId());
+		UUID versionId = UUID.fromString(inputData.getVersionId());
+		List<String> basePath = inputData.getBasePath();
+		Eservice eServiceToUpdate = eserviceRepository.findByEserviceIdAndVersionId(eserviceId, versionId).orElse(null);
+
+		if (Objects.isNull(eServiceToUpdate)) {
+			eServiceToUpdate = new Eservice();
+			eServiceToUpdate.setVersionId(versionId);
+			eServiceToUpdate.setEserviceId(eserviceId);
+			eServiceToUpdate.setLockVersion(1);
+			eServiceToUpdate.setVersionNumber(Integer.valueOf(inputData.getVersionNumber()));
+		}
+
+		eServiceToUpdate.setEserviceName(inputData.getName());
+		eServiceToUpdate.setProducerName(inputData.getProducerName());
+		eServiceToUpdate.setBasePath(basePath.toArray(new String[basePath.size()]));
+		eServiceToUpdate.setTechnology(inputData.getTechnology());
+		eServiceToUpdate.setState(inputData.getState());
+
+		Long id = eserviceRepository.save(eServiceToUpdate).getId();
+		log.info("Service " + eServiceToUpdate.getEserviceId() + " with version " + eServiceToUpdate.getVersionId()
+				+ " has been saved.");
+		return id;
+	}
 
 	@Override
 	public void updateEserviceState(UpdateEserviceStateDto inputData) throws EserviceNotFoundException {

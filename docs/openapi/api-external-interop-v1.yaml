@@ -291,9 +291,87 @@ paths:
                 detail: 'There is a problem processing the request on the server.'
                 traceId: 'string'
                 errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please try again later.'}]
-
+    
+   '/eservices/saveEservice':
+    post:
+      summary: Update the state connection 
+      description: Update the state connection, frequency and all information about that
+      tags:
+      - Write
+      operationId: saveEservice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EserviceSaveRequest'
+      responses:
+        '200':
+          description: The update has been successfully completed
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        '400':
+          description: The provided input is invalid
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: The e-service hasn't been found
+          content:
+              application/problem+json:
+                schema:
+                  $ref: '#/components/schemas/Problem'
+        '500':
+          description: A managed error has occured during the request elaboration
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: string
+                status: 500
+                title: Internal Server Error
+                detail: There is problem processing the request on the server.
+                traceId: string
+                errors:
+                - code: 000-1234
+                  detail: The server is currently down for maintenance. Please try again later.
 components:
   schemas:
+    EserviceSaveRequest:
+      type: object
+      required:
+      - eserviceId
+      - versionId
+      - name
+      - producerName
+      - basePath
+      - technology
+      - state
+      - versionNumber
+      properties:
+        name:
+          type: string
+        producerName:
+          type: string
+        basePath:
+          type: array
+          items:
+            type: string
+        technology:
+          $ref: '#/components/schemas/EserviceTechnology'
+        eserviceId:
+          type: string
+        versionId:
+          type: string
+        state:
+          $ref: '#/components/schemas/EserviceState'
+        versionNumber:
+          type: string
     ChangeProbingStateRequest:
       type: object
       required:
@@ -379,8 +457,14 @@ components:
     EserviceState:
       type: string
       enum:
-        - ACTIVE 
-        - INACTIVE
+        - ONLINE
+        - OFFLINE
+        - N.D.
+    EserviceTechnology:
+      type: string
+      enum:
+      - REST
+      - SOAP
         
     Problem:
       properties:
@@ -438,4 +522,4 @@ components:
           type: string
       required:
         - code
-        - detail   
+        - detail

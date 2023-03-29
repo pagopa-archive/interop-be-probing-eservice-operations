@@ -11,6 +11,7 @@ import it.pagopa.interop.probing.eservice.operations.api.EservicesApi;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
@@ -55,5 +56,10 @@ public class EserviceController implements EservicesApi {
 			Integer versionNumber, String eserviceProducerName, List<EserviceState> eServiceState) {
 		return ResponseEntity.ok(eserviceService.searchEservices(limit, offset, eserviceName, eserviceProducerName,
 				versionNumber, eServiceState));
+	}
+	
+	@Override
+	public ResponseEntity<Long> saveEservice(EserviceSaveRequest eserviceSaveRequest) {
+		return ResponseEntity.ok(eserviceService.saveEservice(eserviceSaveRequest));
 	}
 }

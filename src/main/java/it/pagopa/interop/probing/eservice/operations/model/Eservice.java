@@ -26,7 +26,7 @@ import org.hibernate.annotations.TypeDef;
 import org.springframework.data.annotation.Version;
 
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
-import it.pagopa.interop.probing.eservice.operations.util.EserviceTechnology;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -102,9 +102,9 @@ public class Eservice implements Serializable {
 	private UUID versionId;
 
 	@Version
-	@Column(name = "lockVersion")
+	@Column(name = "lock_version")
 	private Integer lockVersion;
-	
-	@Column(name="version_number")
+
+	@Column(name = "version_number")
 	private Integer versionNumber;
 }
