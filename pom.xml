@@ -160,7 +160,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/docs/openapi/api-external-interop-v1.yaml
+							<inputSpec>${project.basedir}/docs/openapi/api-eservice-operations-interop-v1.yaml
 							</inputSpec>
 							<generatorName>spring</generatorName>
 							<apiPackage>it.pagopa.interop.probing.eservice.operations.api

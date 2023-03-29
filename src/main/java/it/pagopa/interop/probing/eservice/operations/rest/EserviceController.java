@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import it.pagopa.interop.probing.eservice.operations.api.EservicesApi;
+import it.pagopa.interop.probing.eservice.operations.api.EserviceOperationsApi;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
@@ -19,7 +19,7 @@ import it.pagopa.interop.probing.eservice.operations.mapstruct.mapper.MapStructM
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 
 @RestController
-public class EserviceController implements EservicesApi {
+public class EserviceController implements EserviceOperationsApi {
 
 	@Autowired
 	EserviceService eserviceService;
