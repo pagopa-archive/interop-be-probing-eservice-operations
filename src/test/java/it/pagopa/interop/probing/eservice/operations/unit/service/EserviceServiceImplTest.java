@@ -21,12 +21,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceViewDTO;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceProbingStateDto;
@@ -62,7 +64,9 @@ class EserviceServiceImplTest {
 
 	private UpdateEserviceFrequencyDto updateEserviceFrequencyDto;
 
-	private List<EserviceView> eservicesView;
+	private List<EserviceView> eservicesViewExpectedList;
+
+	List<SearchProducerNameResponse> searchProducerNameResponseExpectedList;
 
 	@BeforeEach
 	void setup() {
@@ -91,7 +95,7 @@ class EserviceServiceImplTest {
 		eserviceView.setVersionNumber(1);
 		eserviceView.setState(EserviceState.ONLINE);
 
-		eservicesView = Arrays.asList(eserviceView);
+		eservicesViewExpectedList = Arrays.asList(eserviceView);
 	}
 
 	@Test
@@ -160,25 +164,49 @@ class EserviceServiceImplTest {
 	@DisplayName("service returns SearchEserviceResponse object with content not empty")
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentNotEmpty() {
 
-		List<EserviceState> listEservice = new ArrayList<>();
-		listEservice.add(EserviceState.OFFLINE);
-
 		Mockito.when(eserviceViewRepository.findAll(ArgumentMatchers.<Specification<EserviceView>>any(),
-				ArgumentMatchers.any(Pageable.class))).thenReturn(new PageImpl<EserviceView>(eservicesView));
+				ArgumentMatchers.any(Pageable.class)))
+				.thenReturn(new PageImpl<EserviceView>(eservicesViewExpectedList));
 
-		EserviceViewDTO eserviceViewDTO = new EserviceViewDTO();
-		eserviceViewDTO.setEserviceName("Eservice-Name");
-		eserviceViewDTO.setProducerName("Eservice-Producer-Name");
-		eserviceViewDTO.setVersionNumber(1);
-		eserviceViewDTO.setState(EserviceState.OFFLINE);
+		EserviceViewDTO expectedEserviceViewDTO = new EserviceViewDTO();
+		expectedEserviceViewDTO.setEserviceName("Eservice-Name");
+		expectedEserviceViewDTO.setProducerName("Eservice-Producer-Name");
+		expectedEserviceViewDTO.setVersionNumber(1);
+		expectedEserviceViewDTO.setState(EserviceState.OFFLINE);
 
-		List<EserviceViewDTO> eservicesViewDTO = Arrays.asList(eserviceViewDTO);
-		Mockito.when(mapstructMapper.toSearchEserviceResponse(Mockito.any())).thenReturn(eservicesViewDTO);
+		List<EserviceViewDTO> eservicesViewDTOExpectedList = Arrays.asList(expectedEserviceViewDTO);
+		Mockito.when(mapstructMapper.toSearchEserviceResponse(Mockito.any())).thenReturn(eservicesViewDTOExpectedList);
 
-		SearchEserviceResponse searchEserviceResponse = service.searchEservices(2, 0, "Eservice-Name",
-				"Eservice-Producer-Name", 1, listEservice);
+		SearchEserviceResponse searchEserviceResponseResult = service.searchEservices(2, 0, "Eservice-Name",
+				"Eservice-Producer-Name", 1, Arrays.asList(EserviceState.OFFLINE));
 
-		assertEquals(eservicesViewDTO.size(), searchEserviceResponse.getContent().size());
-		assertTrue(searchEserviceResponse.getTotalElements() > 0);
+		assertEquals(eservicesViewDTOExpectedList.size(), searchEserviceResponseResult.getContent().size());
+		assertTrue(searchEserviceResponseResult.getTotalElements() > 0);
+	}
+
+	@Test
+	@DisplayName("when searching for a valid producer name, then return the list of producers")
+	void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseList() {
+		searchProducerNameResponseExpectedList = Arrays.asList(
+				new SearchProducerNameResponse("ProducerName-Test-1", "ProducerName-Test-1"),
+				new SearchProducerNameResponse("ProducerName-Test-2", "ProducerName-Test-2"));
+		Mockito.when(
+				eserviceViewRepository.getEservicesProducers("ProducerName-Test".toUpperCase(), PageRequest.of(0, 10)))
+				.thenReturn(searchProducerNameResponseExpectedList);
+		List<SearchProducerNameResponse> searchProducerNameResponseResultList = service
+				.getEservicesProducers("ProducerName-Test");
+		assertEquals(searchProducerNameResponseExpectedList.size(), searchProducerNameResponseResultList.size());
+	}
+
+	@Test
+	@DisplayName("when searching for a producer name, then return an empty list")
+	void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseListEmpty() {
+		searchProducerNameResponseExpectedList = new ArrayList<>();
+		Mockito.when(
+				eserviceViewRepository.getEservicesProducers("ProducerName-Test".toUpperCase(), PageRequest.of(0, 10)))
+				.thenReturn(searchProducerNameResponseExpectedList);
+		List<SearchProducerNameResponse> searchProducerNameResponseResultList = service
+				.getEservicesProducers("ProducerName-Test");
+		assertEquals(searchProducerNameResponseExpectedList.size(), searchProducerNameResponseResultList.size());
 	}
 }
