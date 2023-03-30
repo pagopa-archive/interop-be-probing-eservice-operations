@@ -45,7 +45,7 @@ public class EserviceController implements EserviceOperationsApi {
 
 	@Override
 	public ResponseEntity<Void> updateEserviceState(UUID eserviceId, UUID versionId,
-			ChangeEserviceStateRequest changeEserviceStateRequest) throws Exception {
+			ChangeEserviceStateRequest changeEserviceStateRequest) throws EserviceNotFoundException {
 		eserviceService.updateEserviceState(
 				mapstructMapper.toUpdateEserviceStateDto(eserviceId, versionId, changeEserviceStateRequest));
 		return ResponseEntity.noContent().build();
