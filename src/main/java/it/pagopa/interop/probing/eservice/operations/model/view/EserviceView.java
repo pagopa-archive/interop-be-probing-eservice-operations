@@ -66,7 +66,9 @@ public class EserviceView implements Serializable {
 	private Integer versionNumber;
 
 	@Column(name = "response_received")
-	@NotNull
 	private OffsetDateTime responseReceived;
+
+	@Column(name = "last_request")
+	private OffsetDateTime lastRequest;
 
 }
