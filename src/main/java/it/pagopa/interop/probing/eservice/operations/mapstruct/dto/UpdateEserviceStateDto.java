@@ -7,9 +7,11 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class UpdateEserviceStateDto {
 
 	@NotNull

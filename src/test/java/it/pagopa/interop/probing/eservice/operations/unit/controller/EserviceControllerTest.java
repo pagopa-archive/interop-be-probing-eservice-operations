@@ -62,7 +62,7 @@ class EserviceControllerTest {
 
 	@Value("${api.searchEservice.url}")
 	private String apiSearchEserviceUrl;
-	
+
 	@Value("${api.saveEservice.url}")
 	private String saveEserviceUrl;
 
@@ -74,7 +74,7 @@ class EserviceControllerTest {
 
 	@MockBean
 	private EserviceService service;
-	
+
 	private EserviceSaveRequest eserviceSaveRequest;
 
 	private ChangeEserviceStateRequest changeEserviceStateRequest;
@@ -96,57 +96,39 @@ class EserviceControllerTest {
 
 	@BeforeEach
 	void setup() {
-		changeEserviceStateRequest = new ChangeEserviceStateRequest();
-		changeEserviceStateRequest.seteServiceState(EserviceState.OFFLINE);
-		
-		eserviceSaveRequest = new EserviceSaveRequest();
-		eserviceSaveRequest.setBasePath(new ArrayList<String>());
-		eserviceSaveRequest.setEserviceId(eServiceId.toString());
-		eserviceSaveRequest.setName("Eservice name test");
-		eserviceSaveRequest.setProducerName("Eservice producer test");
-		eserviceSaveRequest.setTechnology(EserviceTechnology.fromValue("REST"));
-		eserviceSaveRequest.setVersionId(versionId.toString());
-		eserviceSaveRequest.setVersionNumber("1");
-		eserviceSaveRequest.setState(EserviceState.ONLINE);
-		
-		updateEserviceStateDto = new UpdateEserviceStateDto();
-		updateEserviceStateDto.setEserviceId(eServiceId);
-		updateEserviceStateDto.setVersionId(versionId);
-		updateEserviceStateDto.setNewEServiceState(changeEserviceStateRequest.geteServiceState());
+		changeEserviceStateRequest = ChangeEserviceStateRequest.builder().eServiceState(EserviceState.OFFLINE).build();
 
-		changeProbingStateRequest = new ChangeProbingStateRequest();
-		changeProbingStateRequest.setProbingEnabled(true);
-		updateEserviceProbingStateDto = new UpdateEserviceProbingStateDto();
-		updateEserviceProbingStateDto.setEserviceId(eServiceId);
-		updateEserviceProbingStateDto.setVersionId(versionId);
-		updateEserviceProbingStateDto.setProbingEnabled(changeProbingStateRequest.getProbingEnabled());
+		eserviceSaveRequest = EserviceSaveRequest.builder().basePath(new ArrayList<String>())
+				.eserviceId(eServiceId.toString()).name("Eservice name test").producerName("Eservice producer test")
+				.technology(EserviceTechnology.fromValue("REST")).versionId(versionId.toString()).versionNumber("1")
+				.state(EserviceState.ONLINE).build();
 
-		changeProbingFrequencyRequest = new ChangeProbingFrequencyRequest();
-		changeProbingFrequencyRequest.setFrequency(5);
-		changeProbingFrequencyRequest.setStartTime(OffsetTime.of(8, 0, 0, 0, ZoneOffset.UTC));
-		changeProbingFrequencyRequest.setEndTime(OffsetTime.of(20, 0, 0, 0, ZoneOffset.UTC));
+		updateEserviceStateDto = UpdateEserviceStateDto.builder().eserviceId(eServiceId).versionId(versionId)
+				.newEServiceState(changeEserviceStateRequest.geteServiceState()).build();
 
-		updateEserviceFrequencyDto = new UpdateEserviceFrequencyDto();
-		updateEserviceFrequencyDto.setEserviceId(eServiceId);
-		updateEserviceFrequencyDto.setVersionId(versionId);
-		updateEserviceFrequencyDto.setNewPollingFrequency(changeProbingFrequencyRequest.getFrequency());
-		updateEserviceFrequencyDto.setNewPollingStartTime(changeProbingFrequencyRequest.getStartTime());
-		updateEserviceFrequencyDto.setNewPollingEndTime(changeProbingFrequencyRequest.getEndTime());
+		changeProbingStateRequest = ChangeProbingStateRequest.builder().probingEnabled(true).build();
 
-		expectedSearchEserviceResponse = new SearchEserviceResponse();
-		expectedSearchEserviceResponse.setLimit(2);
-		expectedSearchEserviceResponse.setOffset(0);
+		updateEserviceProbingStateDto = UpdateEserviceProbingStateDto.builder().eserviceId(eServiceId)
+				.versionId(versionId).probingEnabled(changeProbingStateRequest.getProbingEnabled()).build();
 
-		EserviceViewDTO eserviceViewDTO = new EserviceViewDTO();
-		eserviceViewDTO.setEserviceName("Eservice-Name");
-		eserviceViewDTO.setVersionNumber(1);
-		eserviceViewDTO.setProducerName("Eservice-Producer-Name");
-		eserviceViewDTO.setState(EserviceState.ONLINE);
+		changeProbingFrequencyRequest = ChangeProbingFrequencyRequest.builder().frequency(5)
+				.startTime(OffsetTime.of(8, 0, 0, 0, ZoneOffset.UTC))
+				.endTime(OffsetTime.of(20, 0, 0, 0, ZoneOffset.UTC)).build();
+
+		updateEserviceFrequencyDto = UpdateEserviceFrequencyDto.builder().eserviceId(eServiceId).versionId(versionId)
+				.newPollingFrequency(changeProbingFrequencyRequest.getFrequency())
+				.newPollingStartTime(changeProbingFrequencyRequest.getStartTime())
+				.newPollingEndTime(changeProbingFrequencyRequest.getEndTime()).build();
+
+		expectedSearchEserviceResponse = SearchEserviceResponse.builder().limit(2).offset(0).build();
+
+		EserviceViewDTO eserviceViewDTO = EserviceViewDTO.builder().eserviceName("Eservice-Name").versionNumber(1)
+				.producerName("Eservice-Producer-Name").state(EserviceState.ONLINE).build();
 
 		List<EserviceViewDTO> eservices = Arrays.asList(eserviceViewDTO);
 		expectedSearchEserviceResponse.setContent(eservices);
 	}
-	
+
 	@Test
 	@DisplayName("e-service state gets saved")
 	void testSaveService_whenGivenValidEserviceSaveRequest_thenReturnsId() throws Exception {
@@ -318,9 +300,6 @@ class EserviceControllerTest {
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentNotEmpty()
 			throws Exception {
 
-		List<EserviceState> listEservice=new ArrayList<>();
-		listEservice.add(EserviceState.ONLINE);
-		
 		Mockito.doReturn(expectedSearchEserviceResponse).when(service).searchEservices(2, 0, "Eservice-Name",
 				"Eservice-Producer-Name", 1, null);
 
@@ -339,17 +318,12 @@ class EserviceControllerTest {
 		assertThat(searchEserviceResponse.getContent()).isNotEmpty();
 		assertEquals(searchEserviceResponse, expectedSearchEserviceResponse);
 	}
-	
-	
 
 	@Test
 	@DisplayName("the retrieved list of e-services is empty")
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentEmpty()
 			throws Exception {
-		
-		List<EserviceState> listEservice=new ArrayList<>();
-		listEservice.add(EserviceState.ONLINE);
-
+		List<EserviceState> listEservice = Arrays.asList(EserviceState.ONLINE);
 		expectedSearchEserviceResponse.setContent(new ArrayList<>());
 		Mockito.doReturn(expectedSearchEserviceResponse).when(service).searchEservices(2, 0, "Eservice-Name",
 				"Eservice-Producer-Name", 1, listEservice);
@@ -388,9 +362,8 @@ class EserviceControllerTest {
 				"Eservice-Name", "Eservice-Version", "false", "ONLINE"))).andExpect(status().isBadRequest());
 	}
 
-	private LinkedMultiValueMap<String, String> getMockRequestParamsUpdateEserviceState(String limit,
-			String offset, String eserviceName, String producerName, String versionNumber,
-			String eServiceState) {
+	private LinkedMultiValueMap<String, String> getMockRequestParamsUpdateEserviceState(String limit, String offset,
+			String eserviceName, String producerName, String versionNumber, String eServiceState) {
 		LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
 		requestParams.add("offset", offset);
 		requestParams.add("limit", limit);

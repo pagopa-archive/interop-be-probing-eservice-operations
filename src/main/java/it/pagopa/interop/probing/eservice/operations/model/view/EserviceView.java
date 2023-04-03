@@ -17,8 +17,8 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Immutable;
 
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * The persistent class for the eservices database table.
@@ -28,8 +28,10 @@ import lombok.NoArgsConstructor;
 @Immutable
 @Table(name = "eservice_view")
 @Data
-@NoArgsConstructor
+@Builder
 public class EserviceView implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "id", updatable = false)

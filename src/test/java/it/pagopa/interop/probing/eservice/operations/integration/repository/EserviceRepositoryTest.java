@@ -34,18 +34,11 @@ class EserviceRepositoryTest {
 
 	@BeforeEach
 	void setup() {
-		Eservice eservice = new Eservice();
-		eservice.setEserviceId(eServiceId);
-		eservice.setVersionId(versionId);
-		eservice.setEserviceName("e-service1");
-		eservice.setPollingEndTime(OffsetTime.of(1, 0, 0, 0, ZoneOffset.UTC));
-		eservice.setPollingStartTime(OffsetTime.of(1, 0, 0, 0, ZoneOffset.UTC));
-		eservice.setBasePath(new String[] { "test1", "test2" });
-		eservice.setTechnology(EserviceTechnology.REST);
-		eservice.setPollingFrequency(5);
-		eservice.setProducerName("producer1");
-		eservice.setProbingEnabled(true);
-		eservice.setState(EserviceState.ONLINE);
+		Eservice eservice = Eservice.builder().eserviceId(eServiceId).versionId(versionId).eserviceName("e-service1")
+				.pollingEndTime(OffsetTime.of(1, 0, 0, 0, ZoneOffset.UTC))
+				.pollingStartTime(OffsetTime.of(1, 0, 0, 0, ZoneOffset.UTC)).basePath(new String[] { "test1", "test2" })
+				.technology(EserviceTechnology.REST).pollingFrequency(5).producerName("producer1").probingEnabled(true)
+				.state(EserviceState.ONLINE).build();
 		testEntityManager.persistAndFlush(eservice);
 	}
 

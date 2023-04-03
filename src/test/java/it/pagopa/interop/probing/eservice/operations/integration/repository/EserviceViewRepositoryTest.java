@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,24 +36,17 @@ class EserviceViewRepositoryTest {
 
 	@BeforeEach
 	void setup() {
-		EserviceView eserviceView = new EserviceView();
-		eserviceView.setEserviceId(UUID.randomUUID());
-		eserviceView.setVersionId(UUID.randomUUID());
-		eserviceView.setEserviceName("e-service Name");
-		eserviceView.setProducerName("Producer Name");
-		eserviceView.setProbingEnabled(true);
-		eserviceView.setVersionNumber(1);
-		eserviceView.setState(EserviceState.ONLINE);
-		eserviceView.setResponseReceived(OffsetDateTime.parse("2023-03-21T00:00:15.995Z"));
-		eserviceView.setId(10L);
+		EserviceView eserviceView = EserviceView.builder().eserviceId(UUID.randomUUID()).versionId(UUID.randomUUID())
+				.eserviceName("e-service Name").producerName("Producer Name").probingEnabled(true).versionNumber(1)
+				.state(EserviceState.ONLINE).responseReceived(OffsetDateTime.parse("2023-03-21T00:00:15.995Z")).id(10L)
+				.build();
 		testEntityManager.persistAndFlush(eserviceView);
 	}
 
 	@Test
 	@DisplayName("the retrieved list of e-services is not empty")
 	void testFindAll_whenExistsEservicesOnDatabase_thenReturnTheListNotEmpty() {
-		List<EserviceState> listEservice = new ArrayList<>();
-		listEservice.add(EserviceState.ONLINE);
+		List<EserviceState> listEservice = Arrays.asList(EserviceState.ONLINE);
 		Specification<EserviceView> specs = EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 1,
 				listEservice);
 
@@ -67,8 +60,7 @@ class EserviceViewRepositoryTest {
 	@Test
 	@DisplayName("the retrieved list of e-services is empty")
 	void testFindAll_whenNotExistsEservicesOnDatabase_thenReturnTheListEmpty() {
-		List<EserviceState> listEservice = new ArrayList<>();
-		listEservice.add(EserviceState.ONLINE);
+		List<EserviceState> listEservice = Arrays.asList(EserviceState.ONLINE);
 		Specification<EserviceView> specs = EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 0,
 				listEservice);
 

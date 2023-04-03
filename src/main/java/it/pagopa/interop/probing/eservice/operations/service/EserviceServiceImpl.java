@@ -56,11 +56,12 @@ public class EserviceServiceImpl implements EserviceService {
 		Eservice eServiceToUpdate = eserviceRepository.findByEserviceIdAndVersionId(eserviceId, versionId).orElse(null);
 
 		if (Objects.isNull(eServiceToUpdate)) {
-			eServiceToUpdate = new Eservice();
-			eServiceToUpdate.setVersionId(versionId);
-			eServiceToUpdate.setEserviceId(eserviceId);
-			eServiceToUpdate.setLockVersion(1);
-			eServiceToUpdate.setVersionNumber(Integer.valueOf(inputData.getVersionNumber()));
+			eServiceToUpdate = Eservice.builder()
+					.versionId(versionId)
+					.eserviceId(eserviceId)
+					.lockVersion(1)
+					.versionNumber(Integer.valueOf(inputData.getVersionNumber()))
+					.build();
 		}
 
 		eServiceToUpdate.setEserviceName(inputData.getName());

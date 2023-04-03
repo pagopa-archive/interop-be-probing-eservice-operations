@@ -27,8 +27,8 @@ import org.springframework.data.annotation.Version;
 
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * The persistent class for the eservices database table.
@@ -38,7 +38,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "eservices", uniqueConstraints = @UniqueConstraint(columnNames = { "eservice_id", "version_id" }))
 @TypeDef(name = "basePathType", typeClass = CustomStringArrayType.class)
 @Data
-@NoArgsConstructor
+@Builder
 public class Eservice implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -72,19 +72,23 @@ public class Eservice implements Serializable {
 
 	@NotNull
 	@Column(name = "polling_end_time", columnDefinition = "TIME with time zone")
+	@Builder.Default
 	private OffsetTime pollingEndTime = OffsetTime.of(23, 59, 0, 0, ZoneOffset.UTC);
 
 	@NotNull
 	@Min(1)
 	@Column(name = "polling_frequency", columnDefinition = "integer default 5")
+	@Builder.Default
 	private Integer pollingFrequency = 5;
 
 	@NotNull
 	@Column(name = "polling_start_time", columnDefinition = "TIME with time zone")
+	@Builder.Default
 	private OffsetTime pollingStartTime = OffsetTime.of(0, 0, 0, 0, ZoneOffset.UTC);
 
 	@NotNull
 	@Column(name = "probing_enabled")
+	@Builder.Default
 	private boolean probingEnabled = true;
 
 	@NotBlank

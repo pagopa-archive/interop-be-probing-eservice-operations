@@ -71,43 +71,25 @@ class EserviceServiceImplTest {
 
 	@BeforeEach
 	void setup() {
-		testService = new Eservice();
-		testService.setState(EserviceState.ONLINE);
-		testService.setLockVersion(1);
-		testService.setId(1L);
+		testService = Eservice.builder().state(EserviceState.ONLINE).lockVersion(1).id(1L).build();
 
-		eserviceSaveRequest = new EserviceSaveRequest();
-		eserviceSaveRequest.setBasePath(new ArrayList<String>());
-		eserviceSaveRequest.setEserviceId(eServiceId.toString());
-		eserviceSaveRequest.setName("Eservice name test");
-		eserviceSaveRequest.setProducerName("Eservice producer test");
-		eserviceSaveRequest.setTechnology(EserviceTechnology.fromValue("REST"));
-		eserviceSaveRequest.setVersionId(versionId.toString());
-		eserviceSaveRequest.setVersionNumber("1");
-		eserviceSaveRequest.setState(EserviceState.fromValue("OFFLINE"));
+		eserviceSaveRequest = EserviceSaveRequest.builder().basePath(new ArrayList<String>())
+				.eserviceId(eServiceId.toString()).name("Eservice name test").producerName("Eservice producer test")
+				.technology(EserviceTechnology.fromValue("REST")).versionId(versionId.toString()).versionNumber("1")
+				.state(EserviceState.fromValue("OFFLINE")).build();
 
-		updateEserviceStateDto = new UpdateEserviceStateDto();
-		updateEserviceStateDto.setEserviceId(eServiceId);
-		updateEserviceStateDto.setVersionId(versionId);
-		updateEserviceStateDto.setNewEServiceState(EserviceState.fromValue("OFFLINE"));
+		updateEserviceStateDto = UpdateEserviceStateDto.builder().eserviceId(eServiceId).versionId(versionId)
+				.newEServiceState(EserviceState.fromValue("OFFLINE")).build();
 
-		updateEserviceProbingStateDto = new UpdateEserviceProbingStateDto();
-		updateEserviceProbingStateDto.setProbingEnabled(false);
-		updateEserviceProbingStateDto.setEserviceId(eServiceId);
-		updateEserviceProbingStateDto.setVersionId(versionId);
+		updateEserviceProbingStateDto = UpdateEserviceProbingStateDto.builder().probingEnabled(false)
+				.eserviceId(eServiceId).versionId(versionId).build();
 
-		updateEserviceFrequencyDto = new UpdateEserviceFrequencyDto();
-		updateEserviceFrequencyDto.setEserviceId(eServiceId);
-		updateEserviceFrequencyDto.setVersionId(versionId);
-		updateEserviceFrequencyDto.setNewPollingFrequency(5);
-		updateEserviceFrequencyDto.setNewPollingStartTime(OffsetTime.of(8, 0, 0, 0, ZoneOffset.UTC));
-		updateEserviceFrequencyDto.setNewPollingEndTime(OffsetTime.of(20, 0, 0, 0, ZoneOffset.UTC));
+		updateEserviceFrequencyDto = UpdateEserviceFrequencyDto.builder().eserviceId(eServiceId).versionId(versionId)
+				.newPollingFrequency(5).newPollingStartTime(OffsetTime.of(8, 0, 0, 0, ZoneOffset.UTC))
+				.newPollingEndTime(OffsetTime.of(20, 0, 0, 0, ZoneOffset.UTC)).build();
 
-		EserviceView eserviceView = new EserviceView();
-		eserviceView.setEserviceName("Eservice-Name");
-		eserviceView.setProducerName("Eservice-Producer-Name");
-		eserviceView.setVersionNumber(1);
-		eserviceView.setState(EserviceState.ONLINE);
+		EserviceView eserviceView = EserviceView.builder().eserviceName("Eservice-Name")
+				.producerName("Eservice-Producer-Name").versionNumber(1).state(EserviceState.ONLINE).build();
 
 		eservicesView = Arrays.asList(eserviceView);
 	}
@@ -199,17 +181,12 @@ class EserviceServiceImplTest {
 	@DisplayName("service returns SearchEserviceResponse object with content not empty")
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentNotEmpty() {
 
-		List<EserviceState> listEservice = new ArrayList<>();
-		listEservice.add(EserviceState.ONLINE);
-
+		List<EserviceState> listEservice = Arrays.asList(EserviceState.ONLINE);
 		Mockito.when(eserviceViewRepository.findAll(ArgumentMatchers.<Specification<EserviceView>>any(),
 				ArgumentMatchers.any(Pageable.class))).thenReturn(new PageImpl<EserviceView>(eservicesView));
 
-		EserviceViewDTO eserviceViewDTO = new EserviceViewDTO();
-		eserviceViewDTO.setEserviceName("Eservice-Name");
-		eserviceViewDTO.setProducerName("Eservice-Producer-Name");
-		eserviceViewDTO.setVersionNumber(1);
-		eserviceViewDTO.setState(EserviceState.ONLINE);
+		EserviceViewDTO eserviceViewDTO = EserviceViewDTO.builder().eserviceName("Eservice-Name")
+				.producerName("Eservice-Producer-Name").versionNumber(1).state(EserviceState.ONLINE).build();
 
 		List<EserviceViewDTO> eservicesViewDTO = Arrays.asList(eserviceViewDTO);
 		Mockito.when(mapstructMapper.toSearchEserviceResponse(Mockito.any())).thenReturn(eservicesViewDTO);
