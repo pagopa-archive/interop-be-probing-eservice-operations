@@ -37,7 +37,7 @@ class EserviceViewRepositoryTest {
 	void setup() {
 		EserviceView eserviceView = EserviceView.builder().eserviceId(UUID.randomUUID()).versionId(UUID.randomUUID())
 				.eserviceName("e-service Name").producerName("Producer Name").probingEnabled(true).versionNumber(1)
-				.state(EserviceState.ONLINE).responseReceived(OffsetDateTime.parse("2023-03-21T00:00:15.995Z")).id(10L)
+				.state(EserviceState.ACTIVE).responseReceived(OffsetDateTime.parse("2023-03-21T00:00:15.995Z")).id(10L)
 				.build();
 		testEntityManager.persistAndFlush(eserviceView);
 	}
@@ -45,7 +45,7 @@ class EserviceViewRepositoryTest {
 	@Test
 	@DisplayName("the retrieved list of e-services is not empty")
 	void testFindAll_whenExistsEservicesOnDatabase_thenReturnTheListNotEmpty() {
-		List<EserviceState> listEservice = List.of(EserviceState.ONLINE);
+		List<EserviceState> listEservice = List.of(EserviceState.ACTIVE);
 		Specification<EserviceView> specs = EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 1,
 				listEservice);
 
@@ -59,7 +59,7 @@ class EserviceViewRepositoryTest {
 	@Test
 	@DisplayName("the retrieved list of e-services is empty")
 	void testFindAll_whenNotExistsEservicesOnDatabase_thenReturnTheListEmpty() {
-		List<EserviceState> listEservice = List.of(EserviceState.ONLINE);
+		List<EserviceState> listEservice = List.of(EserviceState.ACTIVE);
 		Specification<EserviceView> specs = EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 0,
 				listEservice);
 

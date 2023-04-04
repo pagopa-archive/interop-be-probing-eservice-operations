@@ -1,4 +1,4 @@
-package it.pagopa.interop.probing.eservice.operations.mapstruct.dto;
+package it.pagopa.interop.probing.eservice.operations.mapping.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;

@@ -27,8 +27,10 @@ import org.springframework.data.annotation.Version;
 
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * The persistent class for the eservices database table.
@@ -38,11 +40,14 @@ import lombok.Data;
 @Table(name = "eservices", uniqueConstraints = @UniqueConstraint(columnNames = { "eservice_id", "version_id" }))
 @TypeDef(name = "basePathType", typeClass = CustomStringArrayType.class)
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
+
 public class Eservice implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eservice_sequence")
 	@SequenceGenerator(name = "eservice_sequence", sequenceName = "eservice_sequence", allocationSize = 1)

@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +29,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
@@ -41,11 +39,11 @@ import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceViewDTO;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.SaveEserviceDto;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceFrequencyDto;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceProbingStateDto;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceStateDto;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.mapper.MapStructMapper;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.mapper.MapperImpl;
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 
 @SpringBootTest
@@ -70,7 +68,10 @@ class EserviceControllerTest {
 	private MockMvc mockMvc;
 
 	@Autowired
-	MapStructMapper mapstructMapper;
+	private ObjectMapper mapper;
+	
+	@Autowired
+	MapperImpl mapstructMapper;
 
 	@MockBean
 	private EserviceService service;
@@ -88,9 +89,9 @@ class EserviceControllerTest {
 	private UpdateEserviceProbingStateDto updateEserviceProbingStateDto;
 
 	private UpdateEserviceFrequencyDto updateEserviceFrequencyDto;
-	
+
 	private SaveEserviceDto saveEserviceDto;
-	
+
 	private SearchEserviceResponse expectedSearchEserviceResponse;
 
 	private final UUID eServiceId = UUID.randomUUID();
@@ -98,7 +99,7 @@ class EserviceControllerTest {
 
 	@BeforeEach
 	void setup() {
-		changeEserviceStateRequest = ChangeEserviceStateRequest.builder().eServiceState(EserviceState.OFFLINE).build();
+		changeEserviceStateRequest = ChangeEserviceStateRequest.builder().eServiceState(EserviceState.INACTIVE).build();
 
 		updateEserviceStateDto = UpdateEserviceStateDto.builder().eserviceId(eServiceId).versionId(versionId)
 				.newEServiceState(changeEserviceStateRequest.geteServiceState()).build();
@@ -117,20 +118,19 @@ class EserviceControllerTest {
 				.newPollingStartTime(changeProbingFrequencyRequest.getStartTime())
 				.newPollingEndTime(changeProbingFrequencyRequest.getEndTime()).build();
 
-		saveEserviceDto = SaveEserviceDto.builder().basePath(new String[] {"test-1"})
+		saveEserviceDto = SaveEserviceDto.builder().basePath(new String[] { "test-1" })
 				.eserviceId(eServiceId.toString()).name("Eservice name test").producerName("Eservice producer test")
 				.technology(EserviceTechnology.fromValue("REST")).versionId(versionId.toString()).versionNumber("1")
-				.state(EserviceState.fromValue("OFFLINE")).build();
-		
-		eserviceSaveRequest = EserviceSaveRequest.builder().basePath(List.of("test-1"))
-				.eserviceId(eServiceId.toString()).name("Eservice name test").producerName("Eservice producer test")
-				.technology(EserviceTechnology.fromValue("REST")).versionId(versionId.toString()).versionNumber("1")
-				.state(EserviceState.OFFLINE).build();
-		
+				.state(EserviceState.fromValue("INACTIVE")).build();
+
+		eserviceSaveRequest = EserviceSaveRequest.builder().basePath(List.of("test-1")).name("Eservice name test")
+				.producerName("Eservice producer test").technology(EserviceTechnology.fromValue("REST"))
+				.versionNumber("1").state(EserviceState.INACTIVE).build();
+
 		expectedSearchEserviceResponse = SearchEserviceResponse.builder().limit(2).offset(0).build();
 
 		EserviceViewDTO eserviceViewDTO = EserviceViewDTO.builder().eserviceName("Eservice-Name").versionNumber(1)
-				.producerName("Eservice-Producer-Name").state(EserviceState.ONLINE).build();
+				.producerName("Eservice-Producer-Name").state(EserviceState.ACTIVE).build();
 
 		List<EserviceViewDTO> eservices = List.of(eserviceViewDTO);
 		expectedSearchEserviceResponse.setContent(eservices);
@@ -139,9 +139,9 @@ class EserviceControllerTest {
 	@Test
 	@DisplayName("e-service state gets saved")
 	void testSaveService_whenGivenValidEserviceSaveRequest_thenReturnsId() throws Exception {
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.post(String.format(saveEserviceUrl))
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.put(String.format(saveEserviceUrl, eServiceId, versionId))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString(eserviceSaveRequest));
+				.content(mapper.writeValueAsString(eserviceSaveRequest));
 		Mockito.when(service.saveEservice(saveEserviceDto)).thenReturn(1L);
 		MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -154,7 +154,7 @@ class EserviceControllerTest {
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
 				.post(String.format(updateEserviceStateUrl, eServiceId, versionId))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString(changeEserviceStateRequest));
+				.content(mapper.writeValueAsString(changeEserviceStateRequest));
 		Mockito.doNothing().when(service).updateEserviceState(updateEserviceStateDto);
 		mockMvc.perform(requestBuilder).andExpect(status().isNoContent());
 	}
@@ -165,7 +165,7 @@ class EserviceControllerTest {
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
 				.post(String.format(updateEserviceStateUrl, eServiceId, versionId))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString(changeEserviceStateRequest));
+				.content(mapper.writeValueAsString(changeEserviceStateRequest));
 		Mockito.doThrow(EserviceNotFoundException.class).when(service).updateEserviceState(updateEserviceStateDto);
 		mockMvc.perform(requestBuilder).andExpect(status().isNotFound());
 	}
@@ -175,7 +175,7 @@ class EserviceControllerTest {
 	void testUpdateEserviceState_whenEserviceIdParameterIsMissing_thenThrows404Exception() throws Exception {
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/eservices/versions/" + versionId + "/updateState")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString(changeEserviceStateRequest));
+				.content(mapper.writeValueAsString(changeEserviceStateRequest));
 		Mockito.doThrow(EserviceNotFoundException.class).when(service).updateEserviceState(updateEserviceStateDto);
 		mockMvc.perform(requestBuilder).andExpect(status().isNotFound());
 	}
@@ -185,7 +185,7 @@ class EserviceControllerTest {
 	void testUpdateEserviceState_whenVersionIdParameterIsMissing_thenThrows404Exception() throws Exception {
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
 				.post("/eservices/" + eServiceId + "/versions/updateState").contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString(changeEserviceStateRequest));
+				.content(mapper.writeValueAsString(changeEserviceStateRequest));
 		Mockito.doThrow(EserviceNotFoundException.class).when(service).updateEserviceState(updateEserviceStateDto);
 		mockMvc.perform(requestBuilder).andExpect(status().isNotFound());
 	}
@@ -195,7 +195,7 @@ class EserviceControllerTest {
 	void testUpdateEserviceState_whenRequestBodyIsMissing_thenThrows400Exception() throws Exception {
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
 				.post(String.format(updateEserviceStateUrl, eServiceId, versionId))
-				.contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(null));
+				.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(null));
 		Mockito.doThrow(EserviceNotFoundException.class).when(service).updateEserviceState(updateEserviceStateDto);
 		mockMvc.perform(requestBuilder).andExpect(status().isBadRequest());
 	}
@@ -207,7 +207,7 @@ class EserviceControllerTest {
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
 				.post(String.format(updateProbingStateUrl, eServiceId, versionId))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString(changeProbingStateRequest));
+				.content(mapper.writeValueAsString(changeProbingStateRequest));
 		Mockito.doNothing().when(service).updateEserviceProbingState(updateEserviceProbingStateDto);
 		mockMvc.perform(requestBuilder).andExpect(status().isNoContent());
 	}
@@ -218,7 +218,7 @@ class EserviceControllerTest {
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
 				.post(String.format(updateProbingStateUrl, eServiceId, versionId))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString(changeProbingStateRequest));
+				.content(mapper.writeValueAsString(changeProbingStateRequest));
 		Mockito.doThrow(EserviceNotFoundException.class).when(service)
 				.updateEserviceProbingState(updateEserviceProbingStateDto);
 		mockMvc.perform(requestBuilder).andExpect(status().isNotFound());
@@ -229,7 +229,7 @@ class EserviceControllerTest {
 	void testUpdateEserviceProbingState_whenRequestBodyIsMissing_thenThrows400Exception() throws Exception {
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
 				.post(String.format(updateProbingStateUrl, eServiceId, versionId))
-				.contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(null));
+				.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(null));
 		Mockito.doThrow(EserviceNotFoundException.class).when(service)
 				.updateEserviceProbingState(updateEserviceProbingStateDto);
 		mockMvc.perform(requestBuilder).andExpect(status().isBadRequest());
@@ -239,8 +239,6 @@ class EserviceControllerTest {
 	@DisplayName("e-service frequency, polling stard date and end date get updated")
 	void testUpdateEserviceFrequencyDto_whenGivenValidEServiceIdAndVersionId_thenEserviceFrequencyPollingStartDateAndEndDateAreUpdated()
 			throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
 				.post(String.format(updateEserviceFrequencyUrl, eServiceId, versionId))
 				.contentType(MediaType.APPLICATION_JSON)
@@ -252,8 +250,6 @@ class EserviceControllerTest {
 	@Test
 	@DisplayName("e-service frequency can't be updated because e-service does not exist")
 	void testUpdateEserviceFrequencyDto_whenEserviceDoesNotExist_thenThrows404Exception() throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
 				.post(String.format(updateEserviceFrequencyUrl, eServiceId, versionId))
 				.contentType(MediaType.APPLICATION_JSON)
@@ -266,8 +262,6 @@ class EserviceControllerTest {
 	@Test
 	@DisplayName("e-service frequency can't be updated because e-service id request parameter is missing")
 	void testUpdateEserviceFrequencyDto_whenEserviceIdParameterIsMissing_thenThrows404Exception() throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/eservices/versions/" + versionId + "/updateState")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(changeProbingFrequencyRequest));
@@ -279,8 +273,6 @@ class EserviceControllerTest {
 	@Test
 	@DisplayName("e-service frequency can't be updated because e-service versione id request parameter is missing")
 	void testUpdateEserviceFrequencyDto_whenVersionIdParameterIsMissing_thenThrows404Exception() throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
 				.post("/eservices/" + eServiceId + "/versions/updateState").contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsString(changeProbingFrequencyRequest));
@@ -292,8 +284,6 @@ class EserviceControllerTest {
 	@Test
 	@DisplayName("e-service frequency can't be updated because request body is missing")
 	void testUpdateEserviceFrequencyDto_whenRequestBodyIsMissing_thenThrows400Exception() throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
 				.post(String.format(updateEserviceFrequencyUrl, eServiceId, versionId))
 				.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(null));
@@ -320,7 +310,7 @@ class EserviceControllerTest {
 		assertThat(response.getContentAsString()).contains("totalElements");
 		assertThat(response.getContentAsString()).contains("content");
 
-		SearchEserviceResponse searchEserviceResponse = new ObjectMapper().readValue(response.getContentAsString(),
+		SearchEserviceResponse searchEserviceResponse = mapper.readValue(response.getContentAsString(),
 				SearchEserviceResponse.class);
 		assertThat(searchEserviceResponse.getContent()).isNotEmpty();
 		assertEquals(searchEserviceResponse, expectedSearchEserviceResponse);
@@ -330,14 +320,14 @@ class EserviceControllerTest {
 	@DisplayName("the retrieved list of e-services is empty")
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentEmpty()
 			throws Exception {
-		List<EserviceState> listEservice = List.of(EserviceState.ONLINE);
-		expectedSearchEserviceResponse.setContent(new ArrayList<>());
+		List<EserviceState> listEservice = List.of(EserviceState.ACTIVE);
+		expectedSearchEserviceResponse.setContent(List.of());
 		Mockito.doReturn(expectedSearchEserviceResponse).when(service).searchEservices(2, 0, "Eservice-Name",
 				"Eservice-Producer-Name", 1, listEservice);
 
 		MockHttpServletResponse response = mockMvc
 				.perform(get(apiSearchEserviceUrl).params(getMockRequestParamsUpdateEserviceState("2", "0",
-						"Eservice-Name", "Eservice-Producer-Name", "1", "ONLINE")))
+						"Eservice-Name", "Eservice-Producer-Name", "1", "ACTIVE")))
 				.andReturn().getResponse();
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -345,7 +335,7 @@ class EserviceControllerTest {
 		assertThat(response.getContentAsString()).contains("totalElements");
 		assertThat(response.getContentAsString()).contains("content");
 
-		SearchEserviceResponse searchEserviceResponse = new ObjectMapper().readValue(response.getContentAsString(),
+		SearchEserviceResponse searchEserviceResponse = mapper.readValue(response.getContentAsString(),
 				SearchEserviceResponse.class);
 		assertThat(searchEserviceResponse.getContent()).isEmpty();
 		assertEquals(searchEserviceResponse, expectedSearchEserviceResponse);
@@ -357,7 +347,7 @@ class EserviceControllerTest {
 		Mockito.doThrow(BadRequest.class).when(service).searchEservices(Mockito.anyInt(), Mockito.anyInt(),
 				Mockito.anyString(), Mockito.any(), Mockito.anyInt(), Mockito.any());
 		mockMvc.perform(get(apiSearchEserviceUrl).params(getMockRequestParamsUpdateEserviceState(null, "0",
-				"Eservice-Name", "Eservice-Version", "false", "ONLINE"))).andExpect(status().isBadRequest());
+				"Eservice-Name", "Eservice-Version", "false", "ACTIVE"))).andExpect(status().isBadRequest());
 	}
 
 	@Test
@@ -366,7 +356,7 @@ class EserviceControllerTest {
 		Mockito.doThrow(BadRequest.class).when(service).searchEservices(Mockito.anyInt(), Mockito.anyInt(),
 				Mockito.anyString(), Mockito.any(), Mockito.anyInt(), Mockito.any());
 		mockMvc.perform(get(apiSearchEserviceUrl).params(getMockRequestParamsUpdateEserviceState("2", null,
-				"Eservice-Name", "Eservice-Version", "false", "ONLINE"))).andExpect(status().isBadRequest());
+				"Eservice-Name", "Eservice-Version", "false", "ACTIVE"))).andExpect(status().isBadRequest());
 	}
 
 	private LinkedMultiValueMap<String, String> getMockRequestParamsUpdateEserviceState(String limit, String offset,

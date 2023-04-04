@@ -34,7 +34,7 @@ class EserviceTest {
 
 	@BeforeEach
 	void setup() {
-		eservice = Eservice.builder().state(EserviceState.OFFLINE).eserviceId(UUID.randomUUID())
+		eservice = Eservice.builder().state(EserviceState.INACTIVE).eserviceId(UUID.randomUUID())
 				.versionId(UUID.randomUUID()).eserviceName("e-service1").basePath(new String[] { "test1", "test2" })
 				.technology(EserviceTechnology.REST).producerName("producer1").build();
 	}
@@ -206,7 +206,7 @@ class EserviceTest {
 	@DisplayName("e-service isn't saved due to e-service id and version id already existing")
 	void testEserviceEntity_whenGivenDuplicatedEserviceIdAndVersionId_throwsException() {
 		testEntityManager.persistAndFlush(eservice);
-		Eservice duplicateEservice = Eservice.builder().state(EserviceState.OFFLINE).eserviceId(UUID.randomUUID())
+		Eservice duplicateEservice = Eservice.builder().state(EserviceState.INACTIVE).eserviceId(UUID.randomUUID())
 				.versionId(UUID.randomUUID()).eserviceName("e-service2").basePath(new String[] { "test1", "test2" })
 				.technology(EserviceTechnology.REST).producerName("producer2").versionId(eservice.getVersionId())
 				.eserviceId(eservice.getEserviceId()).build();

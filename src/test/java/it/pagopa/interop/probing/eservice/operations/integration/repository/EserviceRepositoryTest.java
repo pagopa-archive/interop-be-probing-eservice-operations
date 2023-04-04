@@ -38,7 +38,7 @@ class EserviceRepositoryTest {
 				.pollingEndTime(OffsetTime.of(1, 0, 0, 0, ZoneOffset.UTC))
 				.pollingStartTime(OffsetTime.of(1, 0, 0, 0, ZoneOffset.UTC)).basePath(new String[] { "test1", "test2" })
 				.technology(EserviceTechnology.REST).pollingFrequency(5).producerName("producer1").probingEnabled(true)
-				.state(EserviceState.ONLINE).build();
+				.state(EserviceState.ACTIVE).build();
 		testEntityManager.persistAndFlush(eservice);
 	}
 
