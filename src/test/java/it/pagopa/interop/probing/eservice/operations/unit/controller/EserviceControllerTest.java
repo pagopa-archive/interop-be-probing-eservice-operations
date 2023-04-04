@@ -39,6 +39,7 @@ import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequ
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceViewDTO;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceProbingStateDto;
@@ -60,6 +61,9 @@ class EserviceControllerTest {
 
 	@Value("${api.searchEservice.url}")
 	private String apiSearchEserviceUrl;
+
+	@Value("${api.eservices.producers.url}")
+	private String apiGetEservicesProducersUrl;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -83,6 +87,8 @@ class EserviceControllerTest {
 	private UpdateEserviceFrequencyDto updateEserviceFrequencyDto;
 
 	private SearchEserviceResponse expectedSearchEserviceResponse;
+
+	private List<SearchProducerNameResponse> searchProducerNameResponseExpectedList;
 
 	private final UUID eServiceId = UUID.randomUUID();
 	private final UUID versionId = UUID.randomUUID();
@@ -288,11 +294,8 @@ class EserviceControllerTest {
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentNotEmpty()
 			throws Exception {
 
-		List<EserviceState> listEservice = new ArrayList<>();
-		listEservice.add(EserviceState.OFFLINE);
-
-		Mockito.doReturn(expectedSearchEserviceResponse).when(service).searchEservices(2, 0, "Eservice-Name",
-				"Eservice-Producer-Name", 1, null);
+		Mockito.when(service.searchEservices(2, 0, "Eservice-Name", "Eservice-Producer-Name", 1, null))
+				.thenReturn(expectedSearchEserviceResponse);
 
 		MockHttpServletResponse response = mockMvc
 				.perform(get(apiSearchEserviceUrl).params(getMockRequestParamsUpdateEserviceState("2", "0",
@@ -314,25 +317,22 @@ class EserviceControllerTest {
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentEmpty()
 			throws Exception {
 
-		List<EserviceState> listEservice = new ArrayList<>();
-		listEservice.add(EserviceState.ONLINE);
-
 		expectedSearchEserviceResponse.setContent(new ArrayList<>());
 		Mockito.when(service.searchEservices(2, 0, "Eservice-Name", "Eservice-Producer-Name", 1,
-				new ArrayList<>(Arrays.asList(EserviceState.ONLINE)))).thenReturn(expectedSearchEserviceResponse);
+				Arrays.asList(EserviceState.ONLINE))).thenReturn(expectedSearchEserviceResponse);
 
-		MockHttpServletResponse response = mockMvc
+		MockHttpServletResponse responseSearchEservice = mockMvc
 				.perform(get(apiSearchEserviceUrl).params(getMockRequestParamsUpdateEserviceState("2", "0",
 						"Eservice-Name", "1", "Eservice-Producer-Name", "ONLINE")))
 				.andReturn().getResponse();
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-		assertThat(response.getContentAsString()).isNotEmpty();
-		assertThat(response.getContentAsString()).contains("totalElements");
-		assertThat(response.getContentAsString()).contains("content");
+		assertThat(responseSearchEservice.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseSearchEservice.getContentAsString()).isNotEmpty();
+		assertThat(responseSearchEservice.getContentAsString()).contains("totalElements");
+		assertThat(responseSearchEservice.getContentAsString()).contains("content");
 
-		SearchEserviceResponse searchEserviceResponse = new ObjectMapper().readValue(response.getContentAsString(),
-				SearchEserviceResponse.class);
+		SearchEserviceResponse searchEserviceResponse = new ObjectMapper()
+				.readValue(responseSearchEservice.getContentAsString(), SearchEserviceResponse.class);
 		assertThat(searchEserviceResponse.getContent()).isEmpty();
 		assertEquals(searchEserviceResponse, expectedSearchEserviceResponse);
 	}
@@ -353,6 +353,36 @@ class EserviceControllerTest {
 				new ArrayList<>(Arrays.asList(EserviceState.ONLINE)))).thenThrow(BadRequest.class);
 		mockMvc.perform(get(apiSearchEserviceUrl).params(getMockRequestParamsUpdateEserviceState("2", null,
 				"Eservice-Name", "1", "Eservice-Producer-Name", "ONLINE"))).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("given a valid producer name, then returns a non-empty list")
+	void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseList()
+			throws Exception {
+		searchProducerNameResponseExpectedList = Arrays
+				.asList(new SearchProducerNameResponse("ProducerName-Test-1", "ProducerName-Test-1"));
+		Mockito.when(service.getEservicesProducers("ProducerName-Test"))
+				.thenReturn(searchProducerNameResponseExpectedList);
+		MockHttpServletResponse response = mockMvc
+				.perform(get(apiGetEservicesProducersUrl).param("producerName", "ProducerName-Test")).andReturn()
+				.getResponse();
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.getContentAsString()).isNotEmpty();
+		assertThat(response.getContentAsString()).contains("label");
+		assertThat(response.getContentAsString()).contains("value");
+	}
+
+	@Test
+	@DisplayName("given a valid producer name with no matching records, then returns an empty list")
+	void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseListEmpty()
+			throws Exception {
+		Mockito.when(service.getEservicesProducers("ProducerName-Test"))
+				.thenReturn(new ArrayList<SearchProducerNameResponse>());
+		MockHttpServletResponse response = mockMvc
+				.perform(get(apiGetEservicesProducersUrl).param("producerName", "ProducerName-Test")).andReturn()
+				.getResponse();
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	private LinkedMultiValueMap<String, String> getMockRequestParamsUpdateEserviceState(String limit, String offset,
