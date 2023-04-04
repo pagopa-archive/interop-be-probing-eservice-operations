@@ -25,7 +25,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.springframework.data.annotation.Version;
 
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateBE;
 import it.pagopa.interop.probing.eservice.operations.util.EserviceTechnology;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -95,7 +95,7 @@ public class Eservice implements Serializable {
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(name = "state")
-	private EserviceState state;
+	private EserviceStateBE state;
 
 	@NotNull
 	@Column(name = "version_id")

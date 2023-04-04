@@ -20,7 +20,7 @@ package it.pagopa.interop.probing.eservice.operations.service;
 
 import java.util.List;
 
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
@@ -76,7 +76,7 @@ public interface EserviceService {
 	 *         parameter
 	 */
 	public SearchEserviceResponse searchEservices(Integer limit, Integer offset, String eserviceName,
-			String producerName, Integer versionNumber, List<EserviceState> state);
+			String producerName, Integer versionNumber, List<EserviceStateFE> state);
 
 	/**
 	 * Get the list of eservices producers.

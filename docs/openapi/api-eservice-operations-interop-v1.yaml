@@ -260,7 +260,7 @@ paths:
           schema:
               type: array
               items:
-                $ref: '#/components/schemas/EserviceState'
+                $ref: '#/components/schemas/EserviceStateFE'
       responses:
         '200':
           description: >-
@@ -354,7 +354,7 @@ components:
         - eServiceState
       properties:
         eServiceState:
-          $ref: '#/components/schemas/EserviceState'
+          $ref: '#/components/schemas/EserviceStateBE'
           
     ChangeProbingFrequencyRequest:
       type: object
@@ -394,7 +394,7 @@ components:
           type: string
           format: date-time
         state:
-          $ref: '#/components/schemas/EserviceState'
+          $ref: '#/components/schemas/EserviceStateFE'
         versionNumber:
           title: the e-service's version
           type: integer
@@ -432,12 +432,18 @@ components:
           title: value of producer's name
           type: string
           
-    EserviceState:
+    EserviceStateFE:
       type: string
       enum:
         - ONLINE 
         - OFFLINE
-        - N/D
+        - 'N/D'
+        
+    EserviceStateBE:
+      type: string
+      enum:
+        - ACTIVE 
+        - INACTIVE
         
     Problem:
       properties:

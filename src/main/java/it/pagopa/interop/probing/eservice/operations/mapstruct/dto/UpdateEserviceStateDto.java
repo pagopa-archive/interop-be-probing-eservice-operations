@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateBE;
 import lombok.Data;
 
 @Data
@@ -22,5 +22,5 @@ public class UpdateEserviceStateDto {
 
 	@NotNull
 	@JsonProperty("eServiceState")
-	private EserviceState newEServiceState;
+	private EserviceStateBE newEServiceState;
 }
