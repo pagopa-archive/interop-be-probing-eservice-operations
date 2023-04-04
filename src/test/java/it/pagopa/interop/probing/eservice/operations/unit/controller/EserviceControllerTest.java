@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,6 +41,7 @@ import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceViewDTO;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
+import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceProbingStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceStateDto;
@@ -88,7 +88,9 @@ class EserviceControllerTest {
 	private UpdateEserviceProbingStateDto updateEserviceProbingStateDto;
 
 	private UpdateEserviceFrequencyDto updateEserviceFrequencyDto;
-
+	
+	private SaveEserviceDto saveEserviceDto;
+	
 	private SearchEserviceResponse expectedSearchEserviceResponse;
 
 	private final UUID eServiceId = UUID.randomUUID();
@@ -97,11 +99,6 @@ class EserviceControllerTest {
 	@BeforeEach
 	void setup() {
 		changeEserviceStateRequest = ChangeEserviceStateRequest.builder().eServiceState(EserviceState.OFFLINE).build();
-
-		eserviceSaveRequest = EserviceSaveRequest.builder().basePath(new ArrayList<String>())
-				.eserviceId(eServiceId.toString()).name("Eservice name test").producerName("Eservice producer test")
-				.technology(EserviceTechnology.fromValue("REST")).versionId(versionId.toString()).versionNumber("1")
-				.state(EserviceState.ONLINE).build();
 
 		updateEserviceStateDto = UpdateEserviceStateDto.builder().eserviceId(eServiceId).versionId(versionId)
 				.newEServiceState(changeEserviceStateRequest.geteServiceState()).build();
@@ -120,12 +117,22 @@ class EserviceControllerTest {
 				.newPollingStartTime(changeProbingFrequencyRequest.getStartTime())
 				.newPollingEndTime(changeProbingFrequencyRequest.getEndTime()).build();
 
+		saveEserviceDto = SaveEserviceDto.builder().basePath(new String[] {"test-1"})
+				.eserviceId(eServiceId.toString()).name("Eservice name test").producerName("Eservice producer test")
+				.technology(EserviceTechnology.fromValue("REST")).versionId(versionId.toString()).versionNumber("1")
+				.state(EserviceState.fromValue("OFFLINE")).build();
+		
+		eserviceSaveRequest = EserviceSaveRequest.builder().basePath(List.of("test-1"))
+				.eserviceId(eServiceId.toString()).name("Eservice name test").producerName("Eservice producer test")
+				.technology(EserviceTechnology.fromValue("REST")).versionId(versionId.toString()).versionNumber("1")
+				.state(EserviceState.OFFLINE).build();
+		
 		expectedSearchEserviceResponse = SearchEserviceResponse.builder().limit(2).offset(0).build();
 
 		EserviceViewDTO eserviceViewDTO = EserviceViewDTO.builder().eserviceName("Eservice-Name").versionNumber(1)
 				.producerName("Eservice-Producer-Name").state(EserviceState.ONLINE).build();
 
-		List<EserviceViewDTO> eservices = Arrays.asList(eserviceViewDTO);
+		List<EserviceViewDTO> eservices = List.of(eserviceViewDTO);
 		expectedSearchEserviceResponse.setContent(eservices);
 	}
 
@@ -135,7 +142,7 @@ class EserviceControllerTest {
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post(String.format(saveEserviceUrl))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(eserviceSaveRequest));
-		Mockito.when(service.saveEservice(eserviceSaveRequest)).thenReturn(1L);
+		Mockito.when(service.saveEservice(saveEserviceDto)).thenReturn(1L);
 		MockHttpServletResponse response = mockMvc.perform(requestBuilder).andReturn().getResponse();
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		assertThat(response.getContentAsString()).contains("1");
@@ -323,7 +330,7 @@ class EserviceControllerTest {
 	@DisplayName("the retrieved list of e-services is empty")
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentEmpty()
 			throws Exception {
-		List<EserviceState> listEservice = Arrays.asList(EserviceState.ONLINE);
+		List<EserviceState> listEservice = List.of(EserviceState.ONLINE);
 		expectedSearchEserviceResponse.setContent(new ArrayList<>());
 		Mockito.doReturn(expectedSearchEserviceResponse).when(service).searchEservices(2, 0, "Eservice-Name",
 				"Eservice-Producer-Name", 1, listEservice);

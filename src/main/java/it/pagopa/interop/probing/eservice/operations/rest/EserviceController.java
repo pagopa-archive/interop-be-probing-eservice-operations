@@ -60,6 +60,7 @@ public class EserviceController implements EservicesApi {
 	
 	@Override
 	public ResponseEntity<Long> saveEservice(EserviceSaveRequest eserviceSaveRequest) {
-		return ResponseEntity.ok(eserviceService.saveEservice(eserviceSaveRequest));
+		return ResponseEntity.ok(eserviceService.saveEservice(
+				mapstructMapper.fromEserviceSaveRequestToSaveEserviceDto(eserviceSaveRequest)));
 	}
 }

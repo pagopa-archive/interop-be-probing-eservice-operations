@@ -7,8 +7,6 @@ import static org.mockito.Mockito.verify;
 
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,12 +23,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceViewDTO;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
+import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceProbingStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceStateDto;
@@ -65,7 +63,7 @@ class EserviceServiceImplTest {
 
 	private UpdateEserviceFrequencyDto updateEserviceFrequencyDto;
 
-	private EserviceSaveRequest eserviceSaveRequest;
+	private SaveEserviceDto saveEserviceDto;
 
 	private List<EserviceView> eservicesView;
 
@@ -73,7 +71,7 @@ class EserviceServiceImplTest {
 	void setup() {
 		testService = Eservice.builder().state(EserviceState.ONLINE).lockVersion(1).id(1L).build();
 
-		eserviceSaveRequest = EserviceSaveRequest.builder().basePath(new ArrayList<String>())
+		saveEserviceDto = SaveEserviceDto.builder().basePath(new String[] {"test-1"})
 				.eserviceId(eServiceId.toString()).name("Eservice name test").producerName("Eservice producer test")
 				.technology(EserviceTechnology.fromValue("REST")).versionId(versionId.toString()).versionNumber("1")
 				.state(EserviceState.fromValue("OFFLINE")).build();
@@ -90,8 +88,8 @@ class EserviceServiceImplTest {
 
 		EserviceView eserviceView = EserviceView.builder().eserviceName("Eservice-Name")
 				.producerName("Eservice-Producer-Name").versionNumber(1).state(EserviceState.ONLINE).build();
-
-		eservicesView = Arrays.asList(eserviceView);
+		
+		eservicesView = List.of(eserviceView);
 	}
 
 	@Test
@@ -100,8 +98,8 @@ class EserviceServiceImplTest {
 		Mockito.when(eserviceRepository.findByEserviceIdAndVersionId(eServiceId, versionId))
 				.thenReturn(Optional.of(testService));
 		Mockito.when(eserviceRepository.save(Mockito.any(Eservice.class))).thenReturn(testService);
-		service.saveEservice(eserviceSaveRequest);
-		assertEquals(testService.getId(), service.saveEservice(eserviceSaveRequest), "e-service has been updated");
+		service.saveEservice(saveEserviceDto);
+		assertEquals(testService.getId(), service.saveEservice(saveEserviceDto), "e-service has been updated");
 	}
 
 	@Test
@@ -110,9 +108,9 @@ class EserviceServiceImplTest {
 		Mockito.when(eserviceRepository.findByEserviceIdAndVersionId(eServiceId, versionId))
 				.thenReturn(Optional.empty());
 		Mockito.when(eserviceRepository.save(Mockito.any(Eservice.class))).thenReturn(testService);
-		service.saveEservice(eserviceSaveRequest);
+		service.saveEservice(saveEserviceDto);
 		verify(eserviceRepository).save(Mockito.any(Eservice.class));
-		assertEquals(testService.getId(), service.saveEservice(eserviceSaveRequest), "e-service has been saved");
+		assertEquals(testService.getId(), service.saveEservice(saveEserviceDto), "e-service has been saved");
 	}
 
 	@Test
@@ -181,14 +179,14 @@ class EserviceServiceImplTest {
 	@DisplayName("service returns SearchEserviceResponse object with content not empty")
 	void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentNotEmpty() {
 
-		List<EserviceState> listEservice = Arrays.asList(EserviceState.ONLINE);
+		List<EserviceState> listEservice = List.of(EserviceState.ONLINE);
 		Mockito.when(eserviceViewRepository.findAll(ArgumentMatchers.<Specification<EserviceView>>any(),
 				ArgumentMatchers.any(Pageable.class))).thenReturn(new PageImpl<EserviceView>(eservicesView));
 
 		EserviceViewDTO eserviceViewDTO = EserviceViewDTO.builder().eserviceName("Eservice-Name")
 				.producerName("Eservice-Producer-Name").versionNumber(1).state(EserviceState.ONLINE).build();
 
-		List<EserviceViewDTO> eservicesViewDTO = Arrays.asList(eserviceViewDTO);
+		List<EserviceViewDTO> eservicesViewDTO = List.of(eserviceViewDTO);
 		Mockito.when(mapstructMapper.toSearchEserviceResponse(Mockito.any())).thenReturn(eservicesViewDTO);
 
 		SearchEserviceResponse searchEserviceResponse = service.searchEservices(2, 0, "Eservice-Name",

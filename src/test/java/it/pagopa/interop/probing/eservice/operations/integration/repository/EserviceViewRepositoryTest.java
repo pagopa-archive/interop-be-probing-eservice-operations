@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,7 +45,7 @@ class EserviceViewRepositoryTest {
 	@Test
 	@DisplayName("the retrieved list of e-services is not empty")
 	void testFindAll_whenExistsEservicesOnDatabase_thenReturnTheListNotEmpty() {
-		List<EserviceState> listEservice = Arrays.asList(EserviceState.ONLINE);
+		List<EserviceState> listEservice = List.of(EserviceState.ONLINE);
 		Specification<EserviceView> specs = EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 1,
 				listEservice);
 
@@ -60,7 +59,7 @@ class EserviceViewRepositoryTest {
 	@Test
 	@DisplayName("the retrieved list of e-services is empty")
 	void testFindAll_whenNotExistsEservicesOnDatabase_thenReturnTheListEmpty() {
-		List<EserviceState> listEservice = Arrays.asList(EserviceState.ONLINE);
+		List<EserviceState> listEservice = List.of(EserviceState.ONLINE);
 		Specification<EserviceView> specs = EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 0,
 				listEservice);
 

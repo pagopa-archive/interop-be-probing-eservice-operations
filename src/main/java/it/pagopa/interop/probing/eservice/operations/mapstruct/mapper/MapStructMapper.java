@@ -9,7 +9,9 @@ import org.mapstruct.Mapping;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceViewDTO;
+import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceProbingStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceStateDto;
@@ -32,4 +34,6 @@ public interface MapStructMapper {
 			ChangeProbingFrequencyRequest changeProbingFrequencyRequest);
 
 	List<EserviceViewDTO> toSearchEserviceResponse(List<EserviceView> eserviceViewEntity);
+	
+	SaveEserviceDto fromEserviceSaveRequestToSaveEserviceDto(EserviceSaveRequest eserviceSaveRequest);
 }

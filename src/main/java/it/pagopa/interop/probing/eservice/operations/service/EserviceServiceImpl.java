@@ -13,10 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
+import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceProbingStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceStateDto;
@@ -49,10 +49,9 @@ public class EserviceServiceImpl implements EserviceService {
 	Validator validator;
 
 	@Override
-	public Long saveEservice(EserviceSaveRequest inputData) {
+	public Long saveEservice(SaveEserviceDto inputData) {
 		UUID eserviceId = UUID.fromString(inputData.getEserviceId());
 		UUID versionId = UUID.fromString(inputData.getVersionId());
-		List<String> basePath = inputData.getBasePath();
 		Eservice eServiceToUpdate = eserviceRepository.findByEserviceIdAndVersionId(eserviceId, versionId).orElse(null);
 
 		if (Objects.isNull(eServiceToUpdate)) {
@@ -66,7 +65,7 @@ public class EserviceServiceImpl implements EserviceService {
 
 		eServiceToUpdate.setEserviceName(inputData.getName());
 		eServiceToUpdate.setProducerName(inputData.getProducerName());
-		eServiceToUpdate.setBasePath(basePath.toArray(new String[basePath.size()]));
+		eServiceToUpdate.setBasePath(inputData.getBasePath());
 		eServiceToUpdate.setTechnology(inputData.getTechnology());
 		eServiceToUpdate.setState(inputData.getState());
 
