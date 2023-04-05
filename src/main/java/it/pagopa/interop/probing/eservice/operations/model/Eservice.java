@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,100 +19,101 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.springframework.data.annotation.Version;
-
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * The persistent class for the eservices database table.
  *
  */
 @Entity
-@Table(name = "eservices", uniqueConstraints = @UniqueConstraint(columnNames = { "eservice_id", "version_id" }))
+@Table(name = "eservices",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"eservice_id", "version_id"}))
 @TypeDef(name = "basePathType", typeClass = CustomStringArrayType.class)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
+@Accessors(chain = true)
 public class Eservice implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eservice_sequence")
-	@SequenceGenerator(name = "eservice_sequence", sequenceName = "eservice_sequence", allocationSize = 1)
-	@Column(updatable = false)
-	private Long id;
+  private static final long serialVersionUID = 1L;
 
-	@NotNull
-	@Size(max = 255)
-	@Basic(optional = false)
-	@Column(name = "base_path", columnDefinition = "varchar(2048) array")
-	@Type(type = "basePathType")
-	private String[] basePath;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eservice_sequence")
+  @SequenceGenerator(name = "eservice_sequence", sequenceName = "eservice_sequence",
+      allocationSize = 1)
+  @Column(updatable = false)
+  private Long id;
 
-	@NotBlank
-	@Size(max = 255)
-	@Column(name = "eservice_name")
-	private String eserviceName;
+  @NotNull
+  @Size(max = 255)
+  @Basic(optional = false)
+  @Column(name = "base_path", columnDefinition = "varchar(2048) array")
+  @Type(type = "basePathType")
+  private String[] basePath;
 
-	@NotNull
-	@Column(name = "eservice_technology")
-	@Enumerated(EnumType.STRING)
-	private EserviceTechnology technology;
+  @NotBlank
+  @Size(max = 255)
+  @Column(name = "eservice_name")
+  private String eserviceName;
 
-	@NotNull
-	@Column(name = "eservice_id")
-	private UUID eserviceId;
+  @NotNull
+  @Column(name = "eservice_technology")
+  @Enumerated(EnumType.STRING)
+  private EserviceTechnology technology;
 
-	@NotNull
-	@Column(name = "polling_end_time", columnDefinition = "TIME with time zone")
-	@Builder.Default
-	private OffsetTime pollingEndTime = OffsetTime.of(23, 59, 0, 0, ZoneOffset.UTC);
+  @NotNull
+  @Column(name = "eservice_id")
+  private UUID eserviceId;
 
-	@NotNull
-	@Min(1)
-	@Column(name = "polling_frequency", columnDefinition = "integer default 5")
-	@Builder.Default
-	private Integer pollingFrequency = 5;
+  @NotNull
+  @Column(name = "polling_end_time", columnDefinition = "TIME with time zone")
+  @Builder.Default
+  private OffsetTime pollingEndTime = OffsetTime.of(23, 59, 0, 0, ZoneOffset.UTC);
 
-	@NotNull
-	@Column(name = "polling_start_time", columnDefinition = "TIME with time zone")
-	@Builder.Default
-	private OffsetTime pollingStartTime = OffsetTime.of(0, 0, 0, 0, ZoneOffset.UTC);
+  @NotNull
+  @Min(1)
+  @Column(name = "polling_frequency", columnDefinition = "integer default 5")
+  @Builder.Default
+  private Integer pollingFrequency = 5;
 
-	@NotNull
-	@Column(name = "probing_enabled")
-	@Builder.Default
-	private boolean probingEnabled = true;
+  @NotNull
+  @Column(name = "polling_start_time", columnDefinition = "TIME with time zone")
+  @Builder.Default
+  private OffsetTime pollingStartTime = OffsetTime.of(0, 0, 0, 0, ZoneOffset.UTC);
 
-	@NotBlank
-	@Size(max = 255)
-	@Column(name = "producer_name")
-	private String producerName;
+  @NotNull
+  @Column(name = "probing_enabled")
+  @Builder.Default
+  private boolean probingEnabled = true;
 
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	@Column(name = "state")
-	private EserviceState state;
+  @NotBlank
+  @Size(max = 255)
+  @Column(name = "producer_name")
+  private String producerName;
 
-	@NotNull
-	@Column(name = "version_id")
-	private UUID versionId;
+  @NotNull
+  @Enumerated(EnumType.STRING)
+  @Column(name = "state")
+  private EserviceState state;
 
-	@Version
-	@Column(name = "lock_version")
-	private Integer lockVersion;
+  @NotNull
+  @Column(name = "version_id")
+  private UUID versionId;
 
-	@Column(name = "version_number")
-	private Integer versionNumber;
+  @Version
+  @Column(name = "lock_version")
+  private Integer lockVersion;
+
+  @Column(name = "version_number")
+  private Integer versionNumber;
 }

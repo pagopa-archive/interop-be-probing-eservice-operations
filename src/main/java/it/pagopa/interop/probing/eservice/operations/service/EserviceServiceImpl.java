@@ -1,7 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
@@ -46,24 +45,22 @@ public class EserviceServiceImpl implements EserviceService {
     UUID eserviceId = UUID.fromString(inputData.getEserviceId());
     UUID versionId = UUID.fromString(inputData.getVersionId());
     Eservice eServiceToUpdate =
-        eserviceRepository.findByEserviceIdAndVersionId(eserviceId, versionId).orElse(null);
+        eserviceRepository.findByEserviceIdAndVersionId(eserviceId, versionId).orElseGet(
+            () -> Eservice.builder().versionId(versionId).eserviceId(eserviceId).lockVersion(1)
+                .versionNumber(Integer.valueOf(inputData.getVersionNumber())).build());
 
-    if (Objects.isNull(eServiceToUpdate)) {
-      eServiceToUpdate = Eservice.builder().versionId(versionId).eserviceId(eserviceId)
-          .lockVersion(1).versionNumber(Integer.valueOf(inputData.getVersionNumber())).build();
-    }
-
-    eServiceToUpdate.setEserviceName(inputData.getName());
-    eServiceToUpdate.setProducerName(inputData.getProducerName());
-    eServiceToUpdate.setBasePath(inputData.getBasePath());
-    eServiceToUpdate.setTechnology(inputData.getTechnology());
-    eServiceToUpdate.setState(inputData.getState());
+    eServiceToUpdate.setEserviceName(inputData.getName())
+        .setProducerName(inputData.getProducerName()).setBasePath(inputData.getBasePath())
+        .setTechnology(inputData.getTechnology()).setState(inputData.getState());
 
     Long id = eserviceRepository.save(eServiceToUpdate).getId();
+
     log.info("Service " + eServiceToUpdate.getEserviceId() + " with version "
         + eServiceToUpdate.getVersionId() + " has been saved.");
     return id;
   }
+
+
 
   @Override
   public void updateEserviceState(UpdateEserviceStateDto inputData)
