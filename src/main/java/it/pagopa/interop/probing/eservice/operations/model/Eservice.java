@@ -42,7 +42,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Accessors(chain = true)
+@Accessors(fluent = true)
 public class Eservice implements Serializable {
 
   private static final long serialVersionUID = 1L;

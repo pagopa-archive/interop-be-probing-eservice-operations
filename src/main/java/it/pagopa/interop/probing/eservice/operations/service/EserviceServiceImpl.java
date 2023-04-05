@@ -49,14 +49,14 @@ public class EserviceServiceImpl implements EserviceService {
             () -> Eservice.builder().versionId(versionId).eserviceId(eserviceId).lockVersion(1)
                 .versionNumber(Integer.valueOf(inputData.getVersionNumber())).build());
 
-    eServiceToUpdate.setEserviceName(inputData.getName())
-        .setProducerName(inputData.getProducerName()).setBasePath(inputData.getBasePath())
-        .setTechnology(inputData.getTechnology()).setState(inputData.getState());
+    eServiceToUpdate.eserviceName(inputData.getName()).producerName(inputData.getProducerName())
+        .basePath(inputData.getBasePath()).technology(inputData.getTechnology())
+        .state(inputData.getState());
 
-    Long id = eserviceRepository.save(eServiceToUpdate).getId();
+    Long id = eserviceRepository.save(eServiceToUpdate).id();
 
-    log.info("Service " + eServiceToUpdate.getEserviceId() + " with version "
-        + eServiceToUpdate.getVersionId() + " has been saved.");
+    log.info("Service " + eServiceToUpdate.eserviceId() + " with version "
+        + eServiceToUpdate.versionId() + " has been saved.");
     return id;
   }
 
@@ -71,12 +71,11 @@ public class EserviceServiceImpl implements EserviceService {
     Eservice eServiceToUpdate = queryResult
         .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
 
-    eServiceToUpdate.setState(inputData.getNewEServiceState());
+    eServiceToUpdate.state(inputData.getNewEServiceState());
     eserviceRepository.save(eServiceToUpdate);
 
-    log.info("EserviceState of eservice " + eServiceToUpdate.getEserviceId() + " with version "
-        + eServiceToUpdate.getVersionId() + " has been updated into "
-        + eServiceToUpdate.getState());
+    log.info("EserviceState of eservice " + eServiceToUpdate.eserviceId() + " with version "
+        + eServiceToUpdate.versionId() + " has been updated into " + eServiceToUpdate.state());
   }
 
   @Override
@@ -89,12 +88,12 @@ public class EserviceServiceImpl implements EserviceService {
     Eservice eServiceToUpdate = queryResult
         .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
 
-    eServiceToUpdate.setProbingEnabled(inputData.isProbingEnabled());
+    eServiceToUpdate.probingEnabled(inputData.isProbingEnabled());
     eserviceRepository.save(eServiceToUpdate);
 
-    log.info("EserviceProbingState of eservice " + eServiceToUpdate.getEserviceId()
-        + " with version " + eServiceToUpdate.getVersionId() + " has been updated into "
-        + eServiceToUpdate.isProbingEnabled());
+    log.info("EserviceProbingState of eservice " + eServiceToUpdate.eserviceId() + " with version "
+        + eServiceToUpdate.versionId() + " has been updated into "
+        + eServiceToUpdate.probingEnabled());
   }
 
   @Override
@@ -107,16 +106,15 @@ public class EserviceServiceImpl implements EserviceService {
     Eservice eServiceToUpdate = queryResult
         .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
 
-    eServiceToUpdate.setPollingFrequency(inputData.getNewPollingFrequency());
-    eServiceToUpdate.setPollingStartTime(inputData.getNewPollingStartTime());
-    eServiceToUpdate.setPollingEndTime(inputData.getNewPollingEndTime());
+    eServiceToUpdate.pollingFrequency(inputData.getNewPollingFrequency())
+        .pollingStartTime(inputData.getNewPollingStartTime())
+        .pollingEndTime(inputData.getNewPollingEndTime());
     eserviceRepository.save(eServiceToUpdate);
 
-    log.info("Eservice " + eServiceToUpdate.getEserviceId() + " with version "
-        + eServiceToUpdate.getVersionId() + " has been updated with startTime: "
-        + eServiceToUpdate.getPollingStartTime() + " and endTime: "
-        + eServiceToUpdate.getPollingEndTime() + " and frequency: "
-        + eServiceToUpdate.getPollingFrequency());
+    log.info("Eservice " + eServiceToUpdate.eserviceId() + " with version "
+        + eServiceToUpdate.versionId() + " has been updated with startTime: "
+        + eServiceToUpdate.pollingStartTime() + " and endTime: " + eServiceToUpdate.pollingEndTime()
+        + " and frequency: " + eServiceToUpdate.pollingFrequency());
   }
 
   public SearchEserviceResponse searchEservices(Integer limit, Integer offset, String eserviceName,
