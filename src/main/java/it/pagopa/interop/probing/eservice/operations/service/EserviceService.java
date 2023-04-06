@@ -23,12 +23,19 @@ import java.util.List;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceFrequencyDto;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceProbingStateDto;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
 
 public interface EserviceService {
 
+	/**
+	 * Saves the e-service or updates it if already exists
+	 * @param inputData the input data DTO containing the e-services to save or update
+	 * @return e-service's id
+	 */
+	Long saveEservice(SaveEserviceDto inputData);
 	/**
 	 * Updates the state of the e-service identified by the input eserviceId and
 	 * versionId

@@ -9,6 +9,9 @@ import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 
 public class EserviceViewSpecs {
 
+	private EserviceViewSpecs() {
+	}
+
 	public static Specification<EserviceView> searchSpecBuilder(String eserviceName, String eserviceVersion,
 			Integer versionNumber, List<EserviceState> eServiceState) {
 		return Specification.where(eserviceNameEquals(eserviceName)).and(eserviceVersionEquals(eserviceVersion))
