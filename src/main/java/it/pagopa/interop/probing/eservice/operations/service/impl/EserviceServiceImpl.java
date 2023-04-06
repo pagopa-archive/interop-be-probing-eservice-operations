@@ -1,4 +1,4 @@
-package it.pagopa.interop.probing.eservice.operations.service;
+package it.pagopa.interop.probing.eservice.operations.service.impl;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +21,7 @@ import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.specs.EserviceViewSpecs;
+import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 import it.pagopa.interop.probing.eservice.operations.util.OffsetLimitPageable;
 import it.pagopa.interop.probing.eservice.operations.util.constant.ErrorMessages;
 import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;

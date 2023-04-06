@@ -20,7 +20,7 @@ tags:
 - name: Probing
   description: Operations on probing settings
 paths:
-  '/eserviceOperations/{eserviceId}/versions/{versionId}/updateState':
+  '/eservices/{eserviceId}/versions/{versionId}/updateState':
     post:
       summary: Updates the state of an e-service.
       description: Updates the state of the e-service identified by its id and version id.
@@ -78,7 +78,7 @@ paths:
                 errors:
                 - code: 000-1234
                   detail: The server is currently down for maintenance. Please try again later.
-  '/eserviceOperations/{eserviceId}/versions/{versionId}/probing/updateState':
+  '/eservices/{eserviceId}/versions/{versionId}/probing/updateState':
     post:
       summary: Activates or deactivates the probing polling process for an e-service.
       description: Activates or deactivates the probing polling process for the e-service identified by its id and version id
@@ -136,7 +136,7 @@ paths:
                 errors:
                 - code: 000-1234
                   detail: The server is currently down for maintenance. Please try again later.
-  '/eserviceOperations/{eserviceId}/versions/{versionId}/updateFrequency':
+  '/eservices/{eserviceId}/versions/{versionId}/updateFrequency':
     post:
       summary: Updates the frequency and the time interval of an e-service's polling process.
       description: Updates the frequency and the time interval of the polling process for the e-service identified by its id and version id
@@ -194,11 +194,10 @@ paths:
                 errors:
                 - code: 000-1234
                   detail: The server is currently down for maintenance. Please try again later.
-  '/eserviceOperations/searchEservices':
+  '/eservices':
     get:
       summary: Retrive e-services by filters
-      description: 'Retrive e-services by filters : eserviceName , producerName, versionNumber
-        , eservice-state '
+      description: 'Retrive e-services by filters' 
       tags:
       - Read
       operationId: searchEservices
@@ -274,7 +273,7 @@ paths:
                 errors:
                 - code: 000-1234
                   detail: The server is currently down for maintenance. Please try again later.
-  '/eserviceOperations/{eserviceId}/versions/{versionId}/saveEservice':
+  '/eservices/{eserviceId}/versions/{versionId}/saveEservice':
     put:
       summary: Create or Update the EService Version
       description: Create or Update the EService Version, with corresponding details
@@ -397,11 +396,11 @@ components:
           title: Service verification end time
           type: string
           format: time
-    EserviceViewDTO:
+    SearchEserviceContent:
       type: object
       properties:
         id:
-          title: Service name
+          title: Service id
           type: string
         eserviceName:
           title: Service name
@@ -418,17 +417,14 @@ components:
         versionNumber:
           title: the e-service's version
           type: integer
-    EserviceViewDtos:
-      type: array
-      items:
-        type: null
-        $ref: '#/components/schemas/EserviceViewDTO'
     SearchEserviceResponse:
       type: object
       properties:
         content:
           title: eservice dto list
-          $ref: '#/components/schemas/EserviceViewDtos'
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchEserviceContent'
         offset:
           title: page offset
           type: integer

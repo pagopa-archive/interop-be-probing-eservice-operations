@@ -22,7 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceViewDTO;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
@@ -35,7 +35,7 @@ import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
-import it.pagopa.interop.probing.eservice.operations.service.EserviceServiceImpl;
+import it.pagopa.interop.probing.eservice.operations.service.impl.EserviceServiceImpl;
 
 @SpringBootTest
 class EserviceServiceImplTest {
@@ -189,11 +189,11 @@ class EserviceServiceImplTest {
             ArgumentMatchers.any(Pageable.class)))
         .thenReturn(new PageImpl<EserviceView>(eservicesView));
 
-    EserviceViewDTO eserviceViewDTO = EserviceViewDTO.builder().eserviceName("Eservice-Name")
-        .producerName("Eservice-Producer-Name").versionNumber(1).state(EserviceState.ACTIVE)
-        .build();
+    SearchEserviceContent eserviceViewDTO = SearchEserviceContent.builder()
+        .eserviceName("Eservice-Name").producerName("Eservice-Producer-Name").versionNumber(1)
+        .state(EserviceState.ACTIVE).build();
 
-    List<EserviceViewDTO> eservicesViewDTO = List.of(eserviceViewDTO);
+    List<SearchEserviceContent> eservicesViewDTO = List.of(eserviceViewDTO);
     Mockito.when(mapstructMapper.toSearchEserviceResponse(Mockito.any()))
         .thenReturn(eservicesViewDTO);
 

@@ -8,7 +8,7 @@ import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateReq
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceViewDTO;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
@@ -31,7 +31,7 @@ public interface MapperImpl {
   UpdateEserviceFrequencyDto toUpdateEserviceFrequencyDto(UUID eserviceId, UUID versionId,
       ChangeProbingFrequencyRequest changeProbingFrequencyRequest);
 
-  List<EserviceViewDTO> toSearchEserviceResponse(List<EserviceView> eserviceViewEntity);
+  List<SearchEserviceContent> toSearchEserviceResponse(List<EserviceView> eserviceViewEntity);
 
   SaveEserviceDto fromEserviceSaveRequestToSaveEserviceDto(UUID eserviceId, UUID versionId,
       EserviceSaveRequest eserviceSaveRequest);
