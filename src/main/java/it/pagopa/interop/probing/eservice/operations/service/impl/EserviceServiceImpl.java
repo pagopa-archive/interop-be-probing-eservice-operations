@@ -1,4 +1,4 @@
-package it.pagopa.interop.probing.eservice.operations.service;
+package it.pagopa.interop.probing.eservice.operations.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +11,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceViewDTO;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceFrequencyDto;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceProbingStateDto;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceStateDto;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.mapper.MapStructMapper;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.mapper.MapperImpl;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.specs.EserviceViewSpecs;
+import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 import it.pagopa.interop.probing.eservice.operations.util.EnumUtilities;
 import it.pagopa.interop.probing.eservice.operations.util.OffsetLimitPageable;
 import it.pagopa.interop.probing.eservice.operations.util.constant.ErrorMessages;
@@ -45,7 +47,7 @@ public class EserviceServiceImpl implements EserviceService {
   EserviceViewRepository eserviceViewRepository;
 
   @Autowired
-  MapStructMapper mapstructMapper;
+  MapperImpl mapper;
 
   @Override
   public void updateEserviceState(UpdateEserviceStateDto inputData)
@@ -56,12 +58,11 @@ public class EserviceServiceImpl implements EserviceService {
     Eservice eServiceToUpdate = queryResult
         .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
 
-    eServiceToUpdate.setState(inputData.getNewEServiceState());
+    eServiceToUpdate.state(inputData.getNewEServiceState());
     eserviceRepository.save(eServiceToUpdate);
 
-    log.info("EserviceState of eservice " + eServiceToUpdate.getEserviceId() + " with version "
-        + eServiceToUpdate.getVersionId() + " has been updated into "
-        + eServiceToUpdate.getState());
+    log.info("EserviceState of eservice " + eServiceToUpdate.eserviceId() + " with version "
+        + eServiceToUpdate.versionId() + " has been updated into " + eServiceToUpdate.state());
   }
 
   @Override
@@ -74,12 +75,12 @@ public class EserviceServiceImpl implements EserviceService {
     Eservice eServiceToUpdate = queryResult
         .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
 
-    eServiceToUpdate.setProbingEnabled(inputData.isProbingEnabled());
+    eServiceToUpdate.probingEnabled(inputData.isProbingEnabled());
     eserviceRepository.save(eServiceToUpdate);
 
-    log.info("EserviceProbingState of eservice " + eServiceToUpdate.getEserviceId()
-        + " with version " + eServiceToUpdate.getVersionId() + " has been updated into "
-        + eServiceToUpdate.isProbingEnabled());
+    log.info("EserviceProbingState of eservice " + eServiceToUpdate.eserviceId() + " with version "
+        + eServiceToUpdate.versionId() + " has been updated into "
+        + eServiceToUpdate.probingEnabled());
   }
 
   @Override
@@ -92,16 +93,15 @@ public class EserviceServiceImpl implements EserviceService {
     Eservice eServiceToUpdate = queryResult
         .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
 
-    eServiceToUpdate.setPollingFrequency(inputData.getNewPollingFrequency());
-    eServiceToUpdate.setPollingStartTime(inputData.getNewPollingStartTime());
-    eServiceToUpdate.setPollingEndTime(inputData.getNewPollingEndTime());
+    eServiceToUpdate.pollingFrequency(inputData.getNewPollingFrequency())
+        .pollingStartTime(inputData.getNewPollingStartTime())
+        .pollingEndTime(inputData.getNewPollingEndTime());
     eserviceRepository.save(eServiceToUpdate);
 
-    log.info("Eservice " + eServiceToUpdate.getEserviceId() + " with version "
-        + eServiceToUpdate.getVersionId() + " has been updated with startTime: "
-        + eServiceToUpdate.getPollingStartTime() + " and endTime: "
-        + eServiceToUpdate.getPollingEndTime() + " and frequency: "
-        + eServiceToUpdate.getPollingFrequency());
+    log.info("Eservice " + eServiceToUpdate.eserviceId() + " with version "
+        + eServiceToUpdate.versionId() + " has been updated with startTime: "
+        + eServiceToUpdate.pollingStartTime() + " and endTime: " + eServiceToUpdate.pollingEndTime()
+        + " and frequency: " + eServiceToUpdate.pollingFrequency());
   }
 
   @Override
@@ -128,8 +128,8 @@ public class EserviceServiceImpl implements EserviceService {
               Sort.by(ProjectConstants.ESERVICE_NAME_NATIVE_FIELD).ascending()));
     }
 
-    List<EserviceViewDTO> lista = eserviceList.getContent().stream()
-        .map(e -> mapstructMapper.toSearchEserviceResponse(e)).collect(Collectors.toList());
+    List<SearchEserviceContent> lista = eserviceList.getContent().stream()
+        .map(e -> mapper.toSearchEserviceContent(e)).collect(Collectors.toList());
 
     return SearchEserviceResponse.builder().content(lista).offset(eserviceList.getNumber())
         .limit(eserviceList.getSize()).totalElements(eserviceList.getTotalElements()).build();
@@ -140,6 +140,25 @@ public class EserviceServiceImpl implements EserviceService {
     return eserviceViewRepository.getEservicesProducers(producerName.toUpperCase(),
         new OffsetLimitPageable(0, 10,
             Sort.by(ProjectConstants.ESERVICE_NAME_NATIVE_FIELD).ascending()));
+  }
+
+  @Override
+  public Long saveEservice(SaveEserviceDto inputData) {
+    Eservice eServiceToUpdate = eserviceRepository
+        .findByEserviceIdAndVersionId(inputData.getEserviceId(), inputData.getVersionId())
+        .orElseGet(() -> Eservice.builder().eserviceId(inputData.getEserviceId())
+            .versionId(inputData.getVersionId()).lockVersion(1)
+            .versionNumber(inputData.getVersionNumber()).build());
+
+    eServiceToUpdate.eserviceName(inputData.getName()).producerName(inputData.getProducerName())
+        .basePath(inputData.getBasePath()).technology(inputData.getTechnology())
+        .state(inputData.getState());
+
+    Long id = eserviceRepository.save(eServiceToUpdate).id();
+
+    log.info("Service " + eServiceToUpdate.eserviceId() + " with version "
+        + eServiceToUpdate.versionId() + " has been saved.");
+    return id;
   }
 
 }

@@ -5,48 +5,48 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import it.pagopa.interop.probing.eservice.operations.api.EserviceOperationsApi;
+import it.pagopa.interop.probing.eservice.operations.api.EservicesApi;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
-import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.mapper.MapStructMapper;
+import it.pagopa.interop.probing.eservice.operations.mapping.mapper.MapperImpl;
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 
 @RestController
-public class EserviceController implements EserviceOperationsApi {
+public class EserviceController implements EservicesApi {
 
   @Autowired
   EserviceService eserviceService;
 
   @Autowired
-  MapStructMapper mapstructMapper;
+  MapperImpl mapper;
 
   @Override
   public ResponseEntity<Void> updateEserviceFrequency(UUID eserviceId, UUID versionId,
       ChangeProbingFrequencyRequest changeProbingFrequencyRequest)
       throws EserviceNotFoundException {
-    eserviceService.updateEserviceFrequency(mapstructMapper.toUpdateEserviceFrequencyDto(eserviceId,
-        versionId, changeProbingFrequencyRequest));
+    eserviceService.updateEserviceFrequency(
+        mapper.toUpdateEserviceFrequencyDto(eserviceId, versionId, changeProbingFrequencyRequest));
     return ResponseEntity.noContent().build();
   }
 
   @Override
   public ResponseEntity<Void> updateEserviceProbingState(UUID eserviceId, UUID versionId,
       ChangeProbingStateRequest changeProbingStateRequest) throws EserviceNotFoundException {
-    eserviceService.updateEserviceProbingState(mapstructMapper
-        .toUpdateEserviceProbingStateDto(eserviceId, versionId, changeProbingStateRequest));
+    eserviceService.updateEserviceProbingState(
+        mapper.toUpdateEserviceProbingStateDto(eserviceId, versionId, changeProbingStateRequest));
     return ResponseEntity.noContent().build();
   }
 
   @Override
   public ResponseEntity<Void> updateEserviceState(UUID eserviceId, UUID versionId,
-      ChangeEserviceStateRequest changeEserviceStateRequest) throws EserviceNotFoundException {
-    eserviceService.updateEserviceState(mapstructMapper.toUpdateEserviceStateDto(eserviceId,
-        versionId, changeEserviceStateRequest));
+      ChangeEserviceStateRequest changeEserviceStateRequest) throws Exception {
+    eserviceService.updateEserviceState(
+        mapper.toUpdateEserviceStateDto(eserviceId, versionId, changeEserviceStateRequest));
     return ResponseEntity.noContent().build();
   }
 
@@ -59,8 +59,9 @@ public class EserviceController implements EserviceOperationsApi {
   }
 
   @Override
-  public ResponseEntity<List<SearchProducerNameResponse>> getEservicesProducers(
-      String producerName) {
-    return ResponseEntity.ok(eserviceService.getEservicesProducers(producerName));
+  public ResponseEntity<Long> saveEservice(UUID eserviceId, UUID versionId,
+      EserviceSaveRequest eserviceSaveRequest) {
+    return ResponseEntity.ok(eserviceService.saveEservice(mapper
+        .fromEserviceSaveRequestToSaveEserviceDto(eserviceId, versionId, eserviceSaveRequest)));
   }
 }

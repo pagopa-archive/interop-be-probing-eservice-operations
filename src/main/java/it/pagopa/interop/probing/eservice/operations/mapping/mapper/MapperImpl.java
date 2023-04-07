@@ -1,4 +1,4 @@
-package it.pagopa.interop.probing.eservice.operations.mapstruct.mapper;
+package it.pagopa.interop.probing.eservice.operations.mapping.mapper;
 
 import java.util.UUID;
 import org.mapstruct.Mapper;
@@ -6,16 +6,18 @@ import org.mapstruct.Mapping;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceViewDTO;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceFrequencyDto;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceProbingStateDto;
-import it.pagopa.interop.probing.eservice.operations.mapstruct.dto.UpdateEserviceStateDto;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.util.EnumUtilities;
 
 @Mapper(componentModel = "spring")
-public interface MapStructMapper {
+public interface MapperImpl {
 
   @Mapping(source = "changeEServiceStateRequest.eServiceState", target = "newEServiceState")
   UpdateEserviceStateDto toUpdateEserviceStateDto(UUID eserviceId, UUID versionId,
@@ -30,11 +32,13 @@ public interface MapStructMapper {
   UpdateEserviceFrequencyDto toUpdateEserviceFrequencyDto(UUID eserviceId, UUID versionId,
       ChangeProbingFrequencyRequest changeProbingFrequencyRequest);
 
+  SaveEserviceDto fromEserviceSaveRequestToSaveEserviceDto(UUID eserviceId, UUID versionId,
+      EserviceSaveRequest eserviceSaveRequest);
+
   @Mapping(target = "state", expression = "java(mapStatus(eserviceViewEntity))")
-  EserviceViewDTO toSearchEserviceResponse(EserviceView eserviceViewEntity);
+  SearchEserviceContent toSearchEserviceContent(EserviceView eserviceViewEntity);
 
   default EserviceStateFE mapStatus(EserviceView eserviceViewEntity) {
     return new EnumUtilities().fromBEtoFEState(eserviceViewEntity);
   }
-
 }
