@@ -6,13 +6,15 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateBE;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 
 public class EnumUtilities {
 
-  private EnumUtilities() {}
+  @Value("${minutes.ofTollerance.multiplier}")
+  private int minOfTolleranceMultiplier;
 
   public static String fromFEtoBEState(EserviceStateFE state) {
     switch (state) {
@@ -25,12 +27,12 @@ public class EnumUtilities {
     }
   }
 
-  public static List<String> convertListFromFEtoBE(List<EserviceStateFE> statusList) {
+  public List<String> convertListFromFEtoBE(List<EserviceStateFE> statusList) {
     return statusList.stream().map(EnumUtilities::fromFEtoBEState).filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
-  public static EserviceStateFE fromBEtoFEState(EserviceView view) {
+  public EserviceStateFE fromBEtoFEState(EserviceView view) {
     switch (view.getState()) {
       case ACTIVE:
         return checkND(view) ? EserviceStateFE.N_D : EserviceStateFE.ONLINE;
@@ -41,14 +43,13 @@ public class EnumUtilities {
     }
   }
 
-  public static boolean checkND(EserviceView view) {
+  public boolean checkND(EserviceView view) {
     OffsetDateTime defaultDate = view.getResponseReceived() == null
         ? OffsetDateTime.of(9999, 12, 31, 0, 0, 0, 0, ZoneOffset.UTC)
         : view.getResponseReceived();
-
     return (!view.isProbingEnabled() || view.getLastRequest() == null
         || ((Math.abs(Duration.between(OffsetDateTime.now(), view.getLastRequest())
-            .toMinutes()) > view.getPollingFrequency() * 20)
+            .toMinutes()) > view.getPollingFrequency() * minOfTolleranceMultiplier)
             && defaultDate.isBefore(view.getLastRequest()))
         || view.getResponseReceived() == null);
   }

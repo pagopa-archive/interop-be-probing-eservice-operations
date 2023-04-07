@@ -107,14 +107,15 @@ public class EserviceServiceImpl implements EserviceService {
   @Override
   public SearchEserviceResponse searchEservices(Integer limit, Integer offset, String eserviceName,
       String producerName, Integer versionNumber, List<EserviceStateFE> state) {
+
     Page<EserviceView> eserviceList = null;
     List<String> stateBE = state == null || state.isEmpty() ? new ArrayList<>()
-        : EnumUtilities.convertListFromFEtoBE(state);
+        : new EnumUtilities().convertListFromFEtoBE(state);
 
     if (state == null || state.isEmpty() || (state.contains(EserviceStateFE.N_D)
         && state.contains(EserviceStateFE.ONLINE) && state.contains(EserviceStateFE.OFFLINE))) {
       eserviceList = eserviceViewRepository.findAll(
-          EserviceViewSpecs.searchSpecBuilder(eserviceName, producerName, versionNumber, stateBE),
+          EserviceViewSpecs.searchSpecBuilder(eserviceName, producerName, versionNumber),
           new OffsetLimitPageable(offset, limit,
               Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()));
     } else if (state.contains(EserviceStateFE.N_D)) {

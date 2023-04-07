@@ -381,7 +381,7 @@ components:
       type: object
       properties:
         id:
-          title: Service name
+          title: id of eservice
           type: string
         eserviceName:
           title: Service name
