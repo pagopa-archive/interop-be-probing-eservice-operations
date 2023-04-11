@@ -241,33 +241,4 @@ class EserviceServiceImplTest {
     assertTrue(searchEserviceResponse.getContent().isEmpty());
   }
 
-  @Test
-  @DisplayName("when searching for a valid producer name, then return the list of producers")
-  void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseList() {
-    searchProducerNameResponseExpectedList =
-        List.of(new SearchProducerNameResponse("ProducerName-Test-1", "ProducerName-Test-1"),
-            new SearchProducerNameResponse("ProducerName-Test-2", "ProducerName-Test-2"));
-    Mockito
-        .when(eserviceViewRepository.getEservicesProducers(
-            ArgumentMatchers.eq("ProducerName-Test".toUpperCase()),
-            ArgumentMatchers.any(OffsetLimitPageable.class)))
-        .thenReturn(searchProducerNameResponseExpectedList);
-
-    List<SearchProducerNameResponse> searchProducerNameResponseResultList =
-        service.getEservicesProducers("ProducerName-Test");
-
-    assertEquals(searchProducerNameResponseExpectedList.size(),
-        searchProducerNameResponseResultList.size());
-  }
-
-  @Test
-  @DisplayName("when searching for a producer name, then return an empty list")
-  void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseListEmpty() {
-    Mockito.when(eserviceViewRepository.getEservicesProducers(
-        ArgumentMatchers.eq("ProducerName-Test".toUpperCase()),
-        ArgumentMatchers.any(OffsetLimitPageable.class))).thenReturn(List.of());
-    List<SearchProducerNameResponse> searchProducerNameResponseResultList =
-        service.getEservicesProducers("ProducerName-Test");
-    assertEquals(0, searchProducerNameResponseResultList.size());
-  }
 }

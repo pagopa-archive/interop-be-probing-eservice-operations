@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
-import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
+import it.pagopa.interop.probing.eservice.operations.service.ProducerService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -30,7 +30,7 @@ class ProducerControllerTest {
   private MockMvc mockMvc;
 
   @MockBean
-  private EserviceService service;
+  private ProducerService service;
 
   private List<SearchProducerNameResponse> searchProducerNameResponseExpectedList;
 

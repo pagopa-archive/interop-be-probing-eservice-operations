@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
-import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
@@ -136,13 +135,6 @@ public class EserviceServiceImpl implements EserviceService {
 
     return SearchEserviceResponse.builder().content(lista).offset(eserviceList.getNumber())
         .limit(eserviceList.getSize()).totalElements(eserviceList.getTotalElements()).build();
-  }
-
-  @Override
-  public List<SearchProducerNameResponse> getEservicesProducers(String producerName) {
-    return eserviceViewRepository.getEservicesProducers(producerName.toUpperCase(),
-        new OffsetLimitPageable(0, 10,
-            Sort.by(ProjectConstants.ESERVICE_NAME_NATIVE_FIELD).ascending()));
   }
 
   @Override

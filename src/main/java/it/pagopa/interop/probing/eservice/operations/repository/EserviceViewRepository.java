@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 
 @Repository
@@ -21,10 +20,6 @@ public interface EserviceViewRepository extends JpaRepository<EserviceView, Long
           + "AND e.response_received is not null))";
 
   Page<EserviceView> findAll(Specification<EserviceView> specs, Pageable pageable);
-
-  @Query("SELECT DISTINCT new it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse(e.producerName, e.producerName) FROM it.pagopa.interop.probing.eservice.operations.model.view.EserviceView e WHERE UPPER(e.producerName) LIKE %:producerName%")
-  List<SearchProducerNameResponse> getEservicesProducers(@Param("producerName") String producerName,
-      Pageable pageable);
 
   @Query(value = "SELECT e.* FROM eservice_view e " + COMMON_SEARCH_FIELD_NO_ND + " OR "
       + " (e.probing_enabled=false " + "OR e.last_request is null "
