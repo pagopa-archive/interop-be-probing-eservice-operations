@@ -38,6 +38,7 @@ import it.pagopa.interop.probing.eservice.operations.repository.EserviceReposito
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 import it.pagopa.interop.probing.eservice.operations.service.impl.EserviceServiceImpl;
+import it.pagopa.interop.probing.eservice.operations.util.EnumUtilities;
 import it.pagopa.interop.probing.eservice.operations.util.OffsetLimitPageable;
 
 @SpringBootTest
@@ -47,6 +48,9 @@ class EserviceServiceImplTest {
 
   @Mock
   EserviceViewRepository eserviceViewRepository;
+
+  @Mock
+  EnumUtilities enumUtilities;
 
   @Mock
   MapperImpl mapstructMapper;
@@ -200,9 +204,12 @@ class EserviceServiceImplTest {
   void testSearchEservice_whenGivenValidSizeAndPageNumberAndStatusND_thenReturnsSearchEserviceResponseWithContentEmpty() {
     Mockito
         .when(eserviceViewRepository.findAllWithNDState(eq("Eservice-Name"),
-            eq("Eservice-Producer-Name"), eq(1), eq(List.of()), ArgumentMatchers.anyInt(),
-            ArgumentMatchers.any(OffsetLimitPageable.class)))
+            eq("Eservice-Producer-Name"), eq(1), eq(List.of(EserviceStateBE.INACTIVE.getValue())),
+            ArgumentMatchers.anyInt(), ArgumentMatchers.any(OffsetLimitPageable.class)))
         .thenReturn(new PageImpl<EserviceView>(List.of()));
+
+    Mockito.when(enumUtilities.convertListFromFEtoBE(ArgumentMatchers.any()))
+        .thenReturn(List.of(EserviceStateBE.INACTIVE.getValue()));
 
     Mockito.when(mapstructMapper.toSearchEserviceContent(Mockito.any()))
         .thenReturn(SearchEserviceContent.builder().build());
@@ -224,6 +231,9 @@ class EserviceServiceImplTest {
 
     Mockito.when(mapstructMapper.toSearchEserviceContent(Mockito.any()))
         .thenReturn(SearchEserviceContent.builder().build());
+
+    Mockito.when(enumUtilities.convertListFromFEtoBE(ArgumentMatchers.any()))
+        .thenReturn(List.of(EserviceStateBE.ACTIVE.getValue()));
 
     SearchEserviceResponse searchEserviceResponse = service.searchEservices(2, 0, "Eservice-Name",
         "Eservice-Producer-Name", 1, List.of(EserviceStateFE.ONLINE));

@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateBE;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 
+@Component
 public class EnumUtilities {
 
   @Value("${minutes.ofTollerance.multiplier}")
@@ -48,8 +50,8 @@ public class EnumUtilities {
         ? OffsetDateTime.of(9999, 12, 31, 0, 0, 0, 0, ZoneOffset.UTC)
         : view.getResponseReceived();
     return (!view.isProbingEnabled() || view.getLastRequest() == null
-        || ((Math.abs(Duration.between(OffsetDateTime.now(), view.getLastRequest())
-            .toMinutes()) > view.getPollingFrequency() * minOfTolleranceMultiplier)
+        || ((Duration.between(OffsetDateTime.now(), view.getLastRequest())
+            .toMinutes() > view.getPollingFrequency() * minOfTolleranceMultiplier)
             && defaultDate.isBefore(view.getLastRequest()))
         || view.getResponseReceived() == null);
   }

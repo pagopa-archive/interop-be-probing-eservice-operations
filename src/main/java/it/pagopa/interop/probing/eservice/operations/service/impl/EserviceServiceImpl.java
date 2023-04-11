@@ -41,6 +41,9 @@ public class EserviceServiceImpl implements EserviceService {
   private int minOfTolleranceMultiplier;
 
   @Autowired
+  EnumUtilities enumUtilities;
+
+  @Autowired
   EserviceRepository eserviceRepository;
 
   @Autowired
@@ -110,7 +113,7 @@ public class EserviceServiceImpl implements EserviceService {
 
     Page<EserviceView> eserviceList = null;
     List<String> stateBE = state == null || state.isEmpty() ? new ArrayList<>()
-        : new EnumUtilities().convertListFromFEtoBE(state);
+        : enumUtilities.convertListFromFEtoBE(state);
 
     if (state == null || state.isEmpty() || (state.contains(EserviceStateFE.N_D)
         && state.contains(EserviceStateFE.ONLINE) && state.contains(EserviceStateFE.OFFLINE))) {

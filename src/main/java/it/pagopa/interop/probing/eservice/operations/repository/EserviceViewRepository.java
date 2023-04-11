@@ -17,7 +17,7 @@ public interface EserviceViewRepository extends JpaRepository<EserviceView, Long
   static final String COMMON_SEARCH_FIELD_NO_ND =
       "WHERE ((:eserviceName is null or e.eservice_name= :eserviceName) AND (:producerName is null or e.producer_name= :producerName) AND (:versionNumber is null or e.version_number= :versionNumber)) AND ((e.state in (:stateList) AND "
           + " (e.probing_enabled=true " + "AND e.last_request is not null "
-          + "AND (EXTRACT(MINUTE from CURRENT_TIMESTAMP - e.last_request) < (e.polling_frequency*:minOfTolleranceMultiplier) OR e.response_received < e.last_request) "
+          + "AND (EXTRACT(MINUTE from CURRENT_TIMESTAMP - e.last_request) < (e.polling_frequency*:minOfTolleranceMultiplier) OR e.response_received > e.last_request) "
           + "AND e.response_received is not null))";
 
   Page<EserviceView> findAll(Specification<EserviceView> specs, Pageable pageable);

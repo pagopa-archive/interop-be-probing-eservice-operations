@@ -3,6 +3,7 @@ package it.pagopa.interop.probing.eservice.operations.mapping.mapper;
 import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
@@ -17,28 +18,31 @@ import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.util.EnumUtilities;
 
 @Mapper(componentModel = "spring")
-public interface MapperImpl {
+public abstract class MapperImpl {
+
+  @Autowired
+  EnumUtilities enumUtilities;
 
   @Mapping(source = "changeEServiceStateRequest.eServiceState", target = "newEServiceState")
-  UpdateEserviceStateDto toUpdateEserviceStateDto(UUID eserviceId, UUID versionId,
+  public abstract UpdateEserviceStateDto toUpdateEserviceStateDto(UUID eserviceId, UUID versionId,
       ChangeEserviceStateRequest changeEServiceStateRequest);
 
-  UpdateEserviceProbingStateDto toUpdateEserviceProbingStateDto(UUID eserviceId, UUID versionId,
-      ChangeProbingStateRequest changeProbingStateRequest);
+  public abstract UpdateEserviceProbingStateDto toUpdateEserviceProbingStateDto(UUID eserviceId,
+      UUID versionId, ChangeProbingStateRequest changeProbingStateRequest);
 
   @Mapping(source = "changeProbingFrequencyRequest.frequency", target = "newPollingFrequency")
   @Mapping(source = "changeProbingFrequencyRequest.startTime", target = "newPollingStartTime")
   @Mapping(source = "changeProbingFrequencyRequest.endTime", target = "newPollingEndTime")
-  UpdateEserviceFrequencyDto toUpdateEserviceFrequencyDto(UUID eserviceId, UUID versionId,
-      ChangeProbingFrequencyRequest changeProbingFrequencyRequest);
+  public abstract UpdateEserviceFrequencyDto toUpdateEserviceFrequencyDto(UUID eserviceId,
+      UUID versionId, ChangeProbingFrequencyRequest changeProbingFrequencyRequest);
 
-  SaveEserviceDto fromEserviceSaveRequestToSaveEserviceDto(UUID eserviceId, UUID versionId,
-      EserviceSaveRequest eserviceSaveRequest);
+  public abstract SaveEserviceDto fromEserviceSaveRequestToSaveEserviceDto(UUID eserviceId,
+      UUID versionId, EserviceSaveRequest eserviceSaveRequest);
 
   @Mapping(target = "state", expression = "java(mapStatus(eserviceViewEntity))")
-  SearchEserviceContent toSearchEserviceContent(EserviceView eserviceViewEntity);
+  public abstract SearchEserviceContent toSearchEserviceContent(EserviceView eserviceViewEntity);
 
-  default EserviceStateFE mapStatus(EserviceView eserviceViewEntity) {
-    return new EnumUtilities().fromBEtoFEState(eserviceViewEntity);
+  EserviceStateFE mapStatus(EserviceView eserviceViewEntity) {
+    return enumUtilities.fromBEtoFEState(eserviceViewEntity);
   }
 }
