@@ -204,15 +204,16 @@ paths:
           required: true
           description: the e-service's page limit
           schema:
-            type: string
-            format: integer
+            type: integer
+            minimum: 1
+            maximum: 100
         - name: offset
           in: query
           required: true
           description: the page's offset
           schema:
-            type: string
-            format: integer
+            type: integer
+            minimum: 0
         - name: eserviceName
           in: query
           required: false
