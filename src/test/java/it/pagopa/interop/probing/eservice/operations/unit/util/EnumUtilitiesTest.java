@@ -1,7 +1,7 @@
 package it.pagopa.interop.probing.eservice.operations.unit.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +14,8 @@ import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.util.EnumUtilities;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 class EnumUtilitiesTest {
 
@@ -23,11 +25,11 @@ class EnumUtilitiesTest {
   @Mock
   EnumUtilities enumMock;
 
-  private EserviceView view = new EserviceView();
+  EserviceView view;
 
   @BeforeEach
   void setup() {
-
+    view = EserviceView.builder().build();
   }
 
   @Test
@@ -62,10 +64,35 @@ class EnumUtilitiesTest {
   @Test
   @DisplayName("From BE to FE state return OFFLINE when checkND return false ")
   void testfromBEtoFEState_whenStateIsINACTIVE_thenReturnOFFLINEValue() {
-    view = EserviceView.builder().state(EserviceStateBE.INACTIVE).build();
+    view.setState(EserviceStateBE.INACTIVE);
 
     assertEquals(EserviceStateFE.N_D, enumUtilities.fromBEtoFEState(view));
   }
 
+  @Test
+  @DisplayName("From BE to FE state return ONLINE when checkND return false ")
+  void testfromBEtoFEState_whenStateIsACTIVE_thenReturnOLINEValue() {
+    view.setState(EserviceStateBE.ACTIVE);
+
+    assertEquals(EserviceStateFE.N_D, enumUtilities.fromBEtoFEState(view));
+  }
+
+  @Test
+  @DisplayName("CheckND returns true when probing is disabled")
+  void testCheckND_whenProbingIsNotEnabled_thenReturnsTrue(){
+    view.setProbingEnabled(false);
+    assertTrue(enumUtilities.checkND(view));
+  }
+
+  @Test
+  @DisplayName("CheckND returns true when response received is null")
+  void testCheckND_whenResponseReceivedIsNull_thenReturnsTrue(){
+    view.setProbingEnabled(true);
+    view.setLastRequest(OffsetDateTime.of(OffsetDateTime.now().getYear(), OffsetDateTime.now()
+        .getMonthValue(), OffsetDateTime.now().getDayOfMonth(), OffsetDateTime.now().getHour(),
+        OffsetDateTime.now().getMinute(), 0,0, ZoneOffset.UTC));
+    view.setPollingFrequency(5);
+    assertTrue(enumUtilities.checkND(view));
+  }
 
 }
