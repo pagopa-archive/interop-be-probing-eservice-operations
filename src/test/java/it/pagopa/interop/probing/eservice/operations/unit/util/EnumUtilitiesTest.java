@@ -1,5 +1,8 @@
 package it.pagopa.interop.probing.eservice.operations.unit.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -9,12 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateBE;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EservicePdndState;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.util.EnumUtilities;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class EnumUtilitiesTest {
@@ -35,62 +36,63 @@ class EnumUtilitiesTest {
   @Test
   @DisplayName("From Online to active value")
   void testfromFEtoBEState_whenStateIsOnline_thenReturnActiveValue() {
-    assertEquals(EnumUtilities.fromFEtoBEState(EserviceStateFE.ONLINE),
-        EserviceStateBE.ACTIVE.getValue());
+    assertEquals(EnumUtilities.fromMonitorToPdndState(EserviceMonitorState.ONLINE),
+        EservicePdndState.ACTIVE.getValue());
   }
 
   @Test
   @DisplayName("From Offline to Inactive value")
   void testfromFEtoBEState_whenStateIsOffline_thenReturnInactiveValue() {
-    assertEquals(EnumUtilities.fromFEtoBEState(EserviceStateFE.OFFLINE),
-        EserviceStateBE.INACTIVE.getValue());
+    assertEquals(EnumUtilities.fromMonitorToPdndState(EserviceMonitorState.OFFLINE),
+        EservicePdndState.INACTIVE.getValue());
   }
 
   @Test
   @DisplayName("From ND to null value")
   void testfromFEtoBEState_whenStateIsND_thenReturnNull() {
-    assertNull(EnumUtilities.fromFEtoBEState(EserviceStateFE.N_D));
+    assertNull(EnumUtilities.fromMonitorToPdndState(EserviceMonitorState.N_D));
   }
 
   @Test
-  @DisplayName("From EserviceStateFE to List<String> with EserviceStateBE values")
-  void testconvertListFromFEtoBE_whenIsEserviceStateFEList_thenReturnListOfStringWithEserviceStateBEValues() {
+  @DisplayName("From EserviceMonitorState to List<String> with EservicePdndState values")
+  void testconvertListFromFEtoBE_whenIsEserviceStateFEList_thenReturnListOfStringWithEservicePdndStateValues() {
 
     assertEquals(
-        enumUtilities.convertListFromFEtoBE(List.of(EserviceStateFE.N_D, EserviceStateFE.ONLINE)),
-        List.of(EserviceStateBE.ACTIVE.getValue()));
+        enumUtilities.convertListFromMonitorToPdnd(
+            List.of(EserviceMonitorState.N_D, EserviceMonitorState.ONLINE)),
+        List.of(EservicePdndState.ACTIVE.getValue()));
   }
 
   @Test
   @DisplayName("From BE to FE state return OFFLINE when checkND return false ")
   void testfromBEtoFEState_whenStateIsINACTIVE_thenReturnOFFLINEValue() {
-    view.setState(EserviceStateBE.INACTIVE);
+    view.setState(EservicePdndState.INACTIVE);
 
-    assertEquals(EserviceStateFE.N_D, enumUtilities.fromBEtoFEState(view));
+    assertEquals(EserviceMonitorState.N_D, enumUtilities.fromPdndToMonitorState(view));
   }
 
   @Test
   @DisplayName("From BE to FE state return ONLINE when checkND return false ")
   void testfromBEtoFEState_whenStateIsACTIVE_thenReturnOLINEValue() {
-    view.setState(EserviceStateBE.ACTIVE);
+    view.setState(EservicePdndState.ACTIVE);
 
-    assertEquals(EserviceStateFE.N_D, enumUtilities.fromBEtoFEState(view));
+    assertEquals(EserviceMonitorState.N_D, enumUtilities.fromPdndToMonitorState(view));
   }
 
   @Test
   @DisplayName("CheckND returns true when probing is disabled")
-  void testCheckND_whenProbingIsNotEnabled_thenReturnsTrue(){
+  void testCheckND_whenProbingIsNotEnabled_thenReturnsTrue() {
     view.setProbingEnabled(false);
     assertTrue(enumUtilities.checkND(view));
   }
 
   @Test
   @DisplayName("CheckND returns true when response received is null")
-  void testCheckND_whenResponseReceivedIsNull_thenReturnsTrue(){
+  void testCheckND_whenResponseReceivedIsNull_thenReturnsTrue() {
     view.setProbingEnabled(true);
-    view.setLastRequest(OffsetDateTime.of(OffsetDateTime.now().getYear(), OffsetDateTime.now()
-        .getMonthValue(), OffsetDateTime.now().getDayOfMonth(), OffsetDateTime.now().getHour(),
-        OffsetDateTime.now().getMinute(), 0,0, ZoneOffset.UTC));
+    view.setLastRequest(OffsetDateTime.of(OffsetDateTime.now().getYear(),
+        OffsetDateTime.now().getMonthValue(), OffsetDateTime.now().getDayOfMonth(),
+        OffsetDateTime.now().getHour(), OffsetDateTime.now().getMinute(), 0, 0, ZoneOffset.UTC));
     view.setPollingFrequency(5);
     assertTrue(enumUtilities.checkND(view));
   }

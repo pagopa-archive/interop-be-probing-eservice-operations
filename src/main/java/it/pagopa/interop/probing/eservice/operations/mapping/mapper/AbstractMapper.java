@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
@@ -42,7 +42,7 @@ public abstract class AbstractMapper {
   @Mapping(target = "state", expression = "java(mapStatus(eserviceViewEntity))")
   public abstract SearchEserviceContent toSearchEserviceContent(EserviceView eserviceViewEntity);
 
-  EserviceStateFE mapStatus(EserviceView eserviceViewEntity) {
-    return enumUtilities.fromBEtoFEState(eserviceViewEntity);
+  EserviceMonitorState mapStatus(EserviceView eserviceViewEntity) {
+    return enumUtilities.fromPdndToMonitorState(eserviceViewEntity);
   }
 }

@@ -29,9 +29,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EservicePdndState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateBE;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
@@ -97,7 +97,7 @@ class EserviceControllerTest {
   @BeforeEach
   void setup() {
     changeEserviceStateRequest =
-        ChangeEserviceStateRequest.builder().eServiceState(EserviceStateBE.INACTIVE).build();
+        ChangeEserviceStateRequest.builder().eServiceState(EservicePdndState.INACTIVE).build();
 
     updateEserviceStateDto =
         UpdateEserviceStateDto.builder().eserviceId(eServiceId).versionId(versionId)
@@ -121,18 +121,18 @@ class EserviceControllerTest {
     saveEserviceDto = SaveEserviceDto.builder().basePath(new String[] {"test-1"})
         .eserviceId(eServiceId).name("Eservice name test").producerName("Eservice producer test")
         .technology(EserviceTechnology.fromValue("REST")).versionId(versionId).versionNumber(1)
-        .state(EserviceStateBE.fromValue("INACTIVE")).build();
+        .state(EservicePdndState.fromValue("INACTIVE")).build();
 
     eserviceSaveRequest =
         EserviceSaveRequest.builder().basePath(List.of("test-1")).name("Eservice name test")
             .producerName("Eservice producer test").technology(EserviceTechnology.fromValue("REST"))
-            .versionNumber(1).state(EserviceStateBE.INACTIVE).build();
+            .versionNumber(1).state(EservicePdndState.INACTIVE).build();
 
     expectedSearchEserviceResponse = SearchEserviceResponse.builder().limit(2).offset(0).build();
 
     SearchEserviceContent eserviceViewDTO =
         SearchEserviceContent.builder().eserviceName("Eservice-Name").versionNumber(1)
-            .producerName("Eservice-Producer-Name").state(EserviceStateFE.ONLINE).build();
+            .producerName("Eservice-Producer-Name").state(EserviceMonitorState.ONLINE).build();
 
     List<SearchEserviceContent> eservices = List.of(eserviceViewDTO);
     expectedSearchEserviceResponse.setContent(eservices);
@@ -341,7 +341,7 @@ class EserviceControllerTest {
   @DisplayName("the retrieved list of e-services is empty")
   void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentNotEmpty()
       throws Exception {
-    List<EserviceStateFE> listEservice = List.of(EserviceStateFE.ONLINE);
+    List<EserviceMonitorState> listEservice = List.of(EserviceMonitorState.ONLINE);
     expectedSearchEserviceResponse.setContent(List.of());
     Mockito.doReturn(expectedSearchEserviceResponse).when(service).searchEservices(2, 0,
         "Eservice-Name", "Eservice-Producer-Name", 1, listEservice);

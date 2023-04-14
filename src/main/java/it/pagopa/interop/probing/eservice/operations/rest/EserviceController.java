@@ -9,8 +9,8 @@ import it.pagopa.interop.probing.eservice.operations.api.EservicesApi;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
@@ -53,7 +53,7 @@ public class EserviceController implements EservicesApi {
   @Override
   public ResponseEntity<SearchEserviceResponse> searchEservices(Integer limit, Integer offset,
       String eserviceName, String producerName, Integer versionNumber,
-      List<EserviceStateFE> state) {
+      List<EserviceMonitorState> state) {
     return ResponseEntity.ok(eserviceService.searchEservices(limit, offset, eserviceName,
         producerName, versionNumber, state));
   }

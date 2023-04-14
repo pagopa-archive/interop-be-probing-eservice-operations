@@ -239,7 +239,7 @@ paths:
           schema:
               type: array
               items:
-                $ref: '#/components/schemas/EserviceStateFE'
+                $ref: '#/components/schemas/EserviceMonitorState'
       responses:
         '200':
           description: 'The search has been successfully performed '
@@ -288,7 +288,7 @@ paths:
               schema:
                type: array
                items:
-                 $ref: '#/components/schemas/SearchProducerNameResponse'
+                 $ref: '#/components/schemas/ProducerResponse'
         '400':
           description: The provided input data is invalid
           content:
@@ -388,7 +388,7 @@ components:
         technology:
           $ref: '#/components/schemas/EserviceTechnology'
         state:
-          $ref: '#/components/schemas/EserviceStateBE'
+          $ref: '#/components/schemas/EservicePdndState'
         versionNumber:
           title: the e-service's version
           type: integer
@@ -407,7 +407,7 @@ components:
       - eServiceState
       properties:
         eServiceState:
-          $ref: '#/components/schemas/EserviceStateBE'
+          $ref: '#/components/schemas/EservicePdndState'
           
     ChangeProbingFrequencyRequest:
       type: object
@@ -446,7 +446,7 @@ components:
           type: string
           format: date-time
         state:
-          $ref: '#/components/schemas/EserviceStateFE'
+          $ref: '#/components/schemas/EserviceMonitorState'
         versionNumber:
           title: the e-service's version
           type: integer
@@ -469,7 +469,7 @@ components:
           type: integer
           format: int64
           
-    SearchProducerNameResponse:
+    ProducerResponse:
       type: object
       properties:
         label:
@@ -479,14 +479,14 @@ components:
           title: value of producer's name
           type: string
           
-    EserviceStateFE:
+    EserviceMonitorState:
       type: string
       enum:
         - ONLINE 
         - OFFLINE
         - 'N/D'
         
-    EserviceStateBE:
+    EservicePdndState:
       type: string
       enum:
       - ACTIVE

@@ -15,7 +15,7 @@
 package it.pagopa.interop.probing.eservice.operations.service;
 
 import java.util.List;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
@@ -75,5 +75,5 @@ public interface EserviceService {
    * @return the SearchEserviceResponse which contain eserviceList and pagination parameter
    */
   public SearchEserviceResponse searchEservices(Integer limit, Integer offset, String eserviceName,
-      String producerName, Integer versionNumber, List<EserviceStateFE> state);
+      String producerName, Integer versionNumber, List<EserviceMonitorState> state);
 }

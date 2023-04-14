@@ -15,7 +15,7 @@
 package it.pagopa.interop.probing.eservice.operations.service;
 
 import java.util.List;
-import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
+import it.pagopa.interop.probing.eservice.operations.dtos.ProducerResponse;
 
 public interface ProducerService {
 
@@ -25,5 +25,5 @@ public interface ProducerService {
    * @param producerName the eservice producer name
    * @return the eservices producers
    */
-  List<SearchProducerNameResponse> getEservicesProducers(String producerName);
+  List<ProducerResponse> getEservicesProducers(String producerName);
 }

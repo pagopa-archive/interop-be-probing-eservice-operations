@@ -15,7 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
+import it.pagopa.interop.probing.eservice.operations.dtos.ProducerResponse;
 import it.pagopa.interop.probing.eservice.operations.service.ProducerService;
 
 @SpringBootTest
@@ -32,18 +32,18 @@ class ProducerControllerTest {
   @MockBean
   private ProducerService service;
 
-  private List<SearchProducerNameResponse> searchProducerNameResponseExpectedList;
+  private List<ProducerResponse> producerResponseExpectedList;
 
   @Test
   @DisplayName("given a valid producer name, then returns a non-empty list")
   void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseList()
       throws Exception {
-    SearchProducerNameResponse searchProducerNameResponse = SearchProducerNameResponse.builder()
-        .label("ProducerName-Test-1").value("ProducerName-Test-1").build();
+    ProducerResponse producerResponse = ProducerResponse.builder().label("ProducerName-Test-1")
+        .value("ProducerName-Test-1").build();
 
-    searchProducerNameResponseExpectedList = List.of(searchProducerNameResponse);
+    producerResponseExpectedList = List.of(producerResponse);
     Mockito.when(service.getEservicesProducers("ProducerName-Test"))
-        .thenReturn(searchProducerNameResponseExpectedList);
+        .thenReturn(producerResponseExpectedList);
     MockHttpServletResponse response =
         mockMvc.perform(get(apiGetEservicesProducersUrl).param("producerName", "ProducerName-Test"))
             .andReturn().getResponse();
@@ -59,7 +59,7 @@ class ProducerControllerTest {
   void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseListEmpty()
       throws Exception {
     Mockito.when(service.getEservicesProducers("ProducerName-Test"))
-        .thenReturn(new ArrayList<SearchProducerNameResponse>());
+        .thenReturn(new ArrayList<ProducerResponse>());
     MockHttpServletResponse response =
         mockMvc.perform(get(apiGetEservicesProducersUrl).param("producerName", "ProducerName-Test"))
             .andReturn().getResponse();

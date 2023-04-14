@@ -7,8 +7,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateBE;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EservicePdndState;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 
 @Component
@@ -17,30 +17,30 @@ public class EnumUtilities {
   @Value("${minutes.ofTollerance.multiplier}")
   private int minOfTolleranceMultiplier;
 
-  public static String fromFEtoBEState(EserviceStateFE state) {
+  public static String fromMonitorToPdndState(EserviceMonitorState state) {
     switch (state) {
       case ONLINE:
-        return EserviceStateBE.ACTIVE.getValue();
+        return EservicePdndState.ACTIVE.getValue();
       case OFFLINE:
-        return EserviceStateBE.INACTIVE.getValue();
+        return EservicePdndState.INACTIVE.getValue();
       default:
         return null;
     }
   }
 
-  public List<String> convertListFromFEtoBE(List<EserviceStateFE> statusList) {
-    return statusList.stream().map(EnumUtilities::fromFEtoBEState).filter(Objects::nonNull)
+  public List<String> convertListFromMonitorToPdnd(List<EserviceMonitorState> statusList) {
+    return statusList.stream().map(EnumUtilities::fromMonitorToPdndState).filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
-  public EserviceStateFE fromBEtoFEState(EserviceView view) {
+  public EserviceMonitorState fromPdndToMonitorState(EserviceView view) {
     switch (view.getState()) {
       case ACTIVE:
-        return checkND(view) ? EserviceStateFE.N_D : EserviceStateFE.ONLINE;
+        return checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.ONLINE;
       case INACTIVE:
-        return checkND(view) ? EserviceStateFE.N_D : EserviceStateFE.OFFLINE;
+        return checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.OFFLINE;
       default:
-        return EserviceStateFE.N_D;
+        return EserviceMonitorState.N_D;
     }
   }
 

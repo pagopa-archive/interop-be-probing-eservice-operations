@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
@@ -109,19 +109,20 @@ public class EserviceServiceImpl implements EserviceService {
 
   @Override
   public SearchEserviceResponse searchEservices(Integer limit, Integer offset, String eserviceName,
-      String producerName, Integer versionNumber, List<EserviceStateFE> state) {
+      String producerName, Integer versionNumber, List<EserviceMonitorState> state) {
 
     Page<EserviceView> eserviceList = null;
     List<String> stateBE = Objects.isNull(state) || state.isEmpty() ? new ArrayList<>()
-        : enumUtilities.convertListFromFEtoBE(state);
+        : enumUtilities.convertListFromMonitorToPdnd(state);
 
-    if (Objects.isNull(state) || state.isEmpty() || (state.contains(EserviceStateFE.N_D)
-        && state.contains(EserviceStateFE.ONLINE) && state.contains(EserviceStateFE.OFFLINE))) {
+    if (Objects.isNull(state) || state.isEmpty()
+        || (state.contains(EserviceMonitorState.N_D) && state.contains(EserviceMonitorState.ONLINE)
+            && state.contains(EserviceMonitorState.OFFLINE))) {
       eserviceList = eserviceViewRepository.findAll(
           EserviceViewSpecs.searchSpecBuilder(eserviceName, producerName, versionNumber),
           new OffsetLimitPageable(offset, limit,
               Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()));
-    } else if (state.contains(EserviceStateFE.N_D)) {
+    } else if (state.contains(EserviceMonitorState.N_D)) {
       eserviceList = eserviceViewRepository.findAllWithNDState(eserviceName, producerName,
           versionNumber, stateBE, minOfTolleranceMultiplier, new OffsetLimitPageable(offset, limit,
               Sort.by(ProjectConstants.ESERVICE_NAME_NATIVE_FIELD).ascending()));

@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Immutable;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateBE;
+import it.pagopa.interop.probing.eservice.operations.dtos.EservicePdndState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -59,7 +59,7 @@ public class EserviceView implements Serializable {
   @NotNull
   @Enumerated(EnumType.STRING)
   @Column(name = "state")
-  private EserviceStateBE state;
+  private EservicePdndState state;
 
   @NotNull
   @Column(name = "version_id")
