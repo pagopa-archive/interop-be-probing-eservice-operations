@@ -2,6 +2,7 @@ package it.pagopa.interop.probing.eservice.operations.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
@@ -18,7 +19,7 @@ import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.mapper.MapperImpl;
+import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
@@ -49,7 +50,7 @@ public class EserviceServiceImpl implements EserviceService {
   EserviceViewRepository eserviceViewRepository;
 
   @Autowired
-  MapperImpl mapper;
+  AbstractMapper mapper;
 
   @Override
   public void updateEserviceState(UpdateEserviceStateDto inputData)
@@ -111,10 +112,10 @@ public class EserviceServiceImpl implements EserviceService {
       String producerName, Integer versionNumber, List<EserviceStateFE> state) {
 
     Page<EserviceView> eserviceList = null;
-    List<String> stateBE = state == null || state.isEmpty() ? new ArrayList<>()
+    List<String> stateBE = Objects.isNull(state) || state.isEmpty() ? new ArrayList<>()
         : enumUtilities.convertListFromFEtoBE(state);
 
-    if (state == null || state.isEmpty() || (state.contains(EserviceStateFE.N_D)
+    if (Objects.isNull(state) || state.isEmpty() || (state.contains(EserviceStateFE.N_D)
         && state.contains(EserviceStateFE.ONLINE) && state.contains(EserviceStateFE.OFFLINE))) {
       eserviceList = eserviceViewRepository.findAll(
           EserviceViewSpecs.searchSpecBuilder(eserviceName, producerName, versionNumber),

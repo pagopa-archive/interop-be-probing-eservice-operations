@@ -4,7 +4,7 @@ CREATE TABLE ${schema_name}.eservice_probing_responses (
 	CONSTRAINT eservice_probing_responses_pkey PRIMARY KEY (eservice_id)
 );
 
-ALTER TABLE ${schema_name}.eservice_probing_responses ADD CONSTRAINT fkoyntlrnuvx1wo1sujl4ikd2wf FOREIGN KEY (eservice_id) REFERENCES ${schema_name}.eservices(id);
+ALTER TABLE ${schema_name}.eservice_probing_responses ADD CONSTRAINT FK_ESERVICE_ESERVICE_PROBING_RESPONSE FOREIGN KEY (eservice_id) REFERENCES ${schema_name}.eservices(id);
 
 CREATE TABLE ${schema_name}.eservice_probing_requests (
 	last_request timestamptz NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE ${schema_name}.eservice_probing_requests (
 	CONSTRAINT eservice_probing_requests_pkey PRIMARY KEY (eservice_id)
 );
 
-ALTER TABLE ${schema_name}.eservice_probing_requests ADD CONSTRAINT fkqt143qjsfve81s94u8l959mb4 FOREIGN KEY (eservice_id) REFERENCES ${schema_name}.eservices(id);
+ALTER TABLE ${schema_name}.eservice_probing_requests ADD CONSTRAINT FK_ESERVICE_ESERVICE_PROBING_REQUESTS FOREIGN KEY (eservice_id) REFERENCES ${schema_name}.eservices(id);
 
 delete from ${schema_name}.eservice_probing_requests;
 delete from ${schema_name}.eservice_probing_responses ;

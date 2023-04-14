@@ -18,7 +18,7 @@ import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.util.EnumUtilities;
 
 @Mapper(componentModel = "spring")
-public abstract class MapperImpl {
+public abstract class AbstractMapper {
 
   @Autowired
   EnumUtilities enumUtilities;

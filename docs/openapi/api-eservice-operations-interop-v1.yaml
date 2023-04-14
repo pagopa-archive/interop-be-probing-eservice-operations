@@ -3,8 +3,7 @@ info:
   title: 'E-Service Monitor Interop Operations service'
   version: 1.0.0
   x-summary: 'E-Service Monitor Operations service'
-  description: >- 
-    OpenAPI specification for E-Service Monitor's operation services
+  description: OpenAPI specification for E-Service Monitor's operation services
   termsOfService: https://www.e-serviceurl-example.com/terms
   contact:
     name: contactToDefinePagoPa
@@ -227,14 +226,12 @@ paths:
           description: the e-service's producer name
           schema:
             type: string
-            format: string
         - name: versionNumber
           in: query
           required: false
           description: the e-service's version
           schema:
-            type: string
-            format: integer
+            type: integer
         - name: state
           in: query
           required: false
@@ -273,8 +270,6 @@ paths:
   '/producers':
     get:
       summary: Retrive e-services producers
-      description: >-
-        Retrive e-services producers : producerName
       tags:
         - Read
       operationId: getEservicesProducers
@@ -285,17 +280,15 @@ paths:
           description: the e-service's producer name
           schema:
             type: string
-            format: string
       responses:
         '200':
-          description: >-
-            The search for the list of producers has been performed successfully
+          description: The search for the list of producers has been performed successfully
           content:
             application/json:
               schema:
                type: array
                items:
-                $ref: '#/components/schemas/SearchProducerNameResponse'
+                 $ref: '#/components/schemas/SearchProducerNameResponse'
         '400':
           description: The provided input data is invalid
           content:

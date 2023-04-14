@@ -1,5 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.repository.specs;
 
+import java.util.Objects;
 import org.springframework.data.jpa.domain.Specification;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 
@@ -16,18 +17,20 @@ public class EserviceViewSpecs {
   }
 
   public static Specification<EserviceView> eserviceNameEquals(String eserviceName) {
-    return ((root, query, builder) -> eserviceName == null ? builder.conjunction()
+    return ((root, query, builder) -> Objects.isNull(eserviceName) ? builder.conjunction()
         : builder.equal(root.get("eserviceName"), eserviceName));
   }
 
   public static Specification<EserviceView> producerNameEquals(String producerName) {
-    return (root, query, builder) -> producerName == null ? builder.conjunction()
+    return (root, query, builder) -> Objects.isNull(producerName) ? builder.conjunction()
         : builder.equal(root.get("producerName"), producerName);
   }
 
   public static Specification<EserviceView> versionNumberEquals(Integer version) {
-    return (root, query, builder) -> version == null ? builder.conjunction()
+    return (root, query, builder) -> Objects.isNull(version) ? builder.conjunction()
         : builder.equal(root.get("versionNumber"), version);
   }
+
+
 
 }

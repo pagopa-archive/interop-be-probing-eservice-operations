@@ -40,7 +40,7 @@ import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.mapper.MapperImpl;
+import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 
 @SpringBootTest
@@ -68,7 +68,7 @@ class EserviceControllerTest {
   private ObjectMapper mapper;
 
   @Autowired
-  MapperImpl mapstructMapper;
+  AbstractMapper mapstructMapper;
 
   @MockBean
   private EserviceService service;

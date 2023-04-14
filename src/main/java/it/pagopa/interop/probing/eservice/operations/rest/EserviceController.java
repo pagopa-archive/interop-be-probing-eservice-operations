@@ -13,7 +13,7 @@ import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStateFE;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
-import it.pagopa.interop.probing.eservice.operations.mapping.mapper.MapperImpl;
+import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 
 @RestController
@@ -23,7 +23,7 @@ public class EserviceController implements EservicesApi {
   EserviceService eserviceService;
 
   @Autowired
-  MapperImpl mapper;
+  AbstractMapper mapper;
 
   @Override
   public ResponseEntity<Void> updateEserviceFrequency(UUID eserviceId, UUID versionId,

@@ -2,7 +2,6 @@ package it.pagopa.interop.probing.eservice.operations.util;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,19 +40,26 @@ public class EnumUtilities {
       case INACTIVE:
         return checkND(view) ? EserviceStateFE.N_D : EserviceStateFE.OFFLINE;
       default:
-        return null;
+        return EserviceStateFE.N_D;
     }
   }
 
   public boolean checkND(EserviceView view) {
-    OffsetDateTime defaultDate = view.getResponseReceived() == null
-        ? OffsetDateTime.of(9999, 12, 31, 0, 0, 0, 0, ZoneOffset.UTC)
+    return (!view.isProbingEnabled() || Objects.isNull(view.getLastRequest())
+        || (isBeenToLongRequest(view) && isResponseReceivedBeforeLastRequest(view))
+        || Objects.isNull(view.getResponseReceived()));
+  }
+
+  private boolean isResponseReceivedBeforeLastRequest(EserviceView view) {
+    OffsetDateTime defaultDate = Objects.isNull(view.getResponseReceived()) ? OffsetDateTime.MAX
         : view.getResponseReceived();
-    return (!view.isProbingEnabled() || view.getLastRequest() == null
-        || ((Duration.between(OffsetDateTime.now(), view.getLastRequest())
-            .toMinutes() > view.getPollingFrequency() * minOfTolleranceMultiplier)
-            && defaultDate.isBefore(view.getLastRequest()))
-        || view.getResponseReceived() == null);
+
+    return defaultDate.isBefore(view.getLastRequest());
+  }
+
+  private boolean isBeenToLongRequest(EserviceView view) {
+    return Duration.between(OffsetDateTime.now(), view.getLastRequest())
+        .toMinutes() > (view.getPollingFrequency() * minOfTolleranceMultiplier);
   }
 
 }
