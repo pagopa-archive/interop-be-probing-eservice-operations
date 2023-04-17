@@ -125,11 +125,11 @@ public class EserviceServiceImpl implements EserviceService {
     } else if (state.contains(EserviceMonitorState.N_D)) {
       eserviceList = eserviceViewRepository.findAllWithNDState(eserviceName, producerName,
           versionNumber, stateBE, minOfTolleranceMultiplier, new OffsetLimitPageable(offset, limit,
-              Sort.by(ProjectConstants.ESERVICE_NAME_NATIVE_FIELD).ascending()));
+              Sort.by(ProjectConstants.ESERVICE_NAME_COLUMN_NAME).ascending()));
     } else {
       eserviceList = eserviceViewRepository.findAllWithoutNDState(eserviceName, producerName,
           versionNumber, stateBE, minOfTolleranceMultiplier, new OffsetLimitPageable(offset, limit,
-              Sort.by(ProjectConstants.ESERVICE_NAME_NATIVE_FIELD).ascending()));
+              Sort.by(ProjectConstants.ESERVICE_NAME_COLUMN_NAME).ascending()));
     }
 
     List<SearchEserviceContent> lista = eserviceList.getContent().stream()

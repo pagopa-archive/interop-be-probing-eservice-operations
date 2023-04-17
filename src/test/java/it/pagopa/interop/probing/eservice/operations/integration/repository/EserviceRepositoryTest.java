@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import it.pagopa.interop.probing.eservice.operations.dtos.EservicePdndState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
@@ -36,7 +36,7 @@ class EserviceRepositoryTest {
         .pollingStartTime(OffsetTime.of(1, 0, 0, 0, ZoneOffset.UTC))
         .basePath(new String[] {"test1", "test2"}).technology(EserviceTechnology.REST)
         .pollingFrequency(5).producerName("producer1").probingEnabled(true)
-        .state(EservicePdndState.ACTIVE).build();
+        .state(EserviceInteropState.ACTIVE).build();
     testEntityManager.persistAndFlush(eservice);
   }
 

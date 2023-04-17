@@ -3,7 +3,7 @@ package it.pagopa.interop.probing.eservice.operations.mapping.dto;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.pagopa.interop.probing.eservice.operations.dtos.EservicePdndState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -25,5 +25,5 @@ public class UpdateEserviceStateDto {
 
   @NotNull
   @JsonProperty("eServiceState")
-  private EservicePdndState newEServiceState;
+  private EserviceInteropState newEServiceState;
 }

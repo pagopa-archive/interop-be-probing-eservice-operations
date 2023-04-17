@@ -15,7 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import it.pagopa.interop.probing.eservice.operations.dtos.ProducerResponse;
+import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.service.ProducerService;
@@ -37,10 +37,10 @@ class ProducerServiceImplTest {
   Root<Eservice> root;
 
   @Mock
-  CriteriaQuery<ProducerResponse> query;
+  CriteriaQuery<Producer> query;
 
   @Mock
-  TypedQuery<ProducerResponse> q;
+  TypedQuery<Producer> q;
 
   @Mock
   AbstractMapper mapstructMapper;
@@ -48,7 +48,7 @@ class ProducerServiceImplTest {
   @InjectMocks
   ProducerService service = new ProducerServiceImpl();
 
-  List<ProducerResponse> ProducerResponseExpectedList;
+  List<Producer> ProducerExpectedList;
 
   @BeforeEach
   void setup() {
@@ -57,18 +57,17 @@ class ProducerServiceImplTest {
 
   @Test
   @DisplayName("when searching for a valid producer name, then return the list of producers")
-  void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsProducerResponseList() {
-    ProducerResponseExpectedList =
-        List.of(new ProducerResponse("ProducerName-Test-1", "ProducerName-Test-1"),
-            new ProducerResponse("ProducerName-Test-2", "ProducerName-Test-2"));
+  void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsProducerList() {
+    ProducerExpectedList = List.of(new Producer("ProducerName-Test-1", "ProducerName-Test-1"),
+        new Producer("ProducerName-Test-2", "ProducerName-Test-2"));
     Mockito.when(entityManager.getCriteriaBuilder()).thenReturn(cb);
-    Mockito.when(cb.createQuery(ProducerResponse.class)).thenReturn(query);
+    Mockito.when(cb.createQuery(Producer.class)).thenReturn(query);
     Mockito.when(query.from(Eservice.class)).thenReturn(root);
     Mockito.when(query.distinct(true)).thenReturn(query);
     Mockito.when(query.multiselect(Mockito.any(), Mockito.any())).thenReturn(query);
     Mockito.when(entityManager.createQuery(query)).thenReturn(q);
-    Mockito.when(q.getResultList()).thenReturn(ProducerResponseExpectedList);
+    Mockito.when(q.getResultList()).thenReturn(ProducerExpectedList);
 
-    assertEquals(q.getResultList().size(), ProducerResponseExpectedList.size());
+    assertEquals(q.getResultList().size(), ProducerExpectedList.size());
   }
 }

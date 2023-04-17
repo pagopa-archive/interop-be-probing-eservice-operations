@@ -15,7 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import it.pagopa.interop.probing.eservice.operations.dtos.ProducerResponse;
+import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
 import it.pagopa.interop.probing.eservice.operations.service.ProducerService;
 
 @SpringBootTest
@@ -32,18 +32,17 @@ class ProducerControllerTest {
   @MockBean
   private ProducerService service;
 
-  private List<ProducerResponse> producerResponseExpectedList;
+  private List<Producer> ProducerExpectedList;
 
   @Test
   @DisplayName("given a valid producer name, then returns a non-empty list")
   void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseList()
       throws Exception {
-    ProducerResponse producerResponse = ProducerResponse.builder().label("ProducerName-Test-1")
-        .value("ProducerName-Test-1").build();
+    Producer producer = Producer.builder().build();
 
-    producerResponseExpectedList = List.of(producerResponse);
+    ProducerExpectedList = List.of(producer);
     Mockito.when(service.getEservicesProducers("ProducerName-Test"))
-        .thenReturn(producerResponseExpectedList);
+        .thenReturn(ProducerExpectedList);
     MockHttpServletResponse response =
         mockMvc.perform(get(apiGetEservicesProducersUrl).param("producerName", "ProducerName-Test"))
             .andReturn().getResponse();
@@ -59,7 +58,7 @@ class ProducerControllerTest {
   void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseListEmpty()
       throws Exception {
     Mockito.when(service.getEservicesProducers("ProducerName-Test"))
-        .thenReturn(new ArrayList<ProducerResponse>());
+        .thenReturn(new ArrayList<Producer>());
     MockHttpServletResponse response =
         mockMvc.perform(get(apiGetEservicesProducersUrl).param("producerName", "ProducerName-Test"))
             .andReturn().getResponse();

@@ -13,7 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import it.pagopa.interop.probing.eservice.operations.dtos.EservicePdndState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.specs.EserviceViewSpecs;
@@ -33,7 +33,7 @@ class EserviceViewRepositoryTest {
   void setup() {
     EserviceView eserviceView = EserviceView.builder().eserviceId(UUID.randomUUID())
         .versionId(UUID.randomUUID()).eserviceName("e-service Name").producerName("Producer Name")
-        .probingEnabled(true).versionNumber(1).state(EservicePdndState.ACTIVE)
+        .probingEnabled(true).versionNumber(1).state(EserviceInteropState.ACTIVE)
         .responseReceived(OffsetDateTime.parse("2023-03-21T00:00:05.995Z"))
         .lastRequest(OffsetDateTime.parse("2023-03-21T00:00:15.995Z")).id(10L).build();
     testEntityManager.persistAndFlush(eserviceView);

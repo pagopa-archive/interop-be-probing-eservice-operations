@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import it.pagopa.interop.probing.eservice.operations.dtos.EservicePdndState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingResponse;
@@ -30,7 +30,7 @@ class EserviceProbingResponseTest {
 
   @BeforeEach
   void setup() {
-    eservice = Eservice.builder().state(EservicePdndState.INACTIVE).eserviceId(UUID.randomUUID())
+    eservice = Eservice.builder().state(EserviceInteropState.INACTIVE).eserviceId(UUID.randomUUID())
         .versionId(UUID.randomUUID()).eserviceName("e-service1")
         .basePath(new String[] {"test1", "test2"}).technology(EserviceTechnology.REST)
         .producerName("producer1").build();

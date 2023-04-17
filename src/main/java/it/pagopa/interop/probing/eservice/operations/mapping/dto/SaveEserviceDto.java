@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.pagopa.interop.probing.eservice.operations.dtos.EservicePdndState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import lombok.Builder;
 import lombok.Data;
@@ -44,7 +44,7 @@ public class SaveEserviceDto {
 
   @NotNull
   @JsonProperty("state")
-  private EservicePdndState state;
+  private EserviceInteropState state;
 
   @NotBlank
   @JsonProperty("versionNumber")

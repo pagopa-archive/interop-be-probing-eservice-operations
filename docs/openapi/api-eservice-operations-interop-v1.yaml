@@ -288,7 +288,7 @@ paths:
               schema:
                type: array
                items:
-                 $ref: '#/components/schemas/ProducerResponse'
+                 $ref: '#/components/schemas/Producer'
         '400':
           description: The provided input data is invalid
           content:
@@ -388,7 +388,7 @@ components:
         technology:
           $ref: '#/components/schemas/EserviceTechnology'
         state:
-          $ref: '#/components/schemas/EservicePdndState'
+          $ref: '#/components/schemas/EserviceInteropState'
         versionNumber:
           title: the e-service's version
           type: integer
@@ -407,7 +407,7 @@ components:
       - eServiceState
       properties:
         eServiceState:
-          $ref: '#/components/schemas/EservicePdndState'
+          $ref: '#/components/schemas/EserviceInteropState'
           
     ChangeProbingFrequencyRequest:
       type: object
@@ -468,8 +468,8 @@ components:
           title: total elements
           type: integer
           format: int64
-          
-    ProducerResponse:
+
+    Producer:
       type: object
       properties:
         label:
@@ -486,7 +486,7 @@ components:
         - OFFLINE
         - 'N/D'
         
-    EservicePdndState:
+    EserviceInteropState:
       type: string
       enum:
       - ACTIVE

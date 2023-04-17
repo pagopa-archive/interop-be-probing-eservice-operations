@@ -2,13 +2,14 @@ package it.pagopa.interop.probing.eservice.operations.util;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
-import it.pagopa.interop.probing.eservice.operations.dtos.EservicePdndState;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 
 @Component
@@ -20,9 +21,9 @@ public class EnumUtilities {
   public static String fromMonitorToPdndState(EserviceMonitorState state) {
     switch (state) {
       case ONLINE:
-        return EservicePdndState.ACTIVE.getValue();
+        return EserviceInteropState.ACTIVE.getValue();
       case OFFLINE:
-        return EservicePdndState.INACTIVE.getValue();
+        return EserviceInteropState.INACTIVE.getValue();
       default:
         return null;
     }
@@ -58,8 +59,8 @@ public class EnumUtilities {
   }
 
   private boolean isBeenToLongRequest(EserviceView view) {
-    return Duration.between(OffsetDateTime.now(), view.getLastRequest())
-        .toMinutes() > (view.getPollingFrequency() * minOfTolleranceMultiplier);
+    return Math.abs(Duration.between(OffsetDateTime.now(ZoneOffset.UTC), view.getLastRequest())
+        .toMinutes()) > (view.getPollingFrequency() * minOfTolleranceMultiplier);
   }
 
 }

@@ -1,18 +1,18 @@
 CREATE TABLE ${schema_name}.eservice_probing_responses (
 	response_received timestamptz NOT NULL,
-	eservice_id int8 NOT NULL,
-	CONSTRAINT eservice_probing_responses_pkey PRIMARY KEY (eservice_id)
+	eservices_record_id int8 NOT NULL,
+	CONSTRAINT eservice_probing_responses_pkey PRIMARY KEY (eservices_record_id)
 );
 
-ALTER TABLE ${schema_name}.eservice_probing_responses ADD CONSTRAINT FK_ESERVICE_ESERVICE_PROBING_RESPONSE FOREIGN KEY (eservice_id) REFERENCES ${schema_name}.eservices(id);
+ALTER TABLE ${schema_name}.eservice_probing_responses ADD CONSTRAINT FK_ESERVICE_ESERVICE_PROBING_RESPONSE FOREIGN KEY (eservices_record_id) REFERENCES ${schema_name}.eservices(id);
 
 CREATE TABLE ${schema_name}.eservice_probing_requests (
 	last_request timestamptz NOT NULL,
-	eservice_id int8 NOT NULL,
-	CONSTRAINT eservice_probing_requests_pkey PRIMARY KEY (eservice_id)
+	eservices_record_id int8 NOT NULL,
+	CONSTRAINT eservice_probing_requests_pkey PRIMARY KEY (eservices_record_id)
 );
 
-ALTER TABLE ${schema_name}.eservice_probing_requests ADD CONSTRAINT FK_ESERVICE_ESERVICE_PROBING_REQUESTS FOREIGN KEY (eservice_id) REFERENCES ${schema_name}.eservices(id);
+ALTER TABLE ${schema_name}.eservice_probing_requests ADD CONSTRAINT FK_ESERVICE_ESERVICE_PROBING_REQUESTS FOREIGN KEY (eservices_record_id) REFERENCES ${schema_name}.eservices(id);
 
 delete from ${schema_name}.eservice_probing_requests;
 delete from ${schema_name}.eservice_probing_responses ;
