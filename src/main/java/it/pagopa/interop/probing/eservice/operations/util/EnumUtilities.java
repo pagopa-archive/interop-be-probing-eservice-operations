@@ -59,8 +59,10 @@ public class EnumUtilities {
   }
 
   private boolean isBeenToLongRequest(EserviceView view) {
-    return Math.abs(Duration.between(OffsetDateTime.now(ZoneOffset.UTC), view.getLastRequest())
-        .toMinutes()) > (view.getPollingFrequency() * minOfTolleranceMultiplier);
+    return Duration
+        .between(view.getLastRequest().withOffsetSameInstant(ZoneOffset.UTC),
+            OffsetDateTime.now(ZoneOffset.UTC))
+        .toMinutes() > (view.getPollingFrequency() * minOfTolleranceMultiplier);
   }
 
 }
