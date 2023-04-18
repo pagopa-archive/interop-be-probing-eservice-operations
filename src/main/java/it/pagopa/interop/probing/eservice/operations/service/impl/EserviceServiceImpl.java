@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
+import it.pagopa.interop.probing.eservice.operations.dtos.PollingActiveEserviceContent;
+import it.pagopa.interop.probing.eservice.operations.dtos.PollingActiveEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
@@ -156,6 +158,19 @@ public class EserviceServiceImpl implements EserviceService {
     log.info("Service " + eServiceToUpdate.eserviceId() + " with version "
         + eServiceToUpdate.versionId() + " has been saved.");
     return id;
+  }
+
+  @Override
+  public PollingActiveEserviceResponse getEservicesActive(Integer limit, Integer offset) {
+    Page<EserviceView> pollingActiveEserviceResponseList =
+        eserviceViewRepository.findAll(new OffsetLimitPageable(offset, limit,
+            Sort.by(ProjectConstants.ESERVICE_NAME_COLUMN_NAME)));
+
+    List<PollingActiveEserviceContent> list = pollingActiveEserviceResponseList.stream()
+        .map(e -> mapper.toPollingActiveEserviceContent(e)).collect(Collectors.toList());
+
+    return PollingActiveEserviceResponse.builder().content(list)
+        .totalElements(pollingActiveEserviceResponseList.getTotalElements()).build();
   }
 
 }

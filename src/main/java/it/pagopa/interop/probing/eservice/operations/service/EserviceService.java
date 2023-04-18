@@ -16,6 +16,7 @@ package it.pagopa.interop.probing.eservice.operations.service;
 
 import java.util.List;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
+import it.pagopa.interop.probing.eservice.operations.dtos.PollingActiveEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
@@ -76,4 +77,6 @@ public interface EserviceService {
    */
   public SearchEserviceResponse searchEservices(Integer limit, Integer offset, String eserviceName,
       String producerName, Integer versionNumber, List<EserviceMonitorState> state);
+
+  PollingActiveEserviceResponse getEservicesActive(Integer limit, Integer offset);
 }

@@ -9,6 +9,7 @@ import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequency
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.PollingActiveEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
@@ -45,4 +46,7 @@ public abstract class AbstractMapper {
   EserviceMonitorState mapStatus(EserviceView eserviceViewEntity) {
     return enumUtilities.fromPdndToMonitorState(eserviceViewEntity);
   }
+
+  public abstract PollingActiveEserviceContent toPollingActiveEserviceContent(
+      EserviceView eserviceViewEntity);
 }

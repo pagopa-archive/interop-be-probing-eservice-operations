@@ -2,6 +2,7 @@ package it.pagopa.interop.probing.eservice.operations.model.view;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +14,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
+import it.pagopa.interop.probing.eservice.operations.model.CustomStringArrayType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +35,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@TypeDef(name = "basePathType", typeClass = CustomStringArrayType.class)
 public class EserviceView implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -76,5 +82,21 @@ public class EserviceView implements Serializable {
 
   @Column(name = "polling_frequency")
   private Integer pollingFrequency;
+
+  @Column(name = "polling_start_time")
+  private OffsetTime pollingStartTime;
+
+  @Column(name = "polling_end_time")
+  private OffsetTime pollingEndTime;
+
+  @NotNull
+  @Enumerated(EnumType.STRING)
+  @Column(name = "eservice_technology")
+  private EserviceTechnology technology;
+
+  @NotNull
+  @Column(name = "base_path", columnDefinition = "varchar(2048) array")
+  @Type(type = "basePathType")
+  private String[] basePath;
 
 }

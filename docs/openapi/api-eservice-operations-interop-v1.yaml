@@ -365,6 +365,61 @@ paths:
                 detail: 'There is a problem processing the request on the server.'
                 traceId: 'string'
                 errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please try again later.'}]
+  '/eservices/pollingEserviceActive':
+    get:
+      summary: Retrive services with active state
+      description: >- 
+        Retrive services with active state
+      tags:
+        - Read
+      operationId: getEservicesActive
+      parameters:
+          - name: limit
+            in: query
+            required: true
+            description: the e-service's page limit
+            schema:
+              type: integer
+              minimum: 1
+              maximum: 100
+          - name: offset
+            in: query
+            required: true
+            description: the page's offset
+            schema:
+              type: integer
+              minimum: 0
+      
+      responses:
+        '200':
+          description: >-
+            The search for the list of active eservices has been performed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PollingActiveEserviceResponse'
+        '400':
+          description: >-
+            The provided input data is invalid
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':                  
+          description: >-
+            A managed error has occured during the request elaboration
+          content:                        
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: string
+                status: 500 
+                title: 'Internal Server Error'
+                detail: 'There is a problem processing the request on the server.'
+                traceId: 'string'
+                errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please try again later.'}]
+  
 components:
   schemas:
     EserviceSaveRequest:
@@ -392,6 +447,33 @@ components:
         versionNumber:
           title: the e-service's version
           type: integer
+    
+    PollingActiveEserviceContent:
+      type: object
+      properties:
+        id:
+          title: Service id
+          type: string
+        basePath:
+          title: base path
+          type: array
+          items:
+            type: string
+        technology:
+          $ref: '#/components/schemas/EserviceTechnology'
+    
+    PollingActiveEserviceResponse:
+      type: object
+      properties:
+        content:
+          title: polling active response
+          type: array
+          items: 
+            $ref: '#/components/schemas/PollingActiveEserviceContent'
+        totalElements:
+          title: total elements
+          type: integer
+          format: int64
           
     ChangeProbingStateRequest:
       type: object
