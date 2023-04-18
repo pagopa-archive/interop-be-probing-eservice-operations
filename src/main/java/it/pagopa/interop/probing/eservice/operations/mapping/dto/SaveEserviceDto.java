@@ -1,49 +1,52 @@
 package it.pagopa.interop.probing.eservice.operations.mapping.dto;
 
+import java.util.UUID;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Data
 @Builder
 public class SaveEserviceDto {
-	
-	@NotBlank
-	@JsonProperty("name")
-	private String name;
 
-	@NotBlank
-	@JsonProperty("producerName")
-	private String producerName;
+  @NotBlank
+  @JsonProperty("name")
+  private String name;
 
-	@NotEmpty
-	@JsonProperty("basePath")
-	private String[] basePath;
+  @NotBlank
+  @JsonProperty("producerName")
+  private String producerName;
 
-	@NotNull
-	@JsonProperty("technology")
-	private EserviceTechnology technology;
+  @NotEmpty
+  @JsonProperty("basePath")
+  private String[] basePath;
 
-	@NotNull
-	@JsonProperty("eserviceId")
-	private String eserviceId;
+  @NotNull
+  @JsonProperty("technology")
+  private EserviceTechnology technology;
 
-	@NotNull
-	@JsonProperty("versionId")
-	private String versionId;
+  @NotNull
+  @JsonProperty("eserviceId")
+  private UUID eserviceId;
 
-	@NotNull
-	@JsonProperty("state")
-	private EserviceState state;
+  @NotNull
+  @JsonProperty("versionId")
+  private UUID versionId;
 
-	@NotBlank
-	@JsonProperty("versionNumber")
-	private String versionNumber;
+  @NotNull
+  @JsonProperty("state")
+  private EserviceInteropState state;
+
+  @NotBlank
+  @JsonProperty("versionNumber")
+  private Integer versionNumber;
 }

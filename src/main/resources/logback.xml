@@ -52,7 +52,7 @@
 	<logger name="org.mapstruct" level="WARN" />
 	<logger name="org.flywaydb" level="WARN" />
 
-	<logger name="it.pagopa.interop.probing.probingapi" level="INFO" />
+	<logger name="it.pagopa.interop.probing.eservice.operations" level="INFO" />
 
 	<root name="application" level="INFO">
 		<appender-ref ref="ASYNC_STDOUT" />

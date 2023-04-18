@@ -29,8 +29,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
@@ -39,7 +40,7 @@ import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.mapper.MapperImpl;
+import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 
 @SpringBootTest
@@ -67,7 +68,7 @@ class EserviceControllerTest {
   private ObjectMapper mapper;
 
   @Autowired
-  MapperImpl mapstructMapper;
+  AbstractMapper mapstructMapper;
 
   @MockBean
   private EserviceService service;
@@ -96,11 +97,12 @@ class EserviceControllerTest {
   @BeforeEach
   void setup() {
     changeEserviceStateRequest =
-        ChangeEserviceStateRequest.builder().eServiceState(EserviceState.INACTIVE).build();
+        ChangeEserviceStateRequest.builder().eServiceState(EserviceInteropState.INACTIVE).build();
 
     updateEserviceStateDto =
         UpdateEserviceStateDto.builder().eserviceId(eServiceId).versionId(versionId)
             .newEServiceState(changeEserviceStateRequest.geteServiceState()).build();
+
 
     changeProbingStateRequest = ChangeProbingStateRequest.builder().probingEnabled(true).build();
 
@@ -117,21 +119,20 @@ class EserviceControllerTest {
         .newPollingEndTime(changeProbingFrequencyRequest.getEndTime()).build();
 
     saveEserviceDto = SaveEserviceDto.builder().basePath(new String[] {"test-1"})
-        .eserviceId(eServiceId.toString()).name("Eservice name test")
-        .producerName("Eservice producer test").technology(EserviceTechnology.fromValue("REST"))
-        .versionId(versionId.toString()).versionNumber("1")
-        .state(EserviceState.fromValue("INACTIVE")).build();
+        .eserviceId(eServiceId).name("Eservice name test").producerName("Eservice producer test")
+        .technology(EserviceTechnology.fromValue("REST")).versionId(versionId).versionNumber(1)
+        .state(EserviceInteropState.fromValue("INACTIVE")).build();
 
     eserviceSaveRequest =
         EserviceSaveRequest.builder().basePath(List.of("test-1")).name("Eservice name test")
             .producerName("Eservice producer test").technology(EserviceTechnology.fromValue("REST"))
-            .versionNumber("1").state(EserviceState.INACTIVE).build();
+            .versionNumber(1).state(EserviceInteropState.INACTIVE).build();
 
     expectedSearchEserviceResponse = SearchEserviceResponse.builder().limit(2).offset(0).build();
 
     SearchEserviceContent eserviceViewDTO =
         SearchEserviceContent.builder().eserviceName("Eservice-Name").versionNumber(1)
-            .producerName("Eservice-Producer-Name").state(EserviceState.ACTIVE).build();
+            .producerName("Eservice-Producer-Name").state(EserviceMonitorState.ONLINE).build();
 
     List<SearchEserviceContent> eservices = List.of(eserviceViewDTO);
     expectedSearchEserviceResponse.setContent(eservices);
@@ -313,11 +314,11 @@ class EserviceControllerTest {
 
   @Test
   @DisplayName("the list of e-services has been retrieved")
-  void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentNotEmpty()
+  void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentEmpty()
       throws Exception {
 
-    Mockito.doReturn(expectedSearchEserviceResponse).when(service).searchEservices(2, 0,
-        "Eservice-Name", "Eservice-Producer-Name", 1, null);
+    Mockito.when(service.searchEservices(2, 0, "Eservice-Name", "Eservice-Producer-Name", 1, null))
+        .thenReturn(expectedSearchEserviceResponse);
 
     MockHttpServletResponse response =
         mockMvc
@@ -333,14 +334,14 @@ class EserviceControllerTest {
     SearchEserviceResponse searchEserviceResponse =
         mapper.readValue(response.getContentAsString(), SearchEserviceResponse.class);
     assertThat(searchEserviceResponse.getContent()).isNotEmpty();
-    assertEquals(searchEserviceResponse, expectedSearchEserviceResponse);
+    assertEquals(expectedSearchEserviceResponse, searchEserviceResponse);
   }
 
   @Test
   @DisplayName("the retrieved list of e-services is empty")
-  void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentEmpty()
+  void testSearchEservice_whenGivenValidSizeAndPageNumber_thenReturnsSearchEserviceResponseWithContentNotEmpty()
       throws Exception {
-    List<EserviceState> listEservice = List.of(EserviceState.ACTIVE);
+    List<EserviceMonitorState> listEservice = List.of(EserviceMonitorState.ONLINE);
     expectedSearchEserviceResponse.setContent(List.of());
     Mockito.doReturn(expectedSearchEserviceResponse).when(service).searchEservices(2, 0,
         "Eservice-Name", "Eservice-Producer-Name", 1, listEservice);
@@ -348,7 +349,7 @@ class EserviceControllerTest {
     MockHttpServletResponse response =
         mockMvc
             .perform(get(apiSearchEserviceUrl).params(getMockRequestParamsUpdateEserviceState("2",
-                "0", "Eservice-Name", "Eservice-Producer-Name", "1", "ACTIVE")))
+                "0", "Eservice-Name", "Eservice-Producer-Name", "1", "ONLINE")))
             .andReturn().getResponse();
 
     assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -386,15 +387,14 @@ class EserviceControllerTest {
   }
 
   private LinkedMultiValueMap<String, String> getMockRequestParamsUpdateEserviceState(String limit,
-      String offset, String eserviceName, String producerName, String versionNumber,
-      String eServiceState) {
+      String offset, String eserviceName, String producerName, String versionNumber, String state) {
     LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
     requestParams.add("offset", offset);
     requestParams.add("limit", limit);
     requestParams.add("eserviceName", eserviceName);
-    requestParams.add("eserviceProducerName", producerName);
+    requestParams.add("producerName", producerName);
     requestParams.add("versionNumber", versionNumber);
-    requestParams.add("eServiceState", eServiceState);
+    requestParams.add("state", state);
     return requestParams;
   }
 

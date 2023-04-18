@@ -16,13 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 
 @DataJpaTest
 class EserviceTest {
-
   @Autowired
   private TestEntityManager testEntityManager;
 
@@ -30,7 +29,7 @@ class EserviceTest {
 
   @BeforeEach
   void setup() {
-    eservice = Eservice.builder().state(EserviceState.INACTIVE).eserviceId(UUID.randomUUID())
+    eservice = Eservice.builder().state(EserviceInteropState.INACTIVE).eserviceId(UUID.randomUUID())
         .versionId(UUID.randomUUID()).eserviceName("e-service1")
         .basePath(new String[] {"test1", "test2"}).technology(EserviceTechnology.REST)
         .producerName("producer1").build();
@@ -218,7 +217,7 @@ class EserviceTest {
   @DisplayName("e-service isn't saved due to e-service id and version id already existing")
   void testEserviceEntity_whenGivenDuplicatedEserviceIdAndVersionId_throwsException() {
     testEntityManager.persistAndFlush(eservice);
-    Eservice duplicateEservice = Eservice.builder().state(EserviceState.INACTIVE)
+    Eservice duplicateEservice = Eservice.builder().state(EserviceInteropState.INACTIVE)
         .eserviceId(UUID.randomUUID()).versionId(UUID.randomUUID()).eserviceName("e-service2")
         .basePath(new String[] {"test1", "test2"}).technology(EserviceTechnology.REST)
         .producerName("producer2").versionId(eservice.versionId()).eserviceId(eservice.eserviceId())

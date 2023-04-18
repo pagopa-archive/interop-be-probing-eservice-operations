@@ -22,7 +22,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.springframework.data.annotation.Version;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -104,7 +104,8 @@ public class Eservice implements Serializable {
   @NotNull
   @Enumerated(EnumType.STRING)
   @Column(name = "state")
-  private EserviceState state;
+  private EserviceInteropState state;
+
 
   @NotNull
   @Column(name = "version_id")
@@ -116,4 +117,5 @@ public class Eservice implements Serializable {
 
   @Column(name = "version_number")
   private Integer versionNumber;
+
 }

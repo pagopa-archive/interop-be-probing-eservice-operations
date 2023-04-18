@@ -1,5 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.integration.model;
 
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -17,15 +18,14 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
-import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingResponse;
+import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingRequest;
 
 @DataJpaTest
-class EserviceProbingResponseTest {
+class EserviceProbingRequestTest {
 
   @Autowired
   private TestEntityManager testEntityManager;
-
-  EserviceProbingResponse probingResponse;
+  EserviceProbingRequest probingRequest;
   Eservice eservice;
 
   @BeforeEach
@@ -34,53 +34,52 @@ class EserviceProbingResponseTest {
         .versionId(UUID.randomUUID()).eserviceName("e-service1")
         .basePath(new String[] {"test1", "test2"}).technology(EserviceTechnology.REST)
         .producerName("producer1").build();
-    probingResponse = EserviceProbingResponse.builder()
-        .responseReceived(OffsetDateTime.now().minusDays(3)).eservice(eservice).build();
+    probingRequest = EserviceProbingRequest.builder()
+        .lastRequest(OffsetDateTime.of(2023, 12, 12, 1, 0, 0, 0, ZoneOffset.UTC)).eservice(eservice)
+        .build();
   }
 
   @Test
-  @DisplayName("Response is correctly saved")
+  @DisplayName("Request is correctly saved")
   void testEserviceProbingResponseEntity_whenCorrectDataIsProvided_returnsEserviceProbingResponse() {
-    eservice = testEntityManager.persistAndFlush(eservice);
-    EserviceProbingResponse probingResponseDuplicate =
-        testEntityManager.persistAndFlush(probingResponse);
+    EserviceProbingRequest probingResponseDuplicate =
+        testEntityManager.persistAndFlush(probingRequest);
     assertEquals(OffsetDateTime.of(2023, 12, 12, 1, 0, 0, 0, ZoneOffset.UTC),
-        probingResponseDuplicate.responseReceived(), "Values should be equal");
+        probingResponseDuplicate.lastRequest(), "Values should be equal");
     assertNotNull(probingResponseDuplicate.eservice(), "Value should not be null");
     assertEquals("e-service1", probingResponseDuplicate.eservice().eserviceName(),
         "Values should be equal");
   }
 
   @Test
-  @DisplayName("Response isn't saved due to null last request timestamp")
-  void testEserviceProbingResponseEntity_whenResponseReceivedIsNull_throwsException() {
-    probingResponse.responseReceived(null);
+  @DisplayName("Request isn't saved due to null last request timestamp")
+  void testEserviceProbingResponseEntity_whenLastRequestIsNull_throwsException() {
+    probingRequest.lastRequest(null);
     assertThrows(ConstraintViolationException.class,
-        () -> testEntityManager.persistAndFlush(probingResponse),
-        "Response should not be saved because response received shouldn't be null");
+        () -> testEntityManager.persistAndFlush(probingRequest),
+        "Request should not be saved because response received shouldn't be null");
   }
 
   @Test
-  @DisplayName("Response isn't saved due to null e-service reference value")
+  @DisplayName("Request isn't saved due to null e-service reference value")
   void testEserviceProbingResponseEntity_whenAssociatedEserviceIsNull_throwsException() {
-    probingResponse.eservice(null);
+    probingRequest.eservice(null);
     assertThrows(PersistenceException.class,
-        () -> testEntityManager.persistAndFlush(probingResponse),
-        "Response should not be saved because e-service reference shouldn't be null");
+        () -> testEntityManager.persistAndFlush(probingRequest),
+        "Request should not be saved because e-service reference shouldn't be null");
   }
 
   @Test
-  @DisplayName("Response isn't saved due to duplicated e-service reference")
+  @DisplayName("Request isn't saved due to duplicated e-service reference")
   void testEserviceProbingResponseEntity_whenEserviceReferenceAlreadyExists_throwsException() {
-    testEntityManager.persistAndFlush(probingResponse);
-    EserviceProbingResponse duplicatedProbingRequest =
-        EserviceProbingResponse.builder()
-            .responseReceived(OffsetDateTime.of(OffsetDateTime.now().getYear(),
-                OffsetDateTime.now().getMonthValue(), OffsetDateTime.now().getDayOfMonth(), 23, 59,
-                0, 0, ZoneOffset.UTC))
-            .eservice(eservice).build();
+    testEntityManager.persistAndFlush(probingRequest);
+    EserviceProbingRequest duplicatedProbingRequest = new EserviceProbingRequest();
+    duplicatedProbingRequest.lastRequest(
+        OffsetDateTime.of(OffsetDateTime.now().getYear(), OffsetDateTime.now().getMonthValue(),
+            OffsetDateTime.now().getDayOfMonth(), 23, 59, 0, 0, ZoneOffset.UTC));
+    duplicatedProbingRequest.eservice(eservice);
     assertThrows(PersistenceException.class,
         () -> testEntityManager.persistAndFlush(duplicatedProbingRequest),
-        "Response should not be saved because duplicated e-service reference shouldn't be allowed");
+        "Request should not be saved because duplicated e-service reference shouldn't be allowed");
   }
 }

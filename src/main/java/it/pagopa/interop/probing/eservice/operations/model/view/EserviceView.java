@@ -2,7 +2,6 @@ package it.pagopa.interop.probing.eservice.operations.model.view;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
-import java.time.OffsetTime;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,14 +13,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Immutable;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceState;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
-import it.pagopa.interop.probing.eservice.operations.model.Eservice;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
 /**
  * The persistent class for the eservices database table.
@@ -34,7 +30,6 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Accessors(chain = true, fluent = true)
 public class EserviceView implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -64,7 +59,7 @@ public class EserviceView implements Serializable {
   @NotNull
   @Enumerated(EnumType.STRING)
   @Column(name = "state")
-  private EserviceState state;
+  private EserviceInteropState state;
 
   @NotNull
   @Column(name = "version_id")
@@ -73,8 +68,13 @@ public class EserviceView implements Serializable {
   @Column(name = "version_number")
   private Integer versionNumber;
 
-  @Column(name = "response_received")
-  @NotNull
+  @Column(name = "response_received", columnDefinition = "timestamp with time zone")
   private OffsetDateTime responseReceived;
+
+  @Column(name = "last_request", columnDefinition = "timestamp with time zone")
+  private OffsetDateTime lastRequest;
+
+  @Column(name = "polling_frequency")
+  private Integer pollingFrequency;
 
 }

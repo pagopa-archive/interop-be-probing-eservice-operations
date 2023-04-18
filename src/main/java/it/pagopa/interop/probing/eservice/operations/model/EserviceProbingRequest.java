@@ -18,22 +18,22 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Entity
-@Table(name = "eservice_probing_responses")
+@Table(name = "eservice_probing_requests")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true, fluent = true)
-public class EserviceProbingResponse implements Serializable {
+public class EserviceProbingRequest implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
   @Id
   private long id;
 
-  @Column(name = "response_received", columnDefinition = "TIMESTAMP WITH TIME ZONE")
+  @Column(name = "last_request", columnDefinition = "TIMESTAMP WITH TIME ZONE")
   @NotNull
-  private OffsetDateTime responseReceived;
+  private OffsetDateTime lastRequest;
 
   @MapsId
   @OneToOne(fetch = FetchType.LAZY)

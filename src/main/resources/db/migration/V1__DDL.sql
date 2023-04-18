@@ -18,4 +18,4 @@ CREATE TABLE ${schema_name}.eservices (
    CONSTRAINT pk_eservices PRIMARY KEY (id)
 );
 
-ALTER TABLE ${schema_name}.eservices ADD CONSTRAINT uc_c5bc699f9ffb5e4293b59694a UNIQUE (eservice_id, version_id);
+ALTER TABLE ${schema_name}.eservices ADD CONSTRAINT UQ_eservices_eservice_id_version_id UNIQUE (eservice_id, version_id);

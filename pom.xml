@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.2</version>
+		<version>2.7.10</version>
 		<relativePath />
 	</parent>
 	<groupId>it.pagopa.interop.probing.eservice.operations</groupId>
@@ -54,6 +54,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -160,7 +164,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/docs/openapi/api-external-interop-v1.yaml
+							<inputSpec>${project.basedir}/docs/openapi/api-eservice-operations-interop-v1.yaml
 							</inputSpec>
 							<generatorName>spring</generatorName>
 							<apiPackage>it.pagopa.interop.probing.eservice.operations.api
