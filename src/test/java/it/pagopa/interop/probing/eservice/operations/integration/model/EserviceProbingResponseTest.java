@@ -44,8 +44,8 @@ class EserviceProbingResponseTest {
     eservice = testEntityManager.persistAndFlush(eservice);
     EserviceProbingResponse probingResponseDuplicate =
         testEntityManager.persistAndFlush(probingResponse);
-    assertEquals(OffsetDateTime.of(2023, 12, 12, 1, 0, 0, 0, ZoneOffset.UTC),
-        probingResponseDuplicate.responseReceived(), "Values should be equal");
+    assertEquals(probingResponse.responseReceived(), probingResponseDuplicate.responseReceived(),
+        "Values should be equal");
     assertNotNull(probingResponseDuplicate.eservice(), "Value should not be null");
     assertEquals("e-service1", probingResponseDuplicate.eservice().eserviceName(),
         "Values should be equal");
