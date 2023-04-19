@@ -3,8 +3,10 @@ package it.pagopa.interop.probing.eservice.operations.exception;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +23,10 @@ import it.pagopa.interop.probing.eservice.operations.util.constant.LoggingPlaceh
 import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice
-@Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
+	@Autowired
+	private Logger log;
 	/**
 	 * Manages the {@link EserviceNotFoundException} creating a new
 	 * {@link ResponseEntity} and sending it to the client with error code 404 and
@@ -34,7 +37,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	 */
 	@ExceptionHandler(EserviceNotFoundException.class)
 	protected ResponseEntity<Problem> handleEserviceNotFoundException(EserviceNotFoundException ex) {
-		log.error(ExceptionUtils.getStackTrace(ex));
+		log.logMessageException(ex);
 		Problem problemResponse = createProblem(HttpStatus.NOT_FOUND, ErrorMessages.ELEMENT_NOT_FOUND,
 				ErrorMessages.ELEMENT_NOT_FOUND);
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemResponse);
@@ -51,7 +54,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
-		log.error(ExceptionUtils.getStackTrace(ex));
+		log.logMessageException(ex);
 		Problem problemResponse = createProblem(HttpStatus.BAD_REQUEST, ErrorMessages.BAD_REQUEST,
 				ErrorMessages.BAD_REQUEST);
 		return ResponseEntity.status(status).body(problemResponse);

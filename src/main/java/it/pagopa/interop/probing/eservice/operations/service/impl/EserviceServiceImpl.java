@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
+
+import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -32,7 +34,6 @@ import it.pagopa.interop.probing.eservice.operations.util.constant.ErrorMessages
 import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @Transactional
 public class EserviceServiceImpl implements EserviceService {
@@ -40,6 +41,8 @@ public class EserviceServiceImpl implements EserviceService {
   @Value("${minutes.ofTollerance.multiplier}")
   private int minOfTolleranceMultiplier;
 
+  @Autowired
+  Logger logger;
   @Autowired
   EnumUtilities enumUtilities;
 
@@ -63,9 +66,8 @@ public class EserviceServiceImpl implements EserviceService {
 
     eServiceToUpdate.state(inputData.getNewEServiceState());
     eserviceRepository.save(eServiceToUpdate);
-
-    log.info("EserviceState of eservice " + eServiceToUpdate.eserviceId() + " with version "
-        + eServiceToUpdate.versionId() + " has been updated into " + eServiceToUpdate.state());
+    logger.logMessageEserviceStateUpdated(eServiceToUpdate.eserviceId(),
+        eServiceToUpdate.versionId(), eServiceToUpdate.state());
   }
 
   @Override
@@ -80,10 +82,8 @@ public class EserviceServiceImpl implements EserviceService {
 
     eServiceToUpdate.probingEnabled(inputData.isProbingEnabled());
     eserviceRepository.save(eServiceToUpdate);
-
-    log.info("EserviceProbingState of eservice " + eServiceToUpdate.eserviceId() + " with version "
-        + eServiceToUpdate.versionId() + " has been updated into "
-        + eServiceToUpdate.probingEnabled());
+    logger.logMessageEserviceProbingStateUpdated(eServiceToUpdate.eserviceId(),
+        eServiceToUpdate.versionId(), eServiceToUpdate.probingEnabled());
   }
 
   @Override
@@ -100,17 +100,16 @@ public class EserviceServiceImpl implements EserviceService {
         .pollingStartTime(inputData.getNewPollingStartTime())
         .pollingEndTime(inputData.getNewPollingEndTime());
     eserviceRepository.save(eServiceToUpdate);
-
-    log.info("Eservice " + eServiceToUpdate.eserviceId() + " with version "
-        + eServiceToUpdate.versionId() + " has been updated with startTime: "
-        + eServiceToUpdate.pollingStartTime() + " and endTime: " + eServiceToUpdate.pollingEndTime()
-        + " and frequency: " + eServiceToUpdate.pollingFrequency());
+    logger.logMessageEservicePollingConfigUpdated(eServiceToUpdate.eserviceId(), eServiceToUpdate.versionId(),
+        eServiceToUpdate.pollingStartTime(), eServiceToUpdate.pollingEndTime(),
+        eServiceToUpdate.pollingFrequency());
   }
 
   @Override
   public SearchEserviceResponse searchEservices(Integer limit, Integer offset, String eserviceName,
       String producerName, Integer versionNumber, List<EserviceMonitorState> state) {
 
+    logger.logMessageSearchEservice(limit, offset, eserviceName, producerName, versionNumber, state);
     Page<EserviceView> eserviceList = null;
     List<String> stateBE = Objects.isNull(state) || state.isEmpty() ? new ArrayList<>()
         : enumUtilities.convertListFromMonitorToPdnd(state);
@@ -152,9 +151,7 @@ public class EserviceServiceImpl implements EserviceService {
         .state(inputData.getState());
 
     Long id = eserviceRepository.save(eServiceToUpdate).id();
-
-    log.info("Service " + eServiceToUpdate.eserviceId() + " with version "
-        + eServiceToUpdate.versionId() + " has been saved.");
+    logger.logMessageEserviceSaved(eServiceToUpdate.eserviceId(), eServiceToUpdate.versionId());
     return id;
   }
 

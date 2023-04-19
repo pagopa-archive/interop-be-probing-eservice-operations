@@ -10,6 +10,8 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,6 +57,8 @@ class EserviceServiceImplTest {
   @Mock
   AbstractMapper mapstructMapper;
 
+  @Mock
+  Logger logger;
   @InjectMocks
   EserviceService service = new EserviceServiceImpl();
 

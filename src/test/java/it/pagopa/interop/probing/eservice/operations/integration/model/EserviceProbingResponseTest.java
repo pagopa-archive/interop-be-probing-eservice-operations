@@ -35,7 +35,7 @@ class EserviceProbingResponseTest {
         .basePath(new String[] {"test1", "test2"}).technology(EserviceTechnology.REST)
         .producerName("producer1").build();
     probingResponse = EserviceProbingResponse.builder()
-        .responseReceived(OffsetDateTime.now().minusDays(3)).eservice(eservice).build();
+        .responseReceived(OffsetDateTime.of(2023, 12, 12, 1, 0, 0, 0, ZoneOffset.UTC)).eservice(eservice).build();
   }
 
   @Test
