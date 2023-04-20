@@ -1,10 +1,7 @@
 package it.pagopa.interop.probing.eservice.operations.exception;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -15,12 +12,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 import it.pagopa.interop.probing.eservice.operations.dtos.Problem;
 import it.pagopa.interop.probing.eservice.operations.dtos.ProblemError;
 import it.pagopa.interop.probing.eservice.operations.util.constant.ErrorMessages;
 import it.pagopa.interop.probing.eservice.operations.util.constant.LoggingPlaceholders;
-import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -31,7 +26,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	 * Manages the {@link EserviceNotFoundException} creating a new
 	 * {@link ResponseEntity} and sending it to the client with error code 404 and
 	 * information about the error
-	 * 
+	 *
 	 * @param ex The intercepted exception
 	 * @return A new {@link ResponseEntity} with {@link Problem} body
 	 */
@@ -47,7 +42,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	 * Manages the {@link HttpMessageNotReadableException} creating a new
 	 * {@link ResponseEntity} and sending it to the client with error code 400 and
 	 * information about the error
-	 * 
+	 *
 	 * @param ex The intercepted exception
 	 * @return A new {@link ResponseEntity} with {@link Problem} body
 	 */
@@ -62,24 +57,23 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
 	/**
 	 * Creates an instance of type {@link Problem} following the RFC 7807 standard
-	 * 
+	 *
 	 * @param responseCode  The response error code
 	 * @param titleMessage  The response title message
 	 * @param detailMessage The response detail error message
 	 * @return A new instance of {@link Problem}
 	 */
 	private Problem createProblem(HttpStatus responseCode, String titleMessage, String detailMessage) {
-		Problem genericError = new Problem();
-		genericError.setStatus(responseCode.value());
-		genericError.setTitle(titleMessage);
-		genericError.setDetail(detailMessage);
-		genericError.setTraceId(MDC.get(LoggingPlaceholders.TRACE_ID_PLACEHOLDER));
-		ProblemError errorDetails = new ProblemError();
-		errorDetails.setCode(responseCode.toString());
-		errorDetails.setDetail(detailMessage);
-		List<ProblemError> errorDetailsList = new ArrayList<>();
-		errorDetailsList.add(errorDetails);
-		genericError.setErrors(errorDetailsList);
-		return genericError;
+		ProblemError errorDetails = ProblemError.builder()
+				.code(responseCode.toString())
+				.detail(detailMessage)
+				.build();
+		return Problem.builder()
+				.status(responseCode.value())
+				.title(titleMessage)
+				.detail(detailMessage)
+				.traceId(MDC.get(LoggingPlaceholders.TRACE_ID_PLACEHOLDER))
+				.errors(List.of(errorDetails))
+				.build();
 	}
 }
