@@ -18,12 +18,12 @@ public class EserviceViewSpecs {
 
   public static Specification<EserviceView> eserviceNameEquals(String eserviceName) {
     return ((root, query, builder) -> Objects.isNull(eserviceName) ? builder.conjunction()
-        : builder.equal(root.get("eserviceName"), eserviceName));
+        : builder.equal(builder.upper(root.get("eserviceName")), eserviceName.toUpperCase()));
   }
 
   public static Specification<EserviceView> producerNameEquals(String producerName) {
     return (root, query, builder) -> Objects.isNull(producerName) ? builder.conjunction()
-        : builder.equal(root.get("producerName"), producerName);
+        : builder.equal(builder.upper(root.get("producerName")), producerName.toUpperCase());
   }
 
   public static Specification<EserviceView> versionNumberEquals(Integer version) {

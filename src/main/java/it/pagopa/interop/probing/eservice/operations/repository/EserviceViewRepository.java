@@ -15,8 +15,8 @@ import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConsta
 public interface EserviceViewRepository extends JpaRepository<EserviceView, Long> {
 
   static final String COMMON_SEARCH_FIELD_WITH_NO_ND_CONDITION =
-      "WHERE ((:eserviceName is null or e.eservice_name= :eserviceName)"
-          + " AND (:producerName is null or e.producer_name= :producerName)"
+      "WHERE ((:eserviceName is null or UPPER(e.eservice_name)= UPPER(:eserviceName))"
+          + " AND (:producerName is null or UPPER(e.producer_name)= UPPER(:producerName))"
           + " AND (:versionNumber is null or e.version_number= :versionNumber))"
           + " AND ((e.state in (:stateList) AND (e.probing_enabled=true "
           + " AND e.last_request is not null "
