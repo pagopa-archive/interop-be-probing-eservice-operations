@@ -58,8 +58,8 @@ public class EserviceServiceImpl implements EserviceService {
   EserviceViewRepository eserviceViewRepository;
   @Autowired
   AbstractMapper mapper;
-  @Value("${minutes.ofTollerance.multiplier}")
-  private int minOfTolleranceMultiplier;
+  @Value("${tolerance.multiplier.inMinutes}")
+  private int toleranceMultiplierInMinutes;
   @PersistenceContext
   private EntityManager entityManager;
 
@@ -135,19 +135,19 @@ public class EserviceServiceImpl implements EserviceService {
               Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()));
     } else if (state.contains(EserviceMonitorState.N_D)) {
       eserviceList = eserviceViewRepository.findAllWithNDState(eserviceName, producerName,
-          versionNumber, stateBE, minOfTolleranceMultiplier, new OffsetLimitPageable(offset, limit,
-              Sort.by(ProjectConstants.ESERVICE_NAME_COLUMN_NAME).ascending()));
+          versionNumber, stateBE, toleranceMultiplierInMinutes, new OffsetLimitPageable(offset,
+              limit, Sort.by(ProjectConstants.ESERVICE_NAME_COLUMN_NAME).ascending()));
     } else {
       eserviceList = eserviceViewRepository.findAllWithoutNDState(eserviceName, producerName,
-          versionNumber, stateBE, minOfTolleranceMultiplier, new OffsetLimitPageable(offset, limit,
-              Sort.by(ProjectConstants.ESERVICE_NAME_COLUMN_NAME).ascending()));
+          versionNumber, stateBE, toleranceMultiplierInMinutes, new OffsetLimitPageable(offset,
+              limit, Sort.by(ProjectConstants.ESERVICE_NAME_COLUMN_NAME).ascending()));
     }
 
     List<EserviceContent> list = eserviceList.getContent().stream()
         .map(e -> mapper.toSearchEserviceContent(e)).collect(Collectors.toList());
 
-    return new SearchEserviceResponse().content(list).offset(eserviceList.getNumber())
-        .limit(eserviceList.getSize()).totalElements(eserviceList.getTotalElements());
+    return SearchEserviceResponse.builder().content(list).offset(eserviceList.getNumber())
+        .limit(eserviceList.getSize()).totalElements(eserviceList.getTotalElements()).build();
   }
 
   @Override
@@ -197,10 +197,12 @@ public class EserviceServiceImpl implements EserviceService {
     query.where(predicate);
     TypedQuery<EserviceContentCriteria> q = entityManager.createQuery(query);
 
+
     List<EserviceContentCriteria> pollingActiveEserviceContent =
         q.setFirstResult(Math.toIntExact(offset)).setMaxResults(limit).getResultList();
 
-    return new PollingEserviceResponse()
-        .content(pollingActiveEserviceContent.stream().map(c -> (EserviceContent) c).toList());
+    return PollingEserviceResponse.builder()
+        .content(pollingActiveEserviceContent.stream().map(c -> (EserviceContent) c).toList())
+        .build();
   }
 }

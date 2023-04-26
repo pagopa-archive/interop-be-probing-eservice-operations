@@ -1,8 +1,5 @@
 package it.pagopa.interop.probing.eservice.operations.util;
 
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
-import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -11,12 +8,15 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
+import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 
 @Component
 public class EnumUtilities {
 
-  @Value("${minutes.ofTollerance.multiplier}")
-  private int minOfTolleranceMultiplier;
+  @Value("${tolerance.multiplier.inMinutes}")
+  private int toleranceMultiplierInMinutes;
 
   public static String fromMonitorToPdndState(EserviceMonitorState state) {
     return switch (state) {
@@ -55,7 +55,7 @@ public class EnumUtilities {
     return Duration
         .between(view.getLastRequest().withOffsetSameInstant(ZoneOffset.UTC),
             OffsetDateTime.now(ZoneOffset.UTC))
-        .toMinutes() > ((long) view.getPollingFrequency() * minOfTolleranceMultiplier);
+        .toMinutes() > ((long) view.getPollingFrequency() * toleranceMultiplierInMinutes);
   }
 
 }
