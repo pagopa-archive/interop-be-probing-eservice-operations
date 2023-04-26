@@ -1,20 +1,29 @@
 package it.pagopa.interop.probing.eservice.operations.service.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
-import it.pagopa.interop.probing.eservice.operations.dtos.PollingActiveEserviceContent;
-import it.pagopa.interop.probing.eservice.operations.dtos.PollingActiveEserviceResponse;
-import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
+import it.pagopa.interop.probing.eservice.operations.dtos.PollingEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
@@ -23,7 +32,9 @@ import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceP
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
+import it.pagopa.interop.probing.eservice.operations.model.EserviceContentCriteria;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
+import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView_;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.specs.EserviceViewSpecs;
@@ -39,20 +50,18 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class EserviceServiceImpl implements EserviceService {
 
-  @Value("${minutes.ofTollerance.multiplier}")
-  private int minOfTolleranceMultiplier;
-
   @Autowired
   EnumUtilities enumUtilities;
-
   @Autowired
   EserviceRepository eserviceRepository;
-
   @Autowired
   EserviceViewRepository eserviceViewRepository;
-
   @Autowired
   AbstractMapper mapper;
+  @Value("${minutes.ofTollerance.multiplier}")
+  private int minOfTolleranceMultiplier;
+  @PersistenceContext
+  private EntityManager entityManager;
 
   @Override
   public void updateEserviceState(UpdateEserviceStateDto inputData)
@@ -134,11 +143,11 @@ public class EserviceServiceImpl implements EserviceService {
               Sort.by(ProjectConstants.ESERVICE_NAME_COLUMN_NAME).ascending()));
     }
 
-    List<SearchEserviceContent> lista = eserviceList.getContent().stream()
+    List<EserviceContent> list = eserviceList.getContent().stream()
         .map(e -> mapper.toSearchEserviceContent(e)).collect(Collectors.toList());
 
-    return SearchEserviceResponse.builder().content(lista).offset(eserviceList.getNumber())
-        .limit(eserviceList.getSize()).totalElements(eserviceList.getTotalElements()).build();
+    return new SearchEserviceResponse().content(list).offset(eserviceList.getNumber())
+        .limit(eserviceList.getSize()).totalElements(eserviceList.getTotalElements());
   }
 
   @Override
@@ -161,16 +170,37 @@ public class EserviceServiceImpl implements EserviceService {
   }
 
   @Override
-  public PollingActiveEserviceResponse getEservicesActive(Integer limit, Integer offset) {
-    Page<EserviceView> pollingActiveEserviceResponseList =
-        eserviceViewRepository.findAll(new OffsetLimitPageable(offset, limit,
-            Sort.by(ProjectConstants.ESERVICE_NAME_COLUMN_NAME)));
+  public PollingEserviceResponse getEservicesReadyForPolling(Integer limit, Integer offset) {
 
-    List<PollingActiveEserviceContent> list = pollingActiveEserviceResponseList.stream()
-        .map(e -> mapper.toPollingActiveEserviceContent(e)).collect(Collectors.toList());
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<EserviceContentCriteria> query = cb.createQuery(EserviceContentCriteria.class);
+    Root<EserviceView> root = query.from(EserviceView.class);
 
-    return PollingActiveEserviceResponse.builder().content(list)
-        .totalElements(pollingActiveEserviceResponseList.getTotalElements()).build();
+    query.distinct(true).multiselect(root.get(EserviceView_.ID), root.get(EserviceView_.TECHNOLOGY),
+        root.get(EserviceView_.BASE_PATH));
+
+    Expression<Timestamp> makeInterval = cb.function("make_interval", Timestamp.class,
+        root.get(EserviceView_.LAST_REQUEST), root.get(EserviceView_.POLLING_FREQUENCY));
+
+    Expression<Boolean> compareTimestampInterval =
+        cb.function("compare_timestamp_interval", Boolean.TYPE,
+            root.get(EserviceView_.POLLING_START_TIME), root.get(EserviceView_.POLLING_END_TIME));
+
+    Predicate predicate =
+        cb.and(cb.equal(root.get(EserviceView_.STATE), EserviceInteropState.ACTIVE),
+            cb.isTrue(root.get(EserviceView_.PROBING_ENABLED)),
+            cb.lessThanOrEqualTo(makeInterval, cb.currentTimestamp()),
+            cb.lessThanOrEqualTo(root.get(EserviceView_.RESPONSE_RECEIVED),
+                root.get(EserviceView_.LAST_REQUEST)),
+            cb.isTrue(compareTimestampInterval));
+
+    query.where(predicate);
+    TypedQuery<EserviceContentCriteria> q = entityManager.createQuery(query);
+
+    List<EserviceContentCriteria> pollingActiveEserviceContent =
+        q.setFirstResult(Math.toIntExact(offset)).setMaxResults(limit).getResultList();
+
+    return new PollingEserviceResponse()
+        .content(pollingActiveEserviceContent.stream().map(c -> (EserviceContent) c).toList());
   }
-
 }

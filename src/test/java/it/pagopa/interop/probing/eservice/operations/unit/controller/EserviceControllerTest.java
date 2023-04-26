@@ -29,11 +29,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
-import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
@@ -130,11 +130,11 @@ class EserviceControllerTest {
 
     expectedSearchEserviceResponse = SearchEserviceResponse.builder().limit(2).offset(0).build();
 
-    SearchEserviceContent eserviceViewDTO =
-        SearchEserviceContent.builder().eserviceName("Eservice-Name").versionNumber(1)
+    EserviceContent eserviceViewDTO =
+        EserviceContent.builder().eserviceName("Eservice-Name").versionNumber(1)
             .producerName("Eservice-Producer-Name").state(EserviceMonitorState.ONLINE).build();
 
-    List<SearchEserviceContent> eservices = List.of(eserviceViewDTO);
+    List<EserviceContent> eservices = List.of(eserviceViewDTO);
     expectedSearchEserviceResponse.setContent(eservices);
   }
 
@@ -189,7 +189,7 @@ class EserviceControllerTest {
   }
 
   @Test
-  @DisplayName("e-service state can't be updated because e-service versione id request parameter is missing")
+  @DisplayName("e-service state can't be updated because e-service versione id request parameter ismissing")
   void testUpdateEserviceState_whenVersionIdParameterIsMissing_thenThrows404Exception()
       throws Exception {
     RequestBuilder requestBuilder =
@@ -275,7 +275,7 @@ class EserviceControllerTest {
   }
 
   @Test
-  @DisplayName("e-service frequency can't be updated because e-service id request parameter is missing")
+  @DisplayName("e-service frequency can't be updated because e-service id request parameter ismissing")
   void testUpdateEserviceFrequencyDto_whenEserviceIdParameterIsMissing_thenThrows404Exception()
       throws Exception {
     RequestBuilder requestBuilder =
@@ -288,7 +288,8 @@ class EserviceControllerTest {
   }
 
   @Test
-  @DisplayName("e-service frequency can't be updated because e-service versione id request parameter is missing")
+  @DisplayName("e-service frequency can't be updated because e-service versione id requestparameter is missing")
+
   void testUpdateEserviceFrequencyDto_whenVersionIdParameterIsMissing_thenThrows404Exception()
       throws Exception {
     RequestBuilder requestBuilder =

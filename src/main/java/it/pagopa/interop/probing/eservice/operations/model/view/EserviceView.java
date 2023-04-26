@@ -23,11 +23,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
-/**
- * The persistent class for the eservices database table.
- *
- */
+/*** The persistent class for the eservices database table. **/
+
 @Entity
 @Immutable
 @Table(name = "eservice_view")
@@ -36,6 +35,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @TypeDef(name = "basePathType", typeClass = CustomStringArrayType.class)
+@Accessors(chain = true)
 public class EserviceView implements Serializable {
 
   private static final long serialVersionUID = 1L;

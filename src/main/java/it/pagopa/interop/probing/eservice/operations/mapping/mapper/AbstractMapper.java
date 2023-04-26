@@ -7,10 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
-import it.pagopa.interop.probing.eservice.operations.dtos.PollingActiveEserviceContent;
-import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
@@ -41,12 +40,10 @@ public abstract class AbstractMapper {
       UUID versionId, EserviceSaveRequest eserviceSaveRequest);
 
   @Mapping(target = "state", expression = "java(mapStatus(eserviceViewEntity))")
-  public abstract SearchEserviceContent toSearchEserviceContent(EserviceView eserviceViewEntity);
+  public abstract EserviceContent toSearchEserviceContent(EserviceView eserviceViewEntity);
 
   EserviceMonitorState mapStatus(EserviceView eserviceViewEntity) {
     return enumUtilities.fromPdndToMonitorState(eserviceViewEntity);
   }
 
-  public abstract PollingActiveEserviceContent toPollingActiveEserviceContent(
-      EserviceView eserviceViewEntity);
 }

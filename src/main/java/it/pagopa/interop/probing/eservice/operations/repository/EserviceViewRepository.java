@@ -53,9 +53,4 @@ public interface EserviceViewRepository extends JpaRepository<EserviceView, Long
       @Param(ProjectConstants.STATE_LIST_PARAM) List<String> stateList,
       @Param(ProjectConstants.MIN_OF_TOLLERANCE_PARAM) int minOfTolleranceMultiplier,
       Pageable pageable);
-
-  @Query(
-      value = "SELECT e.* FROM eservice_view e WHERE (e.state = 'ACTIVE' AND e.probing_enabled=true AND (e.last_request + make_interval(mins=>e.polling_frequency)<= CURRENT_TIMESTAMP AND e.response_received >= e.last_request AND (CURRENT_TIME between e.polling_start_time and e.polling_end_time)))",
-      nativeQuery = true)
-  Page<EserviceView> findAll(Pageable pageable);
 }

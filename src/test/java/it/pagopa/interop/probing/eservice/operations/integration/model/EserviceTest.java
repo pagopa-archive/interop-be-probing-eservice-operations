@@ -178,7 +178,7 @@ class EserviceTest {
   }
 
   @Test
-  @DisplayName("e-service isn't saved due to null  producer name value")
+  @DisplayName("e-service isn't saved due to null producer name value")
   void testEserviceEntity_whenProducerNameIsNull_throwsException() {
     eservice.producerName(null);
     assertThrows(ConstraintViolationException.class,

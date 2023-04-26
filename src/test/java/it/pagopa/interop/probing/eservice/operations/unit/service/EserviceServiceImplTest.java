@@ -20,11 +20,11 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
-import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
@@ -192,7 +192,7 @@ class EserviceServiceImplTest {
         .thenReturn(new PageImpl<EserviceView>(List.of()));
 
     Mockito.when(mapstructMapper.toSearchEserviceContent(Mockito.any()))
-        .thenReturn(SearchEserviceContent.builder().build());
+        .thenReturn(EserviceContent.builder().build());
 
     SearchEserviceResponse searchEserviceResponse =
         service.searchEservices(2, 0, "Eservice-Name", "Eservice-Producer-Name", 1, null);
@@ -212,7 +212,7 @@ class EserviceServiceImplTest {
         .thenReturn(List.of(EserviceInteropState.INACTIVE.getValue()));
 
     Mockito.when(mapstructMapper.toSearchEserviceContent(Mockito.any()))
-        .thenReturn(SearchEserviceContent.builder().build());
+        .thenReturn(EserviceContent.builder().build());
 
     SearchEserviceResponse searchEserviceResponse = service.searchEservices(2, 0, "Eservice-Name",
         "Eservice-Producer-Name", 1, List.of(EserviceMonitorState.N_D));
@@ -221,7 +221,8 @@ class EserviceServiceImplTest {
   }
 
   @Test
-  @DisplayName("given status online as parameter, service returns SearchEserviceResponse object with content empty")
+  @DisplayName("given status online as parameter, service returns SearchEserviceResponse objectwith content empty")
+
   void testSearchEservice_whenGivenValidSizeAndPageNumberAndStatusONLINE_thenReturnsSearchEserviceResponseWithContentEmpty() {
     Mockito.when(eserviceViewRepository.findAllWithoutNDState(eq("Eservice-Name"),
         eq("Eservice-Producer-Name"), eq(1), eq(List.of(EserviceInteropState.ACTIVE.getValue())),
@@ -229,7 +230,7 @@ class EserviceServiceImplTest {
         .thenReturn(new PageImpl<EserviceView>(List.of()));
 
     Mockito.when(mapstructMapper.toSearchEserviceContent(Mockito.any()))
-        .thenReturn(SearchEserviceContent.builder().build());
+        .thenReturn(EserviceContent.builder().build());
 
     Mockito.when(enumUtilities.convertListFromMonitorToPdnd(ArgumentMatchers.any()))
         .thenReturn(List.of(EserviceInteropState.ACTIVE.getValue()));

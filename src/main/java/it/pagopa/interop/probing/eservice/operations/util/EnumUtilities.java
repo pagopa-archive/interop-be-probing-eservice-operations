@@ -1,5 +1,8 @@
 package it.pagopa.interop.probing.eservice.operations.util;
 
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
+import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -8,9 +11,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
-import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 
 @Component
 public class EnumUtilities {
@@ -19,14 +19,11 @@ public class EnumUtilities {
   private int minOfTolleranceMultiplier;
 
   public static String fromMonitorToPdndState(EserviceMonitorState state) {
-    switch (state) {
-      case ONLINE:
-        return EserviceInteropState.ACTIVE.getValue();
-      case OFFLINE:
-        return EserviceInteropState.INACTIVE.getValue();
-      default:
-        return null;
-    }
+    return switch (state) {
+      case ONLINE -> EserviceInteropState.ACTIVE.getValue();
+      case OFFLINE -> EserviceInteropState.INACTIVE.getValue();
+      default -> null;
+    };
   }
 
   public List<String> convertListFromMonitorToPdnd(List<EserviceMonitorState> statusList) {
@@ -35,14 +32,10 @@ public class EnumUtilities {
   }
 
   public EserviceMonitorState fromPdndToMonitorState(EserviceView view) {
-    switch (view.getState()) {
-      case ACTIVE:
-        return checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.ONLINE;
-      case INACTIVE:
-        return checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.OFFLINE;
-      default:
-        return EserviceMonitorState.N_D;
-    }
+    return switch (view.getState()) {
+      case ACTIVE -> checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.ONLINE;
+      case INACTIVE -> checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.OFFLINE;
+    };
   }
 
   public boolean checkND(EserviceView view) {
@@ -62,7 +55,7 @@ public class EnumUtilities {
     return Duration
         .between(view.getLastRequest().withOffsetSameInstant(ZoneOffset.UTC),
             OffsetDateTime.now(ZoneOffset.UTC))
-        .toMinutes() > (view.getPollingFrequency() * minOfTolleranceMultiplier);
+        .toMinutes() > ((long) view.getPollingFrequency() * minOfTolleranceMultiplier);
   }
 
 }
