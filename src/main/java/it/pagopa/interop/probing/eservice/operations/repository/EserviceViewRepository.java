@@ -20,7 +20,7 @@ public interface EserviceViewRepository extends JpaRepository<EserviceView, Long
           + " AND (:versionNumber is null or e.version_number= :versionNumber))"
           + " AND ((e.state in (:stateList) AND (e.probing_enabled=true "
           + " AND e.last_request is not null "
-          + " AND (EXTRACT(MINUTE from CURRENT_TIMESTAMP - e.last_request) < (e.polling_frequency*:minOfTolleranceMultiplier)"
+          + " AND (EXTRACT(MINUTE from CURRENT_TIMESTAMP - e.last_request) < (e.polling_frequency*:toleranceMultiplierInMinutes)"
           + " OR e.response_received > e.last_request) AND e.response_received is not null)"
           + "  )";
 
@@ -28,7 +28,7 @@ public interface EserviceViewRepository extends JpaRepository<EserviceView, Long
 
   static final String ND_WHERE_CONDITION = " OR (e.probing_enabled=false"
       + " OR e.last_request is null"
-      + " OR (EXTRACT(MINUTE from CURRENT_TIMESTAMP - e.last_request) > (e.polling_frequency*:minOfTolleranceMultiplier)"
+      + " OR (EXTRACT(MINUTE from CURRENT_TIMESTAMP - e.last_request) > (e.polling_frequency*:toleranceMultiplierInMinutes)"
       + " AND e.response_received < e.last_request)" + " OR e.response_received is null )) ";
 
   static final String BASE_QUERY_WHERE_STATE =

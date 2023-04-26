@@ -58,8 +58,9 @@ public class EserviceServiceImpl implements EserviceService {
   EserviceViewRepository eserviceViewRepository;
   @Autowired
   AbstractMapper mapper;
-  @Value("${tolerance.multiplier.inMinutes}")
+  @Value("${toleranceMultiplierInMinutes}")
   private int toleranceMultiplierInMinutes;
+
   @PersistenceContext
   private EntityManager entityManager;
 

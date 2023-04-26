@@ -11,24 +11,26 @@ import org.springframework.stereotype.Component;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
+import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;
 
 @Component
 public class EnumUtilities {
 
-  @Value("${tolerance.multiplier.inMinutes}")
+  @Value("${toleranceMultiplierInMinutes}")
   private int toleranceMultiplierInMinutes;
 
   public static String fromMonitorToPdndState(EserviceMonitorState state) {
     return switch (state) {
       case ONLINE -> EserviceInteropState.ACTIVE.getValue();
       case OFFLINE -> EserviceInteropState.INACTIVE.getValue();
-      default -> null;
+      case N_D -> ProjectConstants.N_D;
+      default -> throw new IllegalArgumentException("Invalid state {}= " + state);
     };
   }
 
   public List<String> convertListFromMonitorToPdnd(List<EserviceMonitorState> statusList) {
     return statusList.stream().map(EnumUtilities::fromMonitorToPdndState).filter(Objects::nonNull)
-        .collect(Collectors.toList());
+        .filter(str -> !str.equals(ProjectConstants.N_D)).collect(Collectors.toList());
   }
 
   public EserviceMonitorState fromPdndToMonitorState(EserviceView view) {
