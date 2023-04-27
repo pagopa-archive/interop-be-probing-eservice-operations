@@ -199,8 +199,8 @@ public class EserviceServiceImpl implements EserviceService {
         cb.and(cb.equal(root.get(EserviceView_.STATE), EserviceInteropState.ACTIVE),
             cb.isTrue(root.get(EserviceView_.PROBING_ENABLED)),
             cb.lessThanOrEqualTo(makeInterval, cb.currentTimestamp()),
-            cb.lessThanOrEqualTo(root.get(EserviceView_.RESPONSE_RECEIVED),
-                root.get(EserviceView_.LAST_REQUEST)),
+            cb.lessThanOrEqualTo(root.get(EserviceView_.LAST_REQUEST),
+                root.get(EserviceView_.RESPONSE_RECEIVED)),
             cb.isTrue(compareTimestampInterval));
 
     query.where(predicate);
