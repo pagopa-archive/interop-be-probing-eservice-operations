@@ -12,13 +12,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView_;
 import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;
@@ -28,9 +26,6 @@ public class EserviceViewQueryBuilder {
 
   @PersistenceContext
   private EntityManager entityManager;
-
-  @Autowired
-  AbstractMapper mapper;
 
   public Page<EserviceView> findAllWithoutNDState(Integer limit, Integer offset,
       String eserviceName, String producerName, Integer versionNumber, List<String> stateList,

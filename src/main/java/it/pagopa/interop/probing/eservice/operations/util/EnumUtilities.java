@@ -37,6 +37,7 @@ public class EnumUtilities {
     return switch (view.getState()) {
       case ACTIVE -> checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.ONLINE;
       case INACTIVE -> checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.OFFLINE;
+      default -> throw new IllegalArgumentException("Invalid state {}= " + view.getState());
     };
   }
 
@@ -57,7 +58,7 @@ public class EnumUtilities {
     return Duration
         .between(view.getLastRequest().withOffsetSameInstant(ZoneOffset.UTC),
             OffsetDateTime.now(ZoneOffset.UTC))
-        .toMinutes() > ((long) view.getPollingFrequency() * toleranceMultiplierInMinutes);
+        .toMinutes() > (Long.valueOf(view.getPollingFrequency() * toleranceMultiplierInMinutes));
   }
 
 }

@@ -18,6 +18,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
@@ -52,16 +54,19 @@ import lombok.extern.slf4j.Slf4j;
 public class EserviceServiceImpl implements EserviceService {
 
   @Autowired
-  EnumUtilities enumUtilities;
-  @Autowired
-  EserviceRepository eserviceRepository;
-  @Autowired
-  EserviceViewRepository eserviceViewRepository;
-  @Autowired
-  EserviceViewQueryBuilder eserviceViewQueryBuilder;
+  private EnumUtilities enumUtilities;
 
   @Autowired
-  AbstractMapper mapper;
+  private EserviceRepository eserviceRepository;
+
+  @Autowired
+  private EserviceViewRepository eserviceViewRepository;
+
+  @Autowired
+  private EserviceViewQueryBuilder eserviceViewQueryBuilder;
+
+  @Autowired
+  private AbstractMapper mapper;
 
   @Value("${toleranceMultiplierInMinutes}")
   private int toleranceMultiplierInMinutes;
@@ -201,11 +206,15 @@ public class EserviceServiceImpl implements EserviceService {
     query.where(predicate);
     TypedQuery<EserviceContentCriteria> q = entityManager.createQuery(query);
 
-    List<EserviceContentCriteria> pollingActiveEserviceContent =
-        q.setFirstResult(Math.toIntExact(offset)).setMaxResults(limit).getResultList();
+    List<EserviceContentCriteria> pollingActiveEserviceContent = q.getResultList();
+
+    Page<EserviceContentCriteria> pollingActiveEservicePagable =
+        new PageImpl<>(pollingActiveEserviceContent.stream().collect(Collectors.toList()),
+            PageRequest.of(offset, limit, Sort.by(ProjectConstants.ID_FIELD).ascending()),
+            pollingActiveEserviceContent.size());
 
     return PollingEserviceResponse.builder()
-        .content(pollingActiveEserviceContent.stream().map(c -> (EserviceContent) c).toList())
-        .build();
+        .content(pollingActiveEservicePagable.stream().map(c -> (EserviceContent) c).toList())
+        .totalElements(pollingActiveEservicePagable.getTotalElements()).build();
   }
 }

@@ -21,10 +21,10 @@ import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 public class EserviceController implements EservicesApi {
 
   @Autowired
-  EserviceService eserviceService;
+  private EserviceService eserviceService;
 
   @Autowired
-  AbstractMapper mapper;
+  private AbstractMapper mapper;
 
   @Override
   public ResponseEntity<Void> updateEserviceFrequency(UUID eserviceId, UUID versionId,
