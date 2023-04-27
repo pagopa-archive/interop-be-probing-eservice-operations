@@ -37,6 +37,7 @@ import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView_;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
+import it.pagopa.interop.probing.eservice.operations.repository.query.builder.EserviceViewQueryBuilder;
 import it.pagopa.interop.probing.eservice.operations.repository.specs.EserviceViewSpecs;
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 import it.pagopa.interop.probing.eservice.operations.util.EnumUtilities;
@@ -57,7 +58,11 @@ public class EserviceServiceImpl implements EserviceService {
   @Autowired
   EserviceViewRepository eserviceViewRepository;
   @Autowired
+  EserviceViewQueryBuilder eserviceViewQueryBuilder;
+
+  @Autowired
   AbstractMapper mapper;
+
   @Value("${toleranceMultiplierInMinutes}")
   private int toleranceMultiplierInMinutes;
 
@@ -135,17 +140,15 @@ public class EserviceServiceImpl implements EserviceService {
           new OffsetLimitPageable(offset, limit,
               Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()));
     } else if (state.contains(EserviceMonitorState.N_D)) {
-      eserviceList = eserviceViewRepository.findAllWithNDState(eserviceName, producerName,
-          versionNumber, stateBE, toleranceMultiplierInMinutes, new OffsetLimitPageable(offset,
-              limit, Sort.by(ProjectConstants.ESERVICE_NAME_COLUMN_NAME).ascending()));
+      eserviceList = eserviceViewQueryBuilder.findAllWithNDState(limit, offset, eserviceName,
+          producerName, versionNumber, stateBE, toleranceMultiplierInMinutes);
     } else {
-      eserviceList = eserviceViewRepository.findAllWithoutNDState(eserviceName, producerName,
-          versionNumber, stateBE, toleranceMultiplierInMinutes, new OffsetLimitPageable(offset,
-              limit, Sort.by(ProjectConstants.ESERVICE_NAME_COLUMN_NAME).ascending()));
+      eserviceList = eserviceViewQueryBuilder.findAllWithoutNDState(limit, offset, eserviceName,
+          producerName, versionNumber, stateBE, toleranceMultiplierInMinutes);
     }
 
-    List<EserviceContent> list = eserviceList.getContent().stream()
-        .map(e -> mapper.toSearchEserviceContent(e)).collect(Collectors.toList());
+    List<EserviceContent> list = eserviceList.stream().map(e -> mapper.toSearchEserviceContent(e))
+        .collect(Collectors.toList());
 
     return SearchEserviceResponse.builder().content(list).offset(eserviceList.getNumber())
         .limit(eserviceList.getSize()).totalElements(eserviceList.getTotalElements()).build();
@@ -197,7 +200,6 @@ public class EserviceServiceImpl implements EserviceService {
 
     query.where(predicate);
     TypedQuery<EserviceContentCriteria> q = entityManager.createQuery(query);
-
 
     List<EserviceContentCriteria> pollingActiveEserviceContent =
         q.setFirstResult(Math.toIntExact(offset)).setMaxResults(limit).getResultList();
