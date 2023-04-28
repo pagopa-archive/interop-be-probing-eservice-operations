@@ -11,38 +11,34 @@ import org.springframework.stereotype.Component;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
+import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;
 
 @Component
 public class EnumUtilities {
 
-  @Value("${minutes.ofTollerance.multiplier}")
-  private int minOfTolleranceMultiplier;
+  @Value("${toleranceMultiplierInMinutes}")
+  private int toleranceMultiplierInMinutes;
 
   public static String fromMonitorToPdndState(EserviceMonitorState state) {
-    switch (state) {
-      case ONLINE:
-        return EserviceInteropState.ACTIVE.getValue();
-      case OFFLINE:
-        return EserviceInteropState.INACTIVE.getValue();
-      default:
-        return null;
-    }
+    return switch (state) {
+      case ONLINE -> EserviceInteropState.ACTIVE.getValue();
+      case OFFLINE -> EserviceInteropState.INACTIVE.getValue();
+      case N_D -> ProjectConstants.N_D;
+      default -> throw new IllegalArgumentException("Invalid state {}= " + state);
+    };
   }
 
   public List<String> convertListFromMonitorToPdnd(List<EserviceMonitorState> statusList) {
     return statusList.stream().map(EnumUtilities::fromMonitorToPdndState).filter(Objects::nonNull)
-        .collect(Collectors.toList());
+        .filter(str -> !str.equals(ProjectConstants.N_D)).collect(Collectors.toList());
   }
 
   public EserviceMonitorState fromPdndToMonitorState(EserviceView view) {
-    switch (view.getState()) {
-      case ACTIVE:
-        return checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.ONLINE;
-      case INACTIVE:
-        return checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.OFFLINE;
-      default:
-        return EserviceMonitorState.N_D;
-    }
+    return switch (view.getState()) {
+      case ACTIVE -> checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.ONLINE;
+      case INACTIVE -> checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.OFFLINE;
+      default -> throw new IllegalArgumentException("Invalid state {}= " + view.getState());
+    };
   }
 
   public boolean checkND(EserviceView view) {
@@ -62,7 +58,7 @@ public class EnumUtilities {
     return Duration
         .between(view.getLastRequest().withOffsetSameInstant(ZoneOffset.UTC),
             OffsetDateTime.now(ZoneOffset.UTC))
-        .toMinutes() > (view.getPollingFrequency() * minOfTolleranceMultiplier);
+        .toMinutes() > (Long.valueOf(view.getPollingFrequency() * toleranceMultiplierInMinutes));
   }
 
 }

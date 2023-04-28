@@ -12,7 +12,7 @@ import it.pagopa.interop.probing.eservice.operations.service.ProducerService;
 public class ProducerController implements ProducersApi {
 
   @Autowired
-  ProducerService producerService;
+  private ProducerService producerService;
 
   @Override
   public ResponseEntity<List<Producer>> getEservicesProducers(String producerName) {
