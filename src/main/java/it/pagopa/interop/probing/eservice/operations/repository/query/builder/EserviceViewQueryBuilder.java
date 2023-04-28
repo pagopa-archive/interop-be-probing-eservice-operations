@@ -1,8 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.repository.query.builder;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -91,23 +89,9 @@ public class EserviceViewQueryBuilder {
     Expression<Integer> extractMinute =
         cb.function("extract_minute", Integer.class, root.get(EserviceView_.LAST_REQUEST));
 
-    List<Predicate> predicates = new ArrayList<>();
-
-    if (Objects.nonNull(eserviceName)) {
-      predicates.add(cb.equal(root.get(EserviceView_.ESERVICE_NAME), eserviceName));
-    }
-
-    if (Objects.nonNull(producerName)) {
-      predicates.add(cb.equal(root.get(EserviceView_.PRODUCER_NAME), producerName));
-    }
-
-    if (Objects.nonNull(versionNumber)) {
-      predicates.add(cb.equal(root.get(EserviceView_.VERSION_NUMBER), versionNumber));
-    }
-
-    Predicate predicateEserviceName = cb.and(predicates.toArray(new Predicate[] {}));
-
-    return cb.and(predicateEserviceName,
+    return cb.and(cb.equal(root.get(EserviceView_.ESERVICE_NAME), eserviceName),
+        cb.equal(root.get(EserviceView_.PRODUCER_NAME), producerName),
+        cb.equal(root.get(EserviceView_.VERSION_NUMBER), versionNumber),
         root.get(EserviceView_.STATE).as(String.class).in(stateList),
         cb.isTrue(root.get(EserviceView_.PROBING_ENABLED)),
         cb.isNotNull(root.get(EserviceView_.LAST_REQUEST)),
