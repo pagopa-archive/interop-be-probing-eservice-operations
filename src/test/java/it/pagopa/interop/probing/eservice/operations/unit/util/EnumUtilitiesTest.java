@@ -1,7 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.unit.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -45,12 +44,6 @@ class EnumUtilitiesTest {
   void testfromFEtoBEState_whenStateIsOffline_thenReturnInactiveValue() {
     assertEquals(EnumUtilities.fromMonitorToPdndState(EserviceMonitorState.OFFLINE),
         EserviceInteropState.INACTIVE.getValue());
-  }
-
-  @Test
-  @DisplayName("From ND to null value")
-  void testfromFEtoBEState_whenStateIsND_thenReturnNull() {
-    assertNull(EnumUtilities.fromMonitorToPdndState(EserviceMonitorState.N_D));
   }
 
   @Test

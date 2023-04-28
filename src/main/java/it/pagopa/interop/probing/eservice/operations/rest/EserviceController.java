@@ -11,6 +11,7 @@ import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequency
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.PollingEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
@@ -20,10 +21,10 @@ import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 public class EserviceController implements EservicesApi {
 
   @Autowired
-  EserviceService eserviceService;
+  private EserviceService eserviceService;
 
   @Autowired
-  AbstractMapper mapper;
+  private AbstractMapper mapper;
 
   @Override
   public ResponseEntity<Void> updateEserviceFrequency(UUID eserviceId, UUID versionId,
@@ -63,5 +64,11 @@ public class EserviceController implements EservicesApi {
       EserviceSaveRequest eserviceSaveRequest) {
     return ResponseEntity.ok(eserviceService.saveEservice(mapper
         .fromEserviceSaveRequestToSaveEserviceDto(eserviceId, versionId, eserviceSaveRequest)));
+  }
+
+  @Override
+  public ResponseEntity<PollingEserviceResponse> getEservicesReadyForPolling(Integer limit,
+      Integer offset) {
+    return ResponseEntity.ok(eserviceService.getEservicesReadyForPolling(limit, offset));
   }
 }
