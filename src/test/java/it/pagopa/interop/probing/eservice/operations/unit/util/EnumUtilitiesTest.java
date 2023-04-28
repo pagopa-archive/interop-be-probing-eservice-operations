@@ -46,12 +46,6 @@ class EnumUtilitiesTest {
         EserviceInteropState.INACTIVE.getValue());
   }
 
-  // @Test
-  // @DisplayName("From ND to null value")
-  // void testfromFEtoBEState_whenStateIsND_thenReturnNull() {
-  // assertNull(EnumUtilities.fromMonitorToPdndState(EserviceMonitorState.N_D));
-  // }
-
   @Test
   @DisplayName("From EserviceMonitorState to List<String> with EserviceInteropState values")
   void testconvertListFromFEtoBE_whenIsEserviceStateFEList_thenReturnListOfStringWithEserviceInteropStateValues() {
