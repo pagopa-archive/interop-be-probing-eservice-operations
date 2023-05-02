@@ -1,7 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.service.impl;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,8 +14,6 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-
-import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -48,7 +45,7 @@ import it.pagopa.interop.probing.eservice.operations.util.EnumUtilities;
 import it.pagopa.interop.probing.eservice.operations.util.OffsetLimitPageable;
 import it.pagopa.interop.probing.eservice.operations.util.constant.ErrorMessages;
 import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;
-import lombok.extern.slf4j.Slf4j;
+import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 
 @Service
 @Transactional
@@ -128,7 +125,8 @@ public class EserviceServiceImpl implements EserviceService {
   public SearchEserviceResponse searchEservices(Integer limit, Integer offset, String eserviceName,
       String producerName, Integer versionNumber, List<EserviceMonitorState> state) {
 
-    logger.logMessageSearchEservice(limit, offset, eserviceName, producerName, versionNumber, state);
+    logger.logMessageSearchEservice(limit, offset, eserviceName, producerName, versionNumber,
+        state);
     Page<EserviceView> eserviceList;
     List<String> stateBE = Objects.isNull(state) || state.isEmpty() ? List.of()
         : enumUtilities.convertListFromMonitorToPdnd(state);
@@ -192,9 +190,12 @@ public class EserviceServiceImpl implements EserviceService {
     Predicate predicate =
         cb.and(cb.equal(root.get(EserviceView_.STATE), EserviceInteropState.ACTIVE),
             cb.isTrue(root.get(EserviceView_.PROBING_ENABLED)),
-            cb.lessThanOrEqualTo(makeInterval, cb.currentTimestamp()),
-            cb.lessThanOrEqualTo(root.get(EserviceView_.LAST_REQUEST),
-                root.get(EserviceView_.RESPONSE_RECEIVED)),
+            cb.or(
+                cb.and(cb.isNull(root.get(EserviceView_.LAST_REQUEST)),
+                    cb.isNull(root.get(EserviceView_.RESPONSE_RECEIVED))),
+                cb.and(cb.lessThanOrEqualTo(makeInterval, cb.currentTimestamp()),
+                    cb.lessThanOrEqualTo(root.get(EserviceView_.LAST_REQUEST),
+                        root.get(EserviceView_.RESPONSE_RECEIVED)))),
             cb.isTrue(compareTimestampInterval));
 
     query.where(predicate);
