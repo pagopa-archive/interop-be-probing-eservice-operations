@@ -10,14 +10,14 @@ import lombok.Data;
 @Builder
 public class UpdateEserviceProbingStateDto {
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @JsonProperty("eserviceId")
   private UUID eserviceId;
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @JsonProperty("versionId")
   private UUID versionId;
 
-  @NotNull
+  @NotNull(message = "must not be null")
   private boolean probingEnabled;
 }

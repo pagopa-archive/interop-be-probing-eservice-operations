@@ -4,6 +4,7 @@ package it.pagopa.interop.probing.eservice.operations.integration.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
@@ -32,8 +33,8 @@ class EserviceProbingRequestTest {
   void setup() {
     eservice = Eservice.builder().state(EserviceInteropState.INACTIVE).eserviceId(UUID.randomUUID())
         .versionId(UUID.randomUUID()).eserviceName("e-service1")
-        .basePath(new String[] {"test1", "test2"}).technology(EserviceTechnology.REST)
-        .producerName("producer1").build();
+        .basePath(new String[]{"test1", "test2"}).technology(EserviceTechnology.REST)
+        .producerName("producer1").versionNumber(1).build();
     probingRequest = EserviceProbingRequest.builder()
         .lastRequest(OffsetDateTime.of(2023, 12, 12, 1, 0, 0, 0, ZoneOffset.UTC)).eservice(eservice)
         .build();

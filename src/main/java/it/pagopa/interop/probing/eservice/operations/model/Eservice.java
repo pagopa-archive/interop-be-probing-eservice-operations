@@ -1,5 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.model;
 
+import it.pagopa.interop.probing.eservice.operations.annotations.ValidateStringArraySize;
 import java.io.Serializable;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
@@ -54,60 +55,60 @@ public class Eservice implements Serializable {
   @Column(updatable = false)
   private Long id;
 
-  @NotNull
-  @Size(max = 255)
+  @NotNull(message = "must not be null")
+  @ValidateStringArraySize(maxSize = 2048)
   @Basic(optional = false)
   @Column(name = "base_path", columnDefinition = "varchar(2048) array")
   @Type(type = "basePathType")
   private String[] basePath;
 
-  @NotBlank
-  @Size(max = 255)
+  @NotBlank(message = "must not be blank")
+  @Size(max = 255, message = "must not be longer than 255 chars")
   @Column(name = "eservice_name")
   private String eserviceName;
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @Column(name = "eservice_technology")
   @Enumerated(EnumType.STRING)
   private EserviceTechnology technology;
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @Column(name = "eservice_id")
   private UUID eserviceId;
 
-  @NotNull
-  @Column(name = "polling_end_time", columnDefinition = "TIME with time zone")
+  @NotNull(message = "must not be null")
+  @Column(name = "polling_end_time")
   @Builder.Default
   private OffsetTime pollingEndTime = OffsetTime.of(23, 59, 0, 0, ZoneOffset.UTC);
 
-  @NotNull
-  @Min(1)
-  @Column(name = "polling_frequency", columnDefinition = "integer default 5")
+  @NotNull(message = "must not be null")
+  @Min(value=1, message="must be at least 1")
+  @Column(name = "polling_frequency")
   @Builder.Default
   private Integer pollingFrequency = 5;
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @Column(name = "polling_start_time", columnDefinition = "TIME with time zone")
   @Builder.Default
   private OffsetTime pollingStartTime = OffsetTime.of(0, 0, 0, 0, ZoneOffset.UTC);
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @Column(name = "probing_enabled")
   @Builder.Default
   private boolean probingEnabled = true;
 
-  @NotBlank
-  @Size(max = 255)
+  @NotBlank(message = "must not be blank")
+  @Size(max = 255, message = "must not be longer than 255 chars")
   @Column(name = "producer_name")
   private String producerName;
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @Enumerated(EnumType.STRING)
   @Column(name = "state")
   private EserviceInteropState state;
 
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @Column(name = "version_id")
   private UUID versionId;
 
@@ -115,6 +116,8 @@ public class Eservice implements Serializable {
   @Column(name = "lock_version")
   private Integer lockVersion;
 
+  @NotNull(message = "must not be null")
+  @Min(value=1, message="must be at least 1")
   @Column(name = "version_number")
   private Integer versionNumber;
 

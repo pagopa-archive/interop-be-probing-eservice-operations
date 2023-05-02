@@ -15,15 +15,15 @@ import lombok.Setter;
 @Builder
 public class UpdateEserviceStateDto {
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @JsonProperty("eserviceId")
   private UUID eserviceId;
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @JsonProperty("versionId")
   private UUID versionId;
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @JsonProperty("eServiceState")
   private EserviceInteropState newEServiceState;
 }

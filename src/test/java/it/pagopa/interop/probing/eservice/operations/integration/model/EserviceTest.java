@@ -32,7 +32,7 @@ class EserviceTest {
     eservice = Eservice.builder().state(EserviceInteropState.INACTIVE).eserviceId(UUID.randomUUID())
         .versionId(UUID.randomUUID()).eserviceName("e-service1")
         .basePath(new String[] {"test1", "test2"}).technology(EserviceTechnology.REST)
-        .producerName("producer1").build();
+        .producerName("producer1").versionNumber(1).build();
   }
 
   @Test
@@ -74,7 +74,7 @@ class EserviceTest {
   @DisplayName("e-service isn't saved due to too long basePath value")
   void testEserviceEntity_whenBasePathIsTooLong_throwsException() {
     eservice.basePath(new String[] {RandomStringUtils.randomAlphabetic(2049)});
-    assertThrows(HsqlException.class, () -> testEntityManager.persistAndFlush(eservice),
+    assertThrows(ConstraintViolationException.class, () -> testEntityManager.persistAndFlush(eservice),
         "e-service should not be saved when base path data is too long");
   }
 
@@ -223,7 +223,7 @@ class EserviceTest {
         .producerName("producer2").versionId(eservice.versionId()).eserviceId(eservice.eserviceId())
         .build();
 
-    assertThrows(PersistenceException.class,
+    assertThrows(ConstraintViolationException.class,
         () -> testEntityManager.persistAndFlush(duplicateEservice),
         "e-service should not be saved when e-service id and version id are already existing");
   }
