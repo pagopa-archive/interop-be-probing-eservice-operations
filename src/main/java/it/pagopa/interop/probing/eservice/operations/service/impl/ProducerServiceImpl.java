@@ -8,6 +8,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
@@ -17,12 +20,14 @@ import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConsta
 @Service
 public class ProducerServiceImpl implements ProducerService {
 
+  @Autowired
+  Logger logger;
   @PersistenceContext
   private EntityManager entityManager;
 
   @Override
   public List<Producer> getEservicesProducers(String producerName) {
-
+    logger.logMessageSearchProducer(producerName);
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<Producer> query = cb.createQuery(Producer.class);
     Root<Eservice> root = query.from(Eservice.class);

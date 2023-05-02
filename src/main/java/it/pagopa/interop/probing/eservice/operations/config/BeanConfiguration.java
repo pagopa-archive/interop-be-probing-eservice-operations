@@ -11,6 +11,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 @Configuration
 public class BeanConfiguration {
+
   @Bean
   public ObjectMapper getObjectMapper() {
     ObjectMapper mapper = new ObjectMapper();
