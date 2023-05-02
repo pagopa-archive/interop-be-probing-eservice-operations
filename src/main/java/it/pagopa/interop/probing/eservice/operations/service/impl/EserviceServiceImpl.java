@@ -89,8 +89,7 @@ public class EserviceServiceImpl implements EserviceService {
 
     eServiceToUpdate.state(inputData.getNewEServiceState());
     eserviceRepository.save(eServiceToUpdate);
-    logger.logMessageEserviceStateUpdated(eServiceToUpdate.eserviceId(),
-        eServiceToUpdate.versionId(), eServiceToUpdate.state());
+    logger.logMessageEserviceStateUpdated(eServiceToUpdate);
   }
 
   @Override
@@ -105,8 +104,7 @@ public class EserviceServiceImpl implements EserviceService {
 
     eServiceToUpdate.probingEnabled(inputData.isProbingEnabled());
     eserviceRepository.save(eServiceToUpdate);
-    logger.logMessageEserviceProbingStateUpdated(eServiceToUpdate.eserviceId(),
-        eServiceToUpdate.versionId(), eServiceToUpdate.probingEnabled());
+    logger.logMessageEserviceProbingStateUpdated(eServiceToUpdate);
   }
 
   @Override
@@ -123,9 +121,7 @@ public class EserviceServiceImpl implements EserviceService {
         .pollingStartTime(inputData.getNewPollingStartTime())
         .pollingEndTime(inputData.getNewPollingEndTime());
     eserviceRepository.save(eServiceToUpdate);
-    logger.logMessageEservicePollingConfigUpdated(eServiceToUpdate.eserviceId(), eServiceToUpdate.versionId(),
-        eServiceToUpdate.pollingStartTime(), eServiceToUpdate.pollingEndTime(),
-        eServiceToUpdate.pollingFrequency());
+    logger.logMessageEservicePollingConfigUpdated(eServiceToUpdate);
   }
 
   @Override
@@ -133,8 +129,8 @@ public class EserviceServiceImpl implements EserviceService {
       String producerName, Integer versionNumber, List<EserviceMonitorState> state) {
 
     logger.logMessageSearchEservice(limit, offset, eserviceName, producerName, versionNumber, state);
-    Page<EserviceView> eserviceList = null;
-    List<String> stateBE = Objects.isNull(state) || state.isEmpty() ? new ArrayList<>()
+    Page<EserviceView> eserviceList;
+    List<String> stateBE = Objects.isNull(state) || state.isEmpty() ? List.of()
         : enumUtilities.convertListFromMonitorToPdnd(state);
 
     if (Objects.isNull(state) || state.isEmpty()
@@ -172,7 +168,7 @@ public class EserviceServiceImpl implements EserviceService {
         .state(inputData.getState());
 
     Long id = eserviceRepository.save(eServiceToUpdate).id();
-    logger.logMessageEserviceSaved(eServiceToUpdate.eserviceId(), eServiceToUpdate.versionId());
+    logger.logMessageEserviceSaved(eServiceToUpdate);
     return id;
   }
 
