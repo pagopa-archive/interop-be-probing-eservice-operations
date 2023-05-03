@@ -32,7 +32,7 @@ public class EserviceProbingResponse implements Serializable {
   private long id;
 
   @Column(name = "response_received", columnDefinition = "TIMESTAMP WITH TIME ZONE")
-  @NotNull
+  @NotNull(message = "must not be null")
   private OffsetDateTime responseReceived;
 
   @MapsId

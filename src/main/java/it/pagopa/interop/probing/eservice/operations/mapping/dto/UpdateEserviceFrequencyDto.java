@@ -15,23 +15,23 @@ import lombok.Setter;
 @Builder
 public class UpdateEserviceFrequencyDto {
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @JsonProperty("eserviceId")
   private UUID eserviceId;
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @JsonProperty("versionId")
   private UUID versionId;
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @JsonProperty("pollingEndTime")
   private OffsetTime newPollingEndTime;
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @JsonProperty("pollingFrequency")
   private Integer newPollingFrequency;
 
-  @NotNull
+  @NotNull(message = "must not be null")
   @JsonProperty("pollingStartTime")
   private OffsetTime newPollingStartTime;
 }
