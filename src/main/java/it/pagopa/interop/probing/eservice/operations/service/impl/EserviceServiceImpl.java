@@ -133,6 +133,7 @@ public class EserviceServiceImpl implements EserviceService {
 
     logger.logMessageSearchEservice(limit, offset, eserviceName, producerName, versionNumber,
         state);
+
     Page<EserviceView> eserviceList;
     List<String> stateBE = Objects.isNull(state) || state.isEmpty() ? List.of()
         : enumUtilities.convertListFromMonitorToPdnd(state);
@@ -172,12 +173,16 @@ public class EserviceServiceImpl implements EserviceService {
         .state(inputData.getState());
 
     Long id = eserviceRepository.save(eServiceToUpdate).id();
+
     logger.logMessageEserviceSaved(eServiceToUpdate);
+
     return id;
   }
 
   @Override
   public PollingEserviceResponse getEservicesReadyForPolling(Integer limit, Integer offset) {
+
+    logger.logMessageEserviceReadyForPolling(limit, offset);
 
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<EserviceContentCriteria> query = cb.createQuery(EserviceContentCriteria.class);
@@ -210,7 +215,7 @@ public class EserviceServiceImpl implements EserviceService {
     List<EserviceContentCriteria> pollingActiveEserviceContent = q.getResultList();
 
     Page<EserviceContentCriteria> pollingActiveEservicePagable =
-        new PageImpl<>(pollingActiveEserviceContent.stream().collect(Collectors.toList()),
+        new PageImpl<>(pollingActiveEserviceContent,
             PageRequest.of(offset, limit, Sort.by(ProjectConstants.ID_FIELD).ascending()),
             pollingActiveEserviceContent.size());
 
