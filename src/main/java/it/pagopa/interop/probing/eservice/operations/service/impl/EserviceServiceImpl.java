@@ -230,12 +230,17 @@ public class EserviceServiceImpl implements EserviceService {
     Optional<EserviceProbingRequest> queryResult =
         eserviceProbingRequestRepository.findById(inputData.getEservicesRecordId());
 
-    EserviceProbingRequest eServiceToUpdate = queryResult.orElseGet(
-        () -> EserviceProbingRequest.builder().id(inputData.getEservicesRecordId()).build());
+    EserviceProbingRequest eServiceToUpdate = queryResult.orElseGet(() -> {
+      Optional<Eservice> e = eserviceRepository.findById(inputData.getEservicesRecordId());
+
+      return EserviceProbingRequest.builder().id(inputData.getEservicesRecordId()).eservice(e.get())
+          .build();
+    });
 
     eServiceToUpdate.lastRequest(inputData.getLastRequest());
 
     eserviceProbingRequestRepository.save(eServiceToUpdate);
     logger.logMessageLastRequestUpdated(eServiceToUpdate);
   }
+
 }

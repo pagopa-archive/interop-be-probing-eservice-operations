@@ -2,6 +2,7 @@ package it.pagopa.interop.probing.eservice.operations.model;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,7 +37,7 @@ public class EserviceProbingRequest implements Serializable {
   private OffsetDateTime lastRequest;
 
   @MapsId
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name = "eservices_record_id")
   private Eservice eservice;
 
