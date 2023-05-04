@@ -230,8 +230,8 @@ public class EserviceServiceImpl implements EserviceService {
     Optional<EserviceProbingRequest> queryResult =
         eserviceProbingRequestRepository.findById(inputData.getEservicesRecordId());
 
-    EserviceProbingRequest eServiceToUpdate = queryResult
-        .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
+    EserviceProbingRequest eServiceToUpdate = queryResult.orElseGet(
+        () -> EserviceProbingRequest.builder().id(inputData.getEservicesRecordId()).build());
 
     eServiceToUpdate.lastRequest(inputData.getLastRequest());
 

@@ -11,7 +11,7 @@ import lombok.Data;
 public class UpdateEserviceLastRequestDto {
 
   @NotNull(message = "must not be null")
-  @JsonProperty("eservices_record_id")
+  @JsonProperty("eservicesRecordId")
   private Long eservicesRecordId;
 
   @NotNull(message = "must not be null")
