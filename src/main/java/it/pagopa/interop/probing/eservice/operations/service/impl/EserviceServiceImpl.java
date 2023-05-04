@@ -29,13 +29,16 @@ import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceLastRequestDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.EserviceContentCriteria;
+import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingRequest;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView_;
+import it.pagopa.interop.probing.eservice.operations.repository.EserviceProbingRequestRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.query.builder.EserviceViewQueryBuilder;
@@ -62,6 +65,9 @@ public class EserviceServiceImpl implements EserviceService {
 
   @Autowired
   private EserviceViewRepository eserviceViewRepository;
+
+  @Autowired
+  private EserviceProbingRequestRepository eserviceProbingRequestRepository;
 
   @Autowired
   private EserviceViewQueryBuilder eserviceViewQueryBuilder;
@@ -211,5 +217,20 @@ public class EserviceServiceImpl implements EserviceService {
     return PollingEserviceResponse.builder()
         .content(pollingActiveEservicePagable.stream().map(c -> (EserviceContent) c).toList())
         .totalElements(pollingActiveEservicePagable.getTotalElements()).build();
+  }
+
+  @Override
+  public void updateLastRequest(UpdateEserviceLastRequestDto inputData)
+      throws EserviceNotFoundException {
+    Optional<EserviceProbingRequest> queryResult =
+        eserviceProbingRequestRepository.findById(inputData.getEservicesRecordId());
+
+    EserviceProbingRequest eServiceToUpdate = queryResult
+        .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
+
+    eServiceToUpdate.lastRequest(inputData.getLastRequest());
+
+    eserviceProbingRequestRepository.save(eServiceToUpdate);
+    logger.logMessageLastRequestUpdated(eServiceToUpdate);
   }
 }

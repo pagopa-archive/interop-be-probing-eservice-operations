@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import it.pagopa.interop.probing.eservice.operations.api.EservicesApi;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.ChangeLastRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
@@ -70,5 +71,13 @@ public class EserviceController implements EservicesApi {
   public ResponseEntity<PollingEserviceResponse> getEservicesReadyForPolling(Integer limit,
       Integer offset) {
     return ResponseEntity.ok(eserviceService.getEservicesReadyForPolling(limit, offset));
+  }
+
+  @Override
+  public ResponseEntity<Void> updateLastRequest(Long eservicesRecordId,
+      ChangeLastRequest changeLastRequest) throws EserviceNotFoundException {
+    eserviceService.updateLastRequest(
+        mapper.toUpdateEserviceLastRequest(eservicesRecordId, changeLastRequest));
+    return ResponseEntity.noContent().build();
   }
 }

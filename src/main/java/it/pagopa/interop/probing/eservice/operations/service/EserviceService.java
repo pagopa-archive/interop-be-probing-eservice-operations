@@ -21,10 +21,19 @@ import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceLastRequestDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
 
 public interface EserviceService {
+
+  /**
+   * Updates the last request of the e-service identified by eserviceRecordId
+   * 
+   * @param inputData the input data DTO containing the eserviceRecordId
+   * @throws EserviceNotFoundException if the e-service isn't found in the database
+   */
+  void updateLastRequest(UpdateEserviceLastRequestDto inputData) throws EserviceNotFoundException;
 
   /**
    * Saves the e-service or updates it if already exists
