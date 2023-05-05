@@ -18,7 +18,7 @@ public class CustomStringArrayType implements UserType {
   }
 
   @Override
-  public Class returnedClass() {
+  public Class<String[]> returnedClass() {
     return String[].class;
   }
 

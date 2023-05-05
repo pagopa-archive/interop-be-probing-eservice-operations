@@ -1,15 +1,14 @@
 package it.pagopa.interop.probing.eservice.operations.mapping.dto;
 
-import it.pagopa.interop.probing.eservice.operations.annotations.ValidateStringArraySize;
 import java.util.UUID;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.pagopa.interop.probing.eservice.operations.annotations.ValidateStringArraySize;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
-import javax.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -53,7 +52,7 @@ public class SaveEserviceDto {
   private EserviceInteropState state;
 
   @NotNull(message = "must not be null")
-  @Min(value=1, message="must be at least 1")
+  @Min(value = 1, message = "must be at least 1")
   @JsonProperty("versionNumber")
   private Integer versionNumber;
 }

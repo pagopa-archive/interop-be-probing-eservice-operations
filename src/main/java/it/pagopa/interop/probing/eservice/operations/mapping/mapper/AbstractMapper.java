@@ -5,6 +5,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.ChangeLastRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
@@ -12,6 +13,7 @@ import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceLastRequestDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
@@ -35,6 +37,9 @@ public abstract class AbstractMapper {
   @Mapping(source = "changeProbingFrequencyRequest.endTime", target = "newPollingEndTime")
   public abstract UpdateEserviceFrequencyDto toUpdateEserviceFrequencyDto(UUID eserviceId,
       UUID versionId, ChangeProbingFrequencyRequest changeProbingFrequencyRequest);
+
+  public abstract UpdateEserviceLastRequestDto toUpdateEserviceLastRequest(Long eservicesRecordId,
+      ChangeLastRequest changeLastRequest);
 
   public abstract SaveEserviceDto fromEserviceSaveRequestToSaveEserviceDto(UUID eserviceId,
       UUID versionId, EserviceSaveRequest eserviceSaveRequest);

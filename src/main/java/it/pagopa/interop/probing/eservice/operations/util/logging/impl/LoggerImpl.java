@@ -1,14 +1,15 @@
 package it.pagopa.interop.probing.eservice.operations.util.logging.impl;
 
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
-import it.pagopa.interop.probing.eservice.operations.model.Eservice;
-import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
-import java.util.Objects;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.stereotype.Component;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
+import it.pagopa.interop.probing.eservice.operations.model.Eservice;
+import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingRequest;
+import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -61,5 +62,16 @@ public class LoggerImpl implements Logger {
   @Override
   public void logMessageException(Exception exception) {
     log.error(ExceptionUtils.getStackTrace(exception));
+  }
+
+  @Override
+  public void logMessageLastRequestUpdated(EserviceProbingRequest eServiceToUpdate) {
+    log.info("Last request has been updated. Service id={}", eServiceToUpdate.id());
+  }
+
+  @Override
+  public void logMessageEserviceReadyForPolling(Integer limit, Integer offset) {
+    log.info("e-services ready for polling, limit={}, offset={}", limit, offset);
+
   }
 }
