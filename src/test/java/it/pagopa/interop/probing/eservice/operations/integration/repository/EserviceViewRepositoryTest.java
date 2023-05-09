@@ -37,8 +37,8 @@ class EserviceViewRepositoryTest {
         .probingEnabled(true).versionNumber(1).state(EserviceInteropState.ACTIVE)
         .responseReceived(OffsetDateTime.parse("2023-03-21T00:00:05.995Z"))
         .lastRequest(OffsetDateTime.parse("2023-03-21T00:00:15.995Z"))
-        .technology(EserviceTechnology.REST).basePath(new String[] {"base_path_test"}).id(10L)
-        .build();
+        .technology(EserviceTechnology.REST).basePath(new String[] {"base_path_test"})
+        .eserviceRecordId(10L).build();
     testEntityManager.persistAndFlush(eserviceView);
   }
 

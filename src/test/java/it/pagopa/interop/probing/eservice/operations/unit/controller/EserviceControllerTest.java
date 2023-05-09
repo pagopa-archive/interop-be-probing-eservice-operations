@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.ChangeLastRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
@@ -38,6 +40,7 @@ import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceLastRequestDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
@@ -60,6 +63,9 @@ class EserviceControllerTest {
 
   @Value("${api.saveEservice.url}")
   private String saveEserviceUrl;
+
+  @Value("${api.updateLastRequest.url}")
+  private String updateLastRequestUrl;
 
   @Autowired
   private MockMvc mockMvc;
@@ -89,10 +95,15 @@ class EserviceControllerTest {
 
   private SaveEserviceDto saveEserviceDto;
 
+  private UpdateEserviceLastRequestDto updateEserviceLastRequestDto;
+
   private SearchEserviceResponse expectedSearchEserviceResponse;
+
+  private ChangeLastRequest changeLastRequest;
 
   private final UUID eServiceId = UUID.randomUUID();
   private final UUID versionId = UUID.randomUUID();
+  private final Long eServicesRecordId = 1L;
 
   @BeforeEach
   void setup() {
@@ -123,6 +134,10 @@ class EserviceControllerTest {
         .technology(EserviceTechnology.fromValue("REST")).versionId(versionId).versionNumber(1)
         .state(EserviceInteropState.fromValue("INACTIVE")).build();
 
+    updateEserviceLastRequestDto =
+        UpdateEserviceLastRequestDto.builder().eserviceRecordId(eServicesRecordId)
+            .lastRequest(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC)).build();
+
     eserviceSaveRequest =
         EserviceSaveRequest.builder().basePath(List.of("test-1")).name("Eservice name test")
             .producerName("Eservice producer test").technology(EserviceTechnology.fromValue("REST"))
@@ -136,6 +151,9 @@ class EserviceControllerTest {
 
     List<EserviceContent> eservices = List.of(eserviceViewDTO);
     expectedSearchEserviceResponse.setContent(eservices);
+
+    changeLastRequest = ChangeLastRequest.builder()
+        .lastRequest(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC)).build();
   }
 
   @Test
@@ -385,6 +403,53 @@ class EserviceControllerTest {
         .perform(get(apiSearchEserviceUrl).params(getMockRequestParamsUpdateEserviceState("2", null,
             "Eservice-Name", "Eservice-Version", "false", "ACTIVE")))
         .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @DisplayName("e-service last request has been updated")
+  void testUpdateLastRequest_whenGivenValidEservicesRecordId_thenLastRequestIsUpdated()
+      throws Exception {
+    RequestBuilder requestBuilder =
+        MockMvcRequestBuilders.post(String.format(updateLastRequestUrl, eServicesRecordId))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(changeLastRequest));
+    Mockito.doNothing().when(service).updateLastRequest(updateEserviceLastRequestDto);
+    mockMvc.perform(requestBuilder).andExpect(status().isNoContent());
+  }
+
+  @Test
+  @DisplayName("e-service last request doesn't be updated because e-service does not exist")
+  void testUpdateLastRequest_whenEserviceDoesNotExist_thenThrows404Exception() throws Exception {
+    RequestBuilder requestBuilder =
+        MockMvcRequestBuilders.post(String.format(updateLastRequestUrl, eServicesRecordId))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(changeLastRequest));
+    Mockito.doThrow(EserviceNotFoundException.class).when(service)
+        .updateLastRequest(updateEserviceLastRequestDto);
+    mockMvc.perform(requestBuilder).andExpect(status().isNotFound());
+  }
+
+  @Test
+  @DisplayName("e-service last request can'te be updated because eserviceRecordId request parameter is missing")
+  void testUpdateLastRequest_whenEserviceRecordIdParameterIsMissing_thenThrows404Exception()
+      throws Exception {
+    RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/eservices/updateLastRequest")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(mapper.writeValueAsString(changeLastRequest));
+    Mockito.doThrow(EserviceNotFoundException.class).when(service)
+        .updateLastRequest(updateEserviceLastRequestDto);
+    mockMvc.perform(requestBuilder).andExpect(status().isNotFound());
+  }
+
+  @Test
+  @DisplayName("e-service last request can't be updated because request body is missing")
+  void testUpdateLastRequest_whenRequestBodyIsMissing_thenThrows400Exception() throws Exception {
+    RequestBuilder requestBuilder =
+        MockMvcRequestBuilders.post(String.format(updateLastRequestUrl, eServicesRecordId))
+            .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(null));
+    Mockito.doThrow(EserviceNotFoundException.class).when(service)
+        .updateLastRequest(updateEserviceLastRequestDto);
+    mockMvc.perform(requestBuilder).andExpect(status().isBadRequest());
   }
 
   private LinkedMultiValueMap<String, String> getMockRequestParamsUpdateEserviceState(String limit,

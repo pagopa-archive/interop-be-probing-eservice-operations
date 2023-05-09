@@ -74,10 +74,10 @@ public class EserviceController implements EservicesApi {
   }
 
   @Override
-  public ResponseEntity<Void> updateLastRequest(Long eservicesRecordId,
+  public ResponseEntity<Void> updateLastRequest(Long eserviceRecordId,
       ChangeLastRequest changeLastRequest) throws EserviceNotFoundException {
     eserviceService.updateLastRequest(
-        mapper.toUpdateEserviceLastRequest(eservicesRecordId, changeLastRequest));
+        mapper.toUpdateEserviceLastRequest(eserviceRecordId, changeLastRequest));
     return ResponseEntity.noContent().build();
   }
 }

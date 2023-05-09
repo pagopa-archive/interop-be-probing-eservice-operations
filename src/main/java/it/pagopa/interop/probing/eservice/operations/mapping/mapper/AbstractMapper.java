@@ -38,7 +38,7 @@ public abstract class AbstractMapper {
   public abstract UpdateEserviceFrequencyDto toUpdateEserviceFrequencyDto(UUID eserviceId,
       UUID versionId, ChangeProbingFrequencyRequest changeProbingFrequencyRequest);
 
-  public abstract UpdateEserviceLastRequestDto toUpdateEserviceLastRequest(Long eservicesRecordId,
+  public abstract UpdateEserviceLastRequestDto toUpdateEserviceLastRequest(Long eserviceRecordId,
       ChangeLastRequest changeLastRequest);
 
   public abstract SaveEserviceDto fromEserviceSaveRequestToSaveEserviceDto(UUID eserviceId,

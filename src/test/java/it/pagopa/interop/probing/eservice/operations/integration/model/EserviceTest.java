@@ -9,7 +9,6 @@ import java.util.UUID;
 import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolationException;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.hsqldb.HsqlException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,7 +73,8 @@ class EserviceTest {
   @DisplayName("e-service isn't saved due to too long basePath value")
   void testEserviceEntity_whenBasePathIsTooLong_throwsException() {
     eservice.basePath(new String[] {RandomStringUtils.randomAlphabetic(2049)});
-    assertThrows(ConstraintViolationException.class, () -> testEntityManager.persistAndFlush(eservice),
+    assertThrows(ConstraintViolationException.class,
+        () -> testEntityManager.persistAndFlush(eservice),
         "e-service should not be saved when base path data is too long");
   }
 
@@ -231,7 +231,7 @@ class EserviceTest {
   @Test
   @DisplayName("e-service isn't saved because id can't be manually updated")
   void testEserviceEntity_whenIdIsManuallyUpdated_throwsException() {
-    eservice.id(1L);
+    eservice.eserviceRecordId(1L);
     assertThrows(PersistenceException.class, () -> testEntityManager.persistAndFlush(eservice),
         "e-service should not be saved because id shouldn't be manually updatable");
   }

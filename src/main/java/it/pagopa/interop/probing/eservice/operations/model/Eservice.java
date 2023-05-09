@@ -1,6 +1,5 @@
 package it.pagopa.interop.probing.eservice.operations.model;
 
-import it.pagopa.interop.probing.eservice.operations.annotations.ValidateStringArraySize;
 import java.io.Serializable;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
@@ -23,6 +22,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.springframework.data.annotation.Version;
+import it.pagopa.interop.probing.eservice.operations.annotations.ValidateStringArraySize;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import lombok.AllArgsConstructor;
@@ -52,8 +52,8 @@ public class Eservice implements Serializable {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eservice_sequence")
   @SequenceGenerator(name = "eservice_sequence", sequenceName = "eservice_sequence",
       allocationSize = 1)
-  @Column(updatable = false)
-  private Long id;
+  @Column(name = "id", updatable = false)
+  private Long eserviceRecordId;
 
   @NotNull(message = "must not be null")
   @ValidateStringArraySize(maxSize = 2048)
@@ -82,7 +82,7 @@ public class Eservice implements Serializable {
   private OffsetTime pollingEndTime = OffsetTime.of(23, 59, 0, 0, ZoneOffset.UTC);
 
   @NotNull(message = "must not be null")
-  @Min(value=1, message="must be at least 1")
+  @Min(value = 1, message = "must be at least 1")
   @Column(name = "polling_frequency")
   @Builder.Default
   private Integer pollingFrequency = 5;
@@ -117,7 +117,7 @@ public class Eservice implements Serializable {
   private Integer lockVersion;
 
   @NotNull(message = "must not be null")
-  @Min(value=1, message="must be at least 1")
+  @Min(value = 1, message = "must be at least 1")
   @Column(name = "version_number")
   private Integer versionNumber;
 

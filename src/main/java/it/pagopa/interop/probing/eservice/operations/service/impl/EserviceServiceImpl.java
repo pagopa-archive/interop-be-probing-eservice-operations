@@ -172,7 +172,7 @@ public class EserviceServiceImpl implements EserviceService {
         .basePath(inputData.getBasePath()).technology(inputData.getTechnology())
         .state(inputData.getState());
 
-    Long id = eserviceRepository.save(eServiceToUpdate).id();
+    Long id = eserviceRepository.save(eServiceToUpdate).eserviceRecordId();
 
     logger.logMessageEserviceSaved(eServiceToUpdate);
 
@@ -188,8 +188,8 @@ public class EserviceServiceImpl implements EserviceService {
     CriteriaQuery<EserviceContentCriteria> query = cb.createQuery(EserviceContentCriteria.class);
     Root<EserviceView> root = query.from(EserviceView.class);
 
-    query.distinct(true).multiselect(root.get(EserviceView_.ID), root.get(EserviceView_.TECHNOLOGY),
-        root.get(EserviceView_.BASE_PATH));
+    query.distinct(true).multiselect(root.get(EserviceView_.ESERVICE_RECORD_ID),
+        root.get(EserviceView_.TECHNOLOGY), root.get(EserviceView_.BASE_PATH));
 
     Expression<Timestamp> makeInterval = cb.function("make_interval", Timestamp.class,
         root.get(EserviceView_.LAST_REQUEST), root.get(EserviceView_.POLLING_FREQUENCY));
@@ -216,7 +216,8 @@ public class EserviceServiceImpl implements EserviceService {
 
     Page<EserviceContentCriteria> pollingActiveEservicePagable =
         new PageImpl<>(pollingActiveEserviceContent,
-            PageRequest.of(offset, limit, Sort.by(ProjectConstants.ID_FIELD).ascending()),
+            PageRequest.of(offset, limit,
+                Sort.by(ProjectConstants.ESERVICE_RECORD_ID_FIELD).ascending()),
             pollingActiveEserviceContent.size());
 
     return PollingEserviceResponse.builder()
@@ -228,10 +229,10 @@ public class EserviceServiceImpl implements EserviceService {
   public void updateLastRequest(UpdateEserviceLastRequestDto inputData)
       throws EserviceNotFoundException {
     Optional<EserviceProbingRequest> queryResult =
-        eserviceProbingRequestRepository.findById(inputData.getEservicesRecordId());
+        eserviceProbingRequestRepository.findById(inputData.getEserviceRecordId());
 
     EserviceProbingRequest eServiceToUpdate = queryResult.orElseGet(() -> {
-      Optional<Eservice> e = eserviceRepository.findById(inputData.getEservicesRecordId());
+      Optional<Eservice> e = eserviceRepository.findById(inputData.getEserviceRecordId());
 
       return EserviceProbingRequest.builder().eservice(e.get()).build();
     });

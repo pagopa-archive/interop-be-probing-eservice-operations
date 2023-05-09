@@ -12,5 +12,5 @@ public interface EserviceRepository extends JpaRepository<Eservice, Long> {
   Optional<Eservice> findByEserviceIdAndVersionId(@Param("eserviceId") UUID eserviceId,
       @Param("versionId") UUID versionId);
 
-  Optional<Eservice> findById(@Param("id") Long id);
+  Optional<Eservice> findById(@Param("eserviceRecordId") Long eserviceRecordId);
 }
