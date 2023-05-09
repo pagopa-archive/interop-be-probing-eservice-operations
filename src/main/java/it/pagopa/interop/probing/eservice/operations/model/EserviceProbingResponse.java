@@ -29,7 +29,7 @@ public class EserviceProbingResponse implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Id
-  private long id;
+  private long eserviceRecordId;
 
   @Column(name = "response_received", columnDefinition = "TIMESTAMP WITH TIME ZONE")
   @NotNull(message = "must not be null")

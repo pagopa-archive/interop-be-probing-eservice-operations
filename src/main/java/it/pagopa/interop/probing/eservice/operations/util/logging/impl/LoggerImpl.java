@@ -66,7 +66,7 @@ public class LoggerImpl implements Logger {
 
   @Override
   public void logMessageLastRequestUpdated(EserviceProbingRequest eServiceToUpdate) {
-    log.info("Last request has been updated. Service id={}", eServiceToUpdate.id());
+    log.info("Last request has been updated. Service id={}", eServiceToUpdate.eserviceRecordId());
   }
 
   @Override

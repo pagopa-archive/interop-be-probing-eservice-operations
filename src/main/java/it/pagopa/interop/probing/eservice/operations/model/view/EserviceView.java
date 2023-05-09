@@ -39,8 +39,8 @@ public class EserviceView implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Id
-  @Column(name = "id", updatable = false)
-  private Long id;
+  @Column(name = "eserviceRecordId", updatable = false)
+  private Long eserviceRecordId;
 
   @Size(max = 255)
   @Column(name = "eservice_name")

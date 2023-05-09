@@ -559,8 +559,8 @@ components:
     EserviceContent:
       type: object
       properties:
-        id:
-          title: Service id
+        eserviceRecordId:
+          title: Service record id
           type: integer
           format: int64
         eserviceName:

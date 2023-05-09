@@ -8,8 +8,9 @@ public class EserviceContentCriteria extends EserviceContent {
 
   private static final long serialVersionUID = 1L;
 
-  public EserviceContentCriteria(Long id, EserviceTechnology technology, String[] basePath) {
-    this.id(id);
+  public EserviceContentCriteria(Long eserviceRecordId, EserviceTechnology technology,
+      String[] basePath) {
+    this.eserviceRecordId(eserviceRecordId);
     this.technology(technology);
     this.basePath(List.of(basePath));
   }
