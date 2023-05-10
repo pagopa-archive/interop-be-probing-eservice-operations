@@ -12,7 +12,7 @@ public class FunctionContributor implements MetadataBuilderContributor {
   @Override
   public void contribute(MetadataBuilder metadataBuilder) {
     metadataBuilder.applySqlFunction("make_interval",
-        new SQLFunctionTemplate(TimestampType.INSTANCE, "?1 + make_interval(mins => ?2)"));
+        new SQLFunctionTemplate(TimestampType.INSTANCE, "?1 + MAKE_INTERVAL(mins => ?2)"));
 
     metadataBuilder.applySqlFunction("compare_timestamp_interval",
         new SQLFunctionTemplate(BooleanType.INSTANCE, "CURRENT_TIME between ?1 and ?2"));

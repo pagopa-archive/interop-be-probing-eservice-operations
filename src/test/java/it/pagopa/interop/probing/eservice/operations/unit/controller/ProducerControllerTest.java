@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import java.util.ArrayList;
 import java.util.List;
-
-import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -34,7 +32,7 @@ class ProducerControllerTest {
   @MockBean
   private ProducerService service;
 
-  private List<Producer> ProducerExpectedList;
+  private List<Producer> producerExpectedList;
 
   @Test
   @DisplayName("given a valid producer name, then returns a non-empty list")
@@ -42,9 +40,9 @@ class ProducerControllerTest {
       throws Exception {
     Producer producer = Producer.builder().build();
 
-    ProducerExpectedList = List.of(producer);
+    producerExpectedList = List.of(producer);
     Mockito.when(service.getEservicesProducers("ProducerName-Test"))
-        .thenReturn(ProducerExpectedList);
+        .thenReturn(producerExpectedList);
     MockHttpServletResponse response =
         mockMvc.perform(get(apiGetEservicesProducersUrl).param("producerName", "ProducerName-Test"))
             .andReturn().getResponse();
