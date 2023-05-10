@@ -3,6 +3,7 @@ package it.pagopa.interop.probing.eservice.operations.unit.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.time.OffsetDateTime;
@@ -417,26 +418,36 @@ class EserviceControllerTest {
   }
 
   @Test
-  @DisplayName("the list of ACTIVE e-services has been retrieved")
-  void testGetEservicesActive_whenEservicesIsOnline_thenCheckEservicesIsOnline() throws Exception {
-    Mockito.when(service.getEservicesReadyForPolling(2, 0))
+  @DisplayName("the retrieve of e-services ready for polling is successful")
+  void testGetEservicesReadyForPolling_whenEservicesAreReadyGivenValidLimitAndOffset_thenReturns2xxSuccessful()
+      throws Exception {
+    Integer limit = 10;
+    Integer offset = 0;
+
+    Mockito.when(service.getEservicesReadyForPolling(limit, offset))
         .thenReturn(pollingActiveEserviceResponse);
+
     MockHttpServletResponse response =
-        mockMvc.perform(get(apiGetEservicesActiveUrl).param("limit", "2").param("offset", "0"))
-            .andReturn().getResponse();
+        mockMvc.perform(get(apiGetEservicesActiveUrl).param("limit", String.valueOf(limit))
+            .param("offset", String.valueOf(offset))).andReturn().getResponse();
     assertEquals(response.getStatus(), HttpStatus.OK.value());
-    assertTrue(response.getContentAsString().contains("REST"));
-    assertTrue(response.getContentAsString().contains("1"));
-    assertTrue(response.getContentAsString().contains("base_path_test"));
+    assertTrue(response.getContentAsString().contains("content"));
+    assertTrue(response.getContentAsString().contains("totalElements"));
   }
 
   @Test
-  @DisplayName("the list of ACTIVE e-services is empty")
-  void testGetEservicesActive_whenEservicesIsOffline_thenCheckEservicesIsOnline() throws Exception {
-    Mockito.when(service.getEservicesReadyForPolling(2, 0)).thenReturn(null);
+  @DisplayName("the retrieve of e-services ready for polling is successful when there are no ready e-services")
+  void testGetEservicesReadyForPolling_whenNoEservicesAreReadyGivenValidLimitAndOffset_thenReturns2xxSuccessful()
+      throws Exception {
+    Integer limit = 10;
+    Integer offset = 0;
+
+    Mockito.when(service.getEservicesReadyForPolling(limit, offset)).thenReturn(null);
     MockHttpServletResponse response =
-        mockMvc.perform(get(apiGetEservicesActiveUrl).param("limit", "2").param("offset", "0"))
-            .andReturn().getResponse();
+        mockMvc.perform(get(apiGetEservicesActiveUrl).param("limit", String.valueOf(limit))
+            .param("offset", String.valueOf(offset))).andReturn().getResponse();
+
+    verify(service).getEservicesReadyForPolling(limit, offset);
 
     assertEquals(response.getStatus(), HttpStatus.OK.value());
     assertTrue(response.getContentAsString().isEmpty());
