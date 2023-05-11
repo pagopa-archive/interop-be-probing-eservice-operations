@@ -15,8 +15,8 @@ CREATE TABLE ${schema_name}.eservices (
    producer_name VARCHAR(2048) NOT NULL,
    state VARCHAR(255) NOT NULL,
    version_id UUID NOT NULL,
-   lock_version int NOT NULL,
-   version_number int NOT NULL,
+   lock_version INTEGER NOT NULL,
+   version_number INTEGER NOT NULL,
    CONSTRAINT pk_eservices PRIMARY KEY (id)
 );
 
