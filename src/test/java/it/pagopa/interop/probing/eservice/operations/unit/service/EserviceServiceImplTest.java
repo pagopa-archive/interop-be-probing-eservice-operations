@@ -17,13 +17,15 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
-import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
+import it.pagopa.interop.probing.eservice.operations.dtos.PollingEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
@@ -38,6 +40,7 @@ import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceProbingRequestRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
+import it.pagopa.interop.probing.eservice.operations.repository.query.builder.EserviceContentQueryBuilder;
 import it.pagopa.interop.probing.eservice.operations.repository.query.builder.EserviceViewQueryBuilder;
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 import it.pagopa.interop.probing.eservice.operations.service.impl.EserviceServiceImpl;
@@ -47,23 +50,31 @@ import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 
 @SpringBootTest
 class EserviceServiceImplTest {
+
   @Mock
   EserviceRepository eserviceRepository;
-  @Mock
-  EserviceProbingRequestRepository eserviceProbingRequestRepository;
+
   @Mock
   EserviceViewRepository eserviceViewRepository;
+
   @Mock
-  EserviceViewQueryBuilder eserviceViewRepositoryImpl;
+  EserviceViewQueryBuilder eserviceViewQueryBuilder;
+
+  @Mock
+  EserviceContentQueryBuilder eserviceContentQueryBuilder;
+
+  @Mock
+  EserviceProbingRequestRepository eserviceProbingRequestRepository;
 
   @Mock
   EnumUtilities enumUtilities;
 
-  @Mock
+  @Spy
   AbstractMapper mapstructMapper;
 
   @Mock
   Logger logger;
+
   @InjectMocks
   EserviceService service = new EserviceServiceImpl();
 
@@ -72,17 +83,20 @@ class EserviceServiceImplTest {
   private final Long eserviceRecordId = 1L;
   private Eservice testService;
   private EserviceProbingRequest testEserviceProbingRequest;
+
   private UpdateEserviceStateDto updateEserviceStateDto;
 
   private UpdateEserviceProbingStateDto updateEserviceProbingStateDto;
 
   private UpdateEserviceFrequencyDto updateEserviceFrequencyDto;
 
-  private SaveEserviceDto saveEserviceDto;
-
   private UpdateEserviceLastRequestDto updateEserviceLastRequestDto;
 
-  List<Producer> ProducerExpectedList;
+  private SaveEserviceDto saveEserviceDto;
+
+  private EserviceView eserviceView;
+
+  private EserviceContent eserviceContent;
 
   @BeforeEach
   void setup() {
@@ -105,6 +119,18 @@ class EserviceServiceImplTest {
             .newPollingFrequency(5).newPollingStartTime(OffsetTime.of(8, 0, 0, 0, ZoneOffset.UTC))
             .newPollingEndTime(OffsetTime.of(20, 0, 0, 0, ZoneOffset.UTC)).build();
 
+    eserviceView = EserviceView.builder().basePath(new String[] {"test-1"}).eserviceId(eServiceId)
+        .eserviceName("Eservice name test").producerName("Eservice producer test")
+        .technology(EserviceTechnology.REST).versionId(versionId).versionNumber(1)
+        .state(EserviceInteropState.INACTIVE)
+        .lastRequest(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC))
+        .responseReceived(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC)).probingEnabled(true)
+        .pollingFrequency(5).pollingStartTime(OffsetTime.of(8, 0, 0, 0, ZoneOffset.UTC))
+        .pollingEndTime(OffsetTime.of(20, 0, 0, 0, ZoneOffset.UTC)).build();
+
+    eserviceContent = EserviceContent.builder().basePath(List.of("base-path")).eserviceRecordId(1L)
+        .technology(EserviceTechnology.REST).build();
+
     updateEserviceLastRequestDto =
         UpdateEserviceLastRequestDto.builder().eserviceRecordId(eserviceRecordId)
             .lastRequest(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC)).build();
@@ -112,7 +138,6 @@ class EserviceServiceImplTest {
     testEserviceProbingRequest = EserviceProbingRequest.builder().eserviceRecordId(eserviceRecordId)
         .lastRequest(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC))
         .eservice(testService).build();
-
 
   }
 
@@ -221,6 +246,105 @@ class EserviceServiceImplTest {
     assertTrue(searchEserviceResponse.getContent().isEmpty());
   }
 
+  @Test
+  @DisplayName("given a list of all state values as parameter, service returns SearchEserviceResponse object with content not empty")
+  void testSearchEservice_whenGivenValidSizeAndPageNumberAndStatusValues_thenReturnsSearchEserviceResponseWithContentNotEmpty() {
+    Mockito
+        .when(eserviceViewRepository.findAll(ArgumentMatchers.<Specification<EserviceView>>any(),
+            ArgumentMatchers.any(OffsetLimitPageable.class)))
+        .thenReturn(new PageImpl<EserviceView>(List.of(eserviceView)));
+
+    Mockito.when(mapstructMapper.toSearchEserviceContent(Mockito.any()))
+        .thenReturn(EserviceContent.builder().eserviceName(eserviceView.getEserviceName())
+            .producerName(eserviceView.getProducerName())
+            .basePath(List.of(eserviceView.getBasePath())).technology(eserviceView.getTechnology())
+            .responseReceived(eserviceView.getResponseReceived())
+            .state(eserviceView.getState().equals(EserviceInteropState.ACTIVE)
+                ? EserviceMonitorState.ONLINE
+                : EserviceMonitorState.OFFLINE)
+            .build());
+
+    Mockito.when(enumUtilities.convertListFromMonitorToPdnd(List.of(EserviceMonitorState.values())))
+        .thenReturn(List.of(EserviceInteropState.ACTIVE.getValue(),
+            EserviceInteropState.INACTIVE.getValue()));
+
+    SearchEserviceResponse searchEserviceResponse = service.searchEservices(2, 0, "Eservice-Name",
+        "Eservice-Producer-Name", 1, List.of(EserviceMonitorState.values()));
+
+    assertTrue(eserviceView.getState().equals(EserviceInteropState.ACTIVE)
+        ? searchEserviceResponse.getContent().get(0).getState().equals(EserviceMonitorState.ONLINE)
+        : searchEserviceResponse.getContent().get(0).getState()
+            .equals(EserviceMonitorState.OFFLINE));
+  }
+
+  @Test
+  @DisplayName("given status n/d as parameter, service returns SearchEserviceResponse object with content empty")
+  void testSearchEservice_whenGivenValidSizeAndPageNumberAndStatusND_thenReturnsSearchEserviceResponseWithContentEmpty() {
+    Mockito
+        .when(eserviceViewQueryBuilder.findAllWithNDState(ArgumentMatchers.eq(2),
+            ArgumentMatchers.eq(0), ArgumentMatchers.eq("Eservice-Name"),
+            ArgumentMatchers.eq("Eservice-Producer-Name"), ArgumentMatchers.eq(1),
+            ArgumentMatchers.eq(List.of()), ArgumentMatchers.anyInt()))
+        .thenReturn(new PageImpl<EserviceView>(List.of()));
+
+    Mockito.when(enumUtilities.convertListFromMonitorToPdnd(List.of(EserviceMonitorState.N_D)))
+        .thenReturn(List.of());
+
+    Mockito.when(mapstructMapper.toSearchEserviceContent(Mockito.any()))
+        .thenReturn(EserviceContent.builder().build());
+
+    SearchEserviceResponse searchEserviceResponse = service.searchEservices(2, 0, "Eservice-Name",
+        "Eservice-Producer-Name", 1, List.of(EserviceMonitorState.N_D));
+
+    assertTrue(searchEserviceResponse.getContent().isEmpty());
+  }
+
+  @Test
+  @DisplayName("given status online as parameter, service returns SearchEserviceResponse object with content empty")
+  void testSearchEservice_whenGivenValidSizeAndPageNumberAndStatusONLINE_thenReturnsSearchEserviceResponseWithContentEmpty() {
+    Mockito
+        .when(eserviceViewQueryBuilder.findAllWithoutNDState(ArgumentMatchers.eq(2),
+            ArgumentMatchers.eq(0), ArgumentMatchers.eq("Eservice-Name"),
+            ArgumentMatchers.eq("Eservice-Producer-Name"), ArgumentMatchers.eq(1),
+            ArgumentMatchers.eq(List.of(EserviceInteropState.ACTIVE.getValue())),
+            ArgumentMatchers.anyInt()))
+        .thenReturn(new PageImpl<EserviceView>(List.of(eserviceView)));
+
+    Mockito.when(enumUtilities.convertListFromMonitorToPdnd(List.of(EserviceMonitorState.ONLINE)))
+        .thenReturn(List.of(EserviceInteropState.ACTIVE.getValue()));
+
+    Mockito.when(mapstructMapper.toSearchEserviceContent(Mockito.any()))
+        .thenReturn(EserviceContent.builder().eserviceName(eserviceView.getEserviceName())
+            .producerName(eserviceView.getProducerName())
+            .basePath(List.of(eserviceView.getBasePath())).technology(eserviceView.getTechnology())
+            .responseReceived(eserviceView.getResponseReceived())
+            .state(eserviceView.getState().equals(EserviceInteropState.ACTIVE)
+                ? EserviceMonitorState.ONLINE
+                : EserviceMonitorState.OFFLINE)
+            .build());
+
+    SearchEserviceResponse searchEserviceResponse = service.searchEservices(2, 0, "Eservice-Name",
+        "Eservice-Producer-Name", 1, List.of(EserviceMonitorState.ONLINE));
+
+    assertTrue(eserviceView.getState().equals(EserviceInteropState.ACTIVE)
+        ? searchEserviceResponse.getContent().get(0).getState().equals(EserviceMonitorState.ONLINE)
+        : searchEserviceResponse.getContent().get(0).getState()
+            .equals(EserviceMonitorState.OFFLINE));
+  }
+
+  @Test
+  @DisplayName("service returns PollingEserviceResponse object with content not empty")
+  void testGetEservicesReadyForPolling_whenGivenValidLimitAndOffset_thenReturnsPollingEserviceResponse() {
+    List<EserviceContent> eserviceContentList = List.of(eserviceContent);
+    Mockito.when(eserviceContentQueryBuilder.findAllEservicesReadyForPolling(2, 0))
+        .thenReturn(new PageImpl<EserviceContent>(eserviceContentList));
+
+    PollingEserviceResponse pollingEserviceResponseExpected =
+        service.getEservicesReadyForPolling(2, 0);
+
+    assertEquals(eserviceContentList, pollingEserviceResponseExpected.getContent());
+    assertEquals(eserviceContentList.size(), pollingEserviceResponseExpected.getTotalElements());
+  }
 
   @Test
   @DisplayName("e-service last request has correctly updated")
@@ -250,5 +374,4 @@ class EserviceServiceImplTest {
     verify(eserviceProbingRequestRepository).save(Mockito.any(EserviceProbingRequest.class));
 
   }
-
 }

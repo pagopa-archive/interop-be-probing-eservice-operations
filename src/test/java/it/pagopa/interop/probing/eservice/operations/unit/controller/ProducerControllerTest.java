@@ -33,7 +33,7 @@ class ProducerControllerTest {
   @MockBean
   private ProducerService service;
 
-  private List<Producer> ProducerExpectedList;
+  private List<Producer> producerExpectedList;
 
   @Test
   @DisplayName("given a valid producer name, then returns a non-empty list")
@@ -41,9 +41,9 @@ class ProducerControllerTest {
       throws Exception {
     Producer producer = Producer.builder().build();
 
-    ProducerExpectedList = List.of(producer);
+    producerExpectedList = List.of(producer);
     Mockito.when(service.getEservicesProducers(2, 0, "ProducerName-Test"))
-        .thenReturn(ProducerExpectedList);
+        .thenReturn(producerExpectedList);
     MockHttpServletResponse response = mockMvc
         .perform(get(apiGetEservicesProducersUrl)
             .params(getMockRequestParamsGetEservicesProducers("2", "0", "ProducerName-Test")))

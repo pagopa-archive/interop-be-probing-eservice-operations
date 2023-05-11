@@ -266,6 +266,52 @@ paths:
                 detail: 'There is a problem processing the request on the server.'
                 traceId: 'string'
                 errors: [ { 'code': '000-1234', 'detail': 'The server is currently down for maintenance. Please try again later.' } ]
+                
+  '/eservices/mainData/{eserviceRecordId}':
+    get:
+      summary: Retrieve e-service main data
+      description: Retrieve e-service main data 
+      tags:
+        - Read
+      operationId: getEserviceMainData
+      parameters:
+        - name: eserviceRecordId
+          in: path
+          required: true
+          description: the e-service's record id
+          schema:
+           type: integer
+           format: int64
+      responses:
+        '200':
+          description: >-
+            The main data of the service got successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MainDataEserviceResponse'
+        '400':
+          description: >-
+            The provided input data is invalid
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':                  
+          description: >-
+            A managed error has occured during the request elaboration
+          content:                        
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: string
+                status: 500 
+                title: 'Internal Server Error'
+                detail: 'There is a problem processing the request on the server.'
+                traceId: 'string'
+                errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please ry again later.'}]
+
   
   '/producers':
     get:
@@ -619,6 +665,19 @@ components:
           title: total elements
           type: integer
           format: int64
+    
+    MainDataEserviceResponse:
+      type: object
+      properties:
+        eserviceName:
+          title: Service name
+          type: string
+        versionNumber:
+          title: the e-service's version
+          type: integer
+        producerName:
+          title: Service producer name
+          type: string
 
     Producer:
       type: object

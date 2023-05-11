@@ -16,6 +16,7 @@ package it.pagopa.interop.probing.eservice.operations.service;
 
 import java.util.List;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
+import it.pagopa.interop.probing.eservice.operations.dtos.MainDataEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.PollingEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
@@ -95,4 +96,15 @@ public interface EserviceService {
    * @return the eservices ready for polling
    */
   public PollingEserviceResponse getEservicesReadyForPolling(Integer limit, Integer offset);
+
+
+  /**
+   * Get the main data of the selected service.
+   *
+   * @param eserviceRecordId the eservice record id
+   * @return the eservice main data
+   * @throws EserviceNotFoundException
+   */
+  public MainDataEserviceResponse getEserviceMainData(Long eserviceRecordId)
+      throws EserviceNotFoundException;
 }
