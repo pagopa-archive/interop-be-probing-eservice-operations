@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
+import it.pagopa.interop.probing.eservice.operations.dtos.MainDataEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.PollingEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
@@ -197,6 +198,16 @@ public class EserviceServiceImpl implements EserviceService {
 
     eserviceProbingRequestRepository.save(eServiceToUpdate);
     logger.logMessageLastRequestUpdated(eServiceToUpdate);
+  }
+
+  @Override
+  public MainDataEserviceResponse getEserviceMainData(Long eserviceRecordId)
+      throws EserviceNotFoundException {
+    logger.logMessageEserviceMainData(eserviceRecordId);
+    Eservice eService = eserviceRepository.findById(eserviceRecordId)
+        .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));;
+    return MainDataEserviceResponse.builder().eserviceName(eService.eserviceName())
+        .versionNumber(eService.versionNumber()).producerName(eService.producerName()).build();
   }
 
 }

@@ -25,4 +25,6 @@ public interface Logger {
   void logMessageEserviceReadyForPolling(Integer limit, Integer offset);
 
   void logMessageLastRequestUpdated(EserviceProbingRequest eServiceToUpdate);
+
+  void logMessageEserviceMainData(Long eserviceRecordId);
 }

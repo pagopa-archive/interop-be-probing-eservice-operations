@@ -74,4 +74,9 @@ public class LoggerImpl implements Logger {
     log.info("e-services ready for polling, limit={}, offset={}", limit, offset);
 
   }
+
+  @Override
+  public void logMessageEserviceMainData(Long eserviceRecordId) {
+    log.info("e-service main data. eserviceRecordId={}", eserviceRecordId);
+  }
 }
