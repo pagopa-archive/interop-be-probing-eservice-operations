@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import it.pagopa.interop.probing.eservice.operations.dtos.Problem;
 import it.pagopa.interop.probing.eservice.operations.dtos.ProblemError;
 import it.pagopa.interop.probing.eservice.operations.util.constant.ErrorMessages;
-import it.pagopa.interop.probing.eservice.operations.util.constant.LoggingPlaceholders;
+import it.pagopa.interop.probing.eservice.operations.util.logging.LoggingPlaceholders;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
