@@ -62,7 +62,7 @@ public class EserviceContentQueryBuilder {
 
     return new PageImpl<>(pollingActiveEserviceContent,
         PageRequest.of(offset, limit,
-            Sort.by(Eservice_.ESERVICE_RECORD_ID).ascending()),
+            Sort.by(EserviceView_.ESERVICE_RECORD_ID).ascending()),
         pollingActiveEserviceContent.size());
   }
 }

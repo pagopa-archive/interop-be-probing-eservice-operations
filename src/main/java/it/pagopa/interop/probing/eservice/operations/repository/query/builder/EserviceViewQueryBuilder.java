@@ -126,6 +126,6 @@ public class EserviceViewQueryBuilder {
 
   private PageRequest getPageRequest(Integer limit, Integer offset) {
     return PageRequest.of(offset, limit,
-        Sort.by(Eservice_.ESERVICE_NAME).ascending());
+        Sort.by(EserviceView_.ESERVICE_NAME).ascending());
   }
 }
