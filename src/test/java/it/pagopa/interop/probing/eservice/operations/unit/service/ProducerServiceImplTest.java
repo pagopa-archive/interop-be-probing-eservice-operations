@@ -42,10 +42,10 @@ class ProducerServiceImplTest {
   @DisplayName("given producerName as parameter, service returns list of producers")
   void testGetEservicesProducers_whenProdcerNameAsParameter_thenReturnsListProducers()
       throws EserviceNotFoundException {
-    Mockito.when(producerQueryBuilder.findAllProducersByProducerName(producerNameInput))
+    Mockito.when(producerQueryBuilder.findAllProducersByProducerName(10, 0, producerNameInput))
         .thenReturn(producerInput);
 
-    List<Producer> producers = service.getEservicesProducers(producerNameInput);
+    List<Producer> producers = service.getEservicesProducers(10, 0, producerNameInput);
 
     assertEquals(producerInput, producers);
   }

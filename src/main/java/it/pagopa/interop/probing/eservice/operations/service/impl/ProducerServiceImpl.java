@@ -18,9 +18,10 @@ public class ProducerServiceImpl implements ProducerService {
   private ProducerQueryBuilder producerQueryBuilder;
 
   @Override
-  public List<Producer> getEservicesProducers(String producerName) {
+  public List<Producer> getEservicesProducers(Integer limit, Integer offset, String producerName) {
     logger.logMessageSearchProducer(producerName);
-    return producerQueryBuilder.findAllProducersByProducerName(producerName);
+
+    return producerQueryBuilder.findAllProducersByProducerName(limit, offset, producerName);
   }
 
 }
