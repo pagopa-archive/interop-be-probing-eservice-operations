@@ -1,5 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.repository.query.builder;
 
+import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 import java.sql.Timestamp;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -61,7 +62,7 @@ public class EserviceContentQueryBuilder {
 
     return new PageImpl<>(pollingActiveEserviceContent,
         PageRequest.of(offset, limit,
-            Sort.by(ProjectConstants.ESERVICES_RECORD_ID_FIELD).ascending()),
+            Sort.by(Eservice_.ESERVICE_RECORD_ID).ascending()),
         pollingActiveEserviceContent.size());
   }
 }

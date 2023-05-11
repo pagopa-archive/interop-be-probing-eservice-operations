@@ -24,7 +24,7 @@ ALTER TABLE ${schema_name}.eservices ADD CONSTRAINT UQ_eservices_eservice_id_ver
 
 CREATE TABLE ${schema_name}.eservice_probing_responses (
 	response_received timestamptz NOT NULL,
-	response_status VARCHAR(2) NOT NULL,
+	status VARCHAR(2) NOT NULL,
 	eservices_record_id int8 NOT NULL,
 	CONSTRAINT eservice_probing_responses_pkey PRIMARY KEY (eservices_record_id)
 );

@@ -2,6 +2,8 @@ package it.pagopa.interop.probing.eservice.operations.integration.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +51,7 @@ class EserviceViewRepositoryTest {
         EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 1);
 
     Page<EserviceView> resultFindAll = repository.findAll(specs,
-        new OffsetLimitPageable(0, 2, Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()));
+        new OffsetLimitPageable(0, 2, Sort.by(Eservice_.ESERVICE_NAME).ascending()));
 
     assertNotNull(resultFindAll);
     assertEquals(1, resultFindAll.getTotalElements());
@@ -63,7 +65,7 @@ class EserviceViewRepositoryTest {
         EserviceViewSpecs.searchSpecBuilder("e-service Name", null, 0);
 
     Page<EserviceView> resultFindAll = repository.findAll(specs,
-        new OffsetLimitPageable(0, 2, Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()));
+        new OffsetLimitPageable(0, 2, Sort.by(Eservice_.ESERVICE_NAME).ascending()));
 
     assertNotNull(resultFindAll);
     assertEquals(0, resultFindAll.getTotalElements());

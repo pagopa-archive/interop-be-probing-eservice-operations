@@ -37,7 +37,7 @@ public class EserviceProbingResponse implements Serializable {
   private OffsetDateTime responseReceived;
 
   @NotNull(message = "must not be null")
-  @Column(name = "response_status")
+  @Column(name = "status")
   private EserviceStatus responseStatus;
 
   @MapsId

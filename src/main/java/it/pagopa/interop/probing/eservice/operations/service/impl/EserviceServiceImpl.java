@@ -1,5 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.service.impl;
 
+import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -134,7 +135,7 @@ public class EserviceServiceImpl implements EserviceService {
       eserviceViewPagable = eserviceViewRepository.findAll(
           EserviceViewSpecs.searchSpecBuilder(eserviceName, producerName, versionNumber),
           new OffsetLimitPageable(offset, limit,
-              Sort.by(ProjectConstants.ESERVICE_NAME_FIELD).ascending()));
+              Sort.by(Eservice_.ESERVICE_NAME).ascending()));
     } else if (state.contains(EserviceMonitorState.N_D)) {
       eserviceViewPagable = eserviceViewQueryBuilder.findAllWithNDState(limit, offset, eserviceName,
           producerName, versionNumber, stateBE, toleranceMultiplierInMinutes);

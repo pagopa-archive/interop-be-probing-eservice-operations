@@ -1,5 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.repository.query.builder;
 
+import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -125,6 +126,6 @@ public class EserviceViewQueryBuilder {
 
   private PageRequest getPageRequest(Integer limit, Integer offset) {
     return PageRequest.of(offset, limit,
-        Sort.by(ProjectConstants.ESERVICE_NAME_COLUMN_NAME).ascending());
+        Sort.by(Eservice_.ESERVICE_NAME).ascending());
   }
 }
