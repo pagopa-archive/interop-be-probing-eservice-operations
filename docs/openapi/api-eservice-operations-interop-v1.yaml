@@ -274,6 +274,21 @@ paths:
         - Read
       operationId: getEservicesProducers
       parameters:
+        - name: limit
+          in: query
+          required: true
+          description: the e-service's page limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          required: true
+          description: the page's offset
+          schema:
+            type: integer
+            minimum: 0
         - name: producerName
           in: query
           required: false

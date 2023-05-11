@@ -8,14 +8,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.service.ProducerService;
 import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;
+import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 
 @Service
 public class ProducerServiceImpl implements ProducerService {
@@ -26,7 +25,7 @@ public class ProducerServiceImpl implements ProducerService {
   private EntityManager entityManager;
 
   @Override
-  public List<Producer> getEservicesProducers(String producerName) {
+  public List<Producer> getEservicesProducers(Integer limit, Integer offset, String producerName) {
     logger.logMessageSearchProducer(producerName);
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<Producer> query = cb.createQuery(Producer.class);
@@ -38,7 +37,8 @@ public class ProducerServiceImpl implements ProducerService {
         "%" + producerName.toUpperCase() + "%");
 
     query.where(predicate);
-    TypedQuery<Producer> q = entityManager.createQuery(query).setFirstResult(0).setMaxResults(10);
+    TypedQuery<Producer> q =
+        entityManager.createQuery(query).setFirstResult(offset).setMaxResults(limit);
 
     return q.getResultList();
   }

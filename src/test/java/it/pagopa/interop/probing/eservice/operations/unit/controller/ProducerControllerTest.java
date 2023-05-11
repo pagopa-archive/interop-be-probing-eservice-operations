@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import java.util.ArrayList;
 import java.util.List;
-
-import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.LinkedMultiValueMap;
 import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
 import it.pagopa.interop.probing.eservice.operations.service.ProducerService;
 
@@ -43,11 +42,12 @@ class ProducerControllerTest {
     Producer producer = Producer.builder().build();
 
     ProducerExpectedList = List.of(producer);
-    Mockito.when(service.getEservicesProducers("ProducerName-Test"))
+    Mockito.when(service.getEservicesProducers(2, 0, "ProducerName-Test"))
         .thenReturn(ProducerExpectedList);
-    MockHttpServletResponse response =
-        mockMvc.perform(get(apiGetEservicesProducersUrl).param("producerName", "ProducerName-Test"))
-            .andReturn().getResponse();
+    MockHttpServletResponse response = mockMvc
+        .perform(get(apiGetEservicesProducersUrl)
+            .params(getMockRequestParamsGetEservicesProducers("2", "0", "ProducerName-Test")))
+        .andReturn().getResponse();
 
     assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     assertThat(response.getContentAsString()).isNotEmpty();
@@ -59,12 +59,23 @@ class ProducerControllerTest {
   @DisplayName("given a valid producer name with no matching records, then returns an empty list")
   void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseListEmpty()
       throws Exception {
-    Mockito.when(service.getEservicesProducers("ProducerName-Test"))
+    Mockito.when(service.getEservicesProducers(2, 0, "ProducerName-Test"))
         .thenReturn(new ArrayList<Producer>());
-    MockHttpServletResponse response =
-        mockMvc.perform(get(apiGetEservicesProducersUrl).param("producerName", "ProducerName-Test"))
-            .andReturn().getResponse();
+    MockHttpServletResponse response = mockMvc
+        .perform(get(apiGetEservicesProducersUrl)
+            .params(getMockRequestParamsGetEservicesProducers("2", "0", "ProducerName-Test")))
+        .andReturn().getResponse();
     assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    assertThat(response.getContentAsString().equals("[]"));
+  }
+
+  private LinkedMultiValueMap<String, String> getMockRequestParamsGetEservicesProducers(
+      String limit, String offset, String producerName) {
+    LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
+    requestParams.add("offset", offset);
+    requestParams.add("limit", limit);
+    requestParams.add("producerName", producerName);
+    return requestParams;
   }
 
 }
