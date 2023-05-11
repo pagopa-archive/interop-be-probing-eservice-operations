@@ -18,7 +18,8 @@ public class ProducerQueryBuilder {
   @PersistenceContext
   private EntityManager entityManager;
 
-  public List<Producer> findAllProducersByProducerName(String producerName) {
+  public List<Producer> findAllProducersByProducerName(Integer limit, Integer offset,
+      String producerName) {
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<Producer> query = cb.createQuery(Producer.class);
     Root<Eservice> root = query.from(Eservice.class);
@@ -29,7 +30,8 @@ public class ProducerQueryBuilder {
         "%" + producerName.toUpperCase() + "%");
 
     query.where(predicate);
-    TypedQuery<Producer> q = entityManager.createQuery(query).setFirstResult(0).setMaxResults(10);
+    TypedQuery<Producer> q =
+        entityManager.createQuery(query).setFirstResult(offset).setMaxResults(limit);
 
     return q.getResultList();
   }

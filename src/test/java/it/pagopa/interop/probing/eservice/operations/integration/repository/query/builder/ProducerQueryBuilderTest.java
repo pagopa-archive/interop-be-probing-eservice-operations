@@ -44,7 +44,7 @@ class ProducerQueryBuilderTest {
   @Test
   @DisplayName("given valid producer name, a producer is found ")
   void getEservicesProducers_givenValidProducerName_returnsProducerList() {
-    List<Producer> producers = producerQueryBuilder.findAllProducersByProducerName("PROD");
+    List<Producer> producers = producerQueryBuilder.findAllProducersByProducerName(10, 0, "PROD");
     assertEquals(1, producers.size());
     assertEquals("producer1", producers.get(0).getValue());
   }
@@ -52,7 +52,8 @@ class ProducerQueryBuilderTest {
   @Test
   @DisplayName("given a random producer name, no producer is found")
   void getEservicesProducers_givenProducerName_returnsProducerList() {
-    List<Producer> producers = producerQueryBuilder.findAllProducersByProducerName("Eservice name");
+    List<Producer> producers =
+        producerQueryBuilder.findAllProducersByProducerName(10, 0, "Eservice name");
     assertEquals(0, producers.size(), "no producer with the given name was found");
   }
 }
