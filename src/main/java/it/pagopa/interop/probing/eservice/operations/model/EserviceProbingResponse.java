@@ -1,5 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.model;
 
+import it.pagopa.interop.probing.eservice.operations.util.EserviceStatus;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import javax.persistence.Column;
@@ -34,6 +35,10 @@ public class EserviceProbingResponse implements Serializable {
   @Column(name = "response_received", columnDefinition = "TIMESTAMP WITH TIME ZONE")
   @NotNull(message = "must not be null")
   private OffsetDateTime responseReceived;
+
+  @NotNull(message = "must not be null")
+  @Column(name = "status")
+  private EserviceStatus responseStatus;
 
   @MapsId
   @OneToOne(fetch = FetchType.LAZY)

@@ -1,4 +1,4 @@
-package it.pagopa.interop.probing.eservice.operations.util.constant;
+package it.pagopa.interop.probing.eservice.operations.util.logging;
 
 public class LoggingPlaceholders {
 	private LoggingPlaceholders() {

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import it.pagopa.interop.probing.eservice.operations.util.EserviceStatus;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
@@ -37,6 +38,7 @@ class EserviceProbingResponseTest {
         .producerName("producer1").versionNumber(1).build();
     probingResponse = EserviceProbingResponse.builder()
         .responseReceived(OffsetDateTime.of(2023, 12, 12, 1, 0, 0, 0, ZoneOffset.UTC))
+        .responseStatus(EserviceStatus.OK)
         .eservice(eservice).build();
   }
 
@@ -54,9 +56,18 @@ class EserviceProbingResponseTest {
   }
 
   @Test
-  @DisplayName("Response isn't saved due to null last request timestamp")
+  @DisplayName("Response isn't saved due to null response received timestamp")
   void testEserviceProbingResponseEntity_whenResponseReceivedIsNull_throwsException() {
     probingResponse.responseReceived(null);
+    assertThrows(ConstraintViolationException.class,
+        () -> testEntityManager.persistAndFlush(probingResponse),
+        "Response should not be saved because response received shouldn't be null");
+  }
+
+  @Test
+  @DisplayName("Response isn't saved due to null response status")
+  void testEserviceProbingResponseEntity_whenResponseStatusIsNull_throwsException() {
+    probingResponse.responseStatus(null);
     assertThrows(ConstraintViolationException.class,
         () -> testEntityManager.persistAndFlush(probingResponse),
         "Response should not be saved because response received shouldn't be null");

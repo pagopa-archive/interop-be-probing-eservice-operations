@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import it.pagopa.interop.probing.eservice.operations.util.constant.LoggingPlaceholders;
+import it.pagopa.interop.probing.eservice.operations.util.logging.LoggingPlaceholders;
 
 @Component
 public class MDCWebFilter extends OncePerRequestFilter {
