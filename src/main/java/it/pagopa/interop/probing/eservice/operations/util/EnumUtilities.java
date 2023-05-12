@@ -35,16 +35,26 @@ public class EnumUtilities {
 
   public EserviceMonitorState fromPdndToMonitorState(EserviceView view) {
     return switch (view.getState()) {
-      case ACTIVE -> checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.ONLINE;
+      case ACTIVE -> checkND(view) ? EserviceMonitorState.N_D
+          : checkOFFLINE(view) ? EserviceMonitorState.OFFLINE : EserviceMonitorState.ONLINE;
       case INACTIVE -> checkND(view) ? EserviceMonitorState.N_D : EserviceMonitorState.OFFLINE;
       default -> throw new IllegalArgumentException("Invalid state {}= " + view.getState());
     };
+  }
+
+  public boolean fromEnumToBoolean(EserviceInteropState viewState) {
+    return viewState.equals(EserviceInteropState.ACTIVE);
   }
 
   public boolean checkND(EserviceView view) {
     return (!view.isProbingEnabled() || Objects.isNull(view.getLastRequest())
         || (isBeenToLongRequest(view) && isResponseReceivedBeforeLastRequest(view))
         || Objects.isNull(view.getResponseReceived()));
+  }
+
+  public boolean checkOFFLINE(EserviceView view) {
+    return Objects.nonNull(view.getResponseStatus())
+        && view.getResponseStatus().equals(EserviceStatus.KO);
   }
 
   private boolean isResponseReceivedBeforeLastRequest(EserviceView view) {

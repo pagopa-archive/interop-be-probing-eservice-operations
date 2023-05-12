@@ -312,6 +312,51 @@ paths:
                 traceId: 'string'
                 errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please ry again later.'}]
 
+  '/eservices/probingData/{eserviceRecordId}':
+    get:
+      summary: Retrive e-service probing data
+      description: Retrive e-service probing data 
+      tags:
+        - Read
+      operationId: getEserviceProbingData
+      parameters:
+        - name: eserviceRecordId
+          in: path
+          required: true
+          description: the e-service's record id
+          schema:
+           type: integer
+           format: int64
+      responses:
+        '200':
+          description: >-
+            The probing data of the service got successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProbingDataEserviceResponse'
+        '400':
+          description: >-
+            The provided input data is invalid
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':                  
+          description: >-
+            A managed error has occured during the request elaboration
+          content:                        
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: string
+                status: 500 
+                title: 'Internal Server Error'
+                detail: 'There is a problem processing the request on the server.'
+                traceId: 'string'
+                errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please ry again later.'}]   
+                
   
   '/producers':
     get:
@@ -678,6 +723,22 @@ components:
         producerName:
           title: Service producer name
           type: string
+    
+    ProbingDataEserviceResponse:
+      type: object
+      properties:
+        probingEnabled:
+          title: probing activated
+          type: boolean
+        state:
+          $ref: '#/components/schemas/EserviceMonitorState'
+        responseReceived:
+          title: last response date
+          type: string
+          format: date-time
+        eserviceActive:
+          title: eservice active
+          type: boolean
 
     Producer:
       type: object
