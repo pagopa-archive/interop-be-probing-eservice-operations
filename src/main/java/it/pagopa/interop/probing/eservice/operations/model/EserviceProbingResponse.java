@@ -1,10 +1,11 @@
 package it.pagopa.interop.probing.eservice.operations.model;
 
-import it.pagopa.interop.probing.eservice.operations.util.EserviceStatus;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -12,6 +13,7 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,8 +39,9 @@ public class EserviceProbingResponse implements Serializable {
   private OffsetDateTime responseReceived;
 
   @NotNull(message = "must not be null")
+  @Enumerated(EnumType.STRING)
   @Column(name = "status")
-  private EserviceStatus responseStatus;
+  private EserviceStatus status;
 
   @MapsId
   @OneToOne(fetch = FetchType.LAZY)

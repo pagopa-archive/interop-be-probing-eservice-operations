@@ -24,6 +24,7 @@ import org.springframework.data.jpa.domain.Specification;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStatus;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.dtos.PollingEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
@@ -32,12 +33,15 @@ import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceLastRequestDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceResponseReceivedDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingRequest;
+import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingResponse;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceProbingRequestRepository;
+import it.pagopa.interop.probing.eservice.operations.repository.EserviceProbingResponseRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.query.builder.EserviceContentQueryBuilder;
@@ -67,6 +71,9 @@ class EserviceServiceImplTest {
   EserviceProbingRequestRepository eserviceProbingRequestRepository;
 
   @Mock
+  EserviceProbingResponseRepository eserviceProbingResponseRepository;
+
+  @Mock
   EnumUtilities enumUtilities;
 
   @Spy
@@ -82,6 +89,7 @@ class EserviceServiceImplTest {
   private final UUID versionId = UUID.randomUUID();
   private final Long eserviceRecordId = 1L;
   private Eservice testService;
+
   private EserviceProbingRequest testEserviceProbingRequest;
 
   private UpdateEserviceStateDto updateEserviceStateDto;
@@ -92,11 +100,15 @@ class EserviceServiceImplTest {
 
   private UpdateEserviceLastRequestDto updateEserviceLastRequestDto;
 
+  private UpdateEserviceResponseReceivedDto updateEserviceResponseReceivedDto;
+
   private SaveEserviceDto saveEserviceDto;
 
   private EserviceView eserviceView;
 
   private EserviceContent eserviceContent;
+
+  private EserviceProbingResponse eserviceProbingResponse;
 
   @BeforeEach
   void setup() {
@@ -119,24 +131,34 @@ class EserviceServiceImplTest {
             .newPollingFrequency(5).newPollingStartTime(OffsetTime.of(8, 0, 0, 0, ZoneOffset.UTC))
             .newPollingEndTime(OffsetTime.of(20, 0, 0, 0, ZoneOffset.UTC)).build();
 
+    updateEserviceLastRequestDto =
+        UpdateEserviceLastRequestDto.builder().eserviceRecordId(eserviceRecordId)
+            .lastRequest(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC)).build();
+
+    updateEserviceResponseReceivedDto = UpdateEserviceResponseReceivedDto.builder()
+        .eserviceRecordId(eserviceRecordId).status(EserviceStatus.OK)
+        .responseReceived(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC)).build();
+
     eserviceView = EserviceView.builder().basePath(new String[] {"test-1"}).eserviceId(eServiceId)
         .eserviceName("Eservice name test").producerName("Eservice producer test")
         .technology(EserviceTechnology.REST).versionId(versionId).versionNumber(1)
         .state(EserviceInteropState.INACTIVE)
         .lastRequest(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC))
-        .responseReceived(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC)).probingEnabled(true)
-        .pollingFrequency(5).pollingStartTime(OffsetTime.of(8, 0, 0, 0, ZoneOffset.UTC))
+        .responseReceived(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC))
+        .probingEnabled(true).pollingFrequency(5)
+        .pollingStartTime(OffsetTime.of(8, 0, 0, 0, ZoneOffset.UTC))
         .pollingEndTime(OffsetTime.of(20, 0, 0, 0, ZoneOffset.UTC)).build();
 
     eserviceContent = EserviceContent.builder().basePath(List.of("base-path")).eserviceRecordId(1L)
         .technology(EserviceTechnology.REST).build();
 
-    updateEserviceLastRequestDto =
-        UpdateEserviceLastRequestDto.builder().eserviceRecordId(eserviceRecordId)
-            .lastRequest(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC)).build();
-
     testEserviceProbingRequest = EserviceProbingRequest.builder().eserviceRecordId(eserviceRecordId)
         .lastRequest(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC))
+        .eservice(testService).build();
+
+    eserviceProbingResponse = EserviceProbingResponse.builder().eserviceRecordId(eserviceRecordId)
+        .status(EserviceStatus.OK)
+        .responseReceived(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC))
         .eservice(testService).build();
 
   }
@@ -372,6 +394,37 @@ class EserviceServiceImplTest {
         .thenReturn(testEserviceProbingRequest);
     service.updateLastRequest(updateEserviceLastRequestDto);
     verify(eserviceProbingRequestRepository).save(Mockito.any(EserviceProbingRequest.class));
+
+  }
+
+  @Test
+  @DisplayName("e-service reponse received has correctly updated")
+  void testUpdateResponseReceived_whenEserviceIsFoundGivenCorrectEserviceRecordId_thenResponseReceivedIsUpdated()
+      throws EserviceNotFoundException {
+    Mockito.when(eserviceProbingResponseRepository.findById(eserviceRecordId))
+        .thenReturn(Optional.of(eserviceProbingResponse));
+    Mockito.when(eserviceProbingResponseRepository.save(Mockito.any(EserviceProbingResponse.class)))
+        .thenReturn(eserviceProbingResponse);
+
+    service.updateResponseReceived(updateEserviceResponseReceivedDto);
+
+    assertEquals((OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC)),
+        eserviceProbingResponse.responseReceived());
+  }
+
+  @Test
+  @DisplayName("eservice probing response object has been created")
+  void testUpdateResponseReceived_whenEserviceIsFoundGivenCorrectEserviceRecordId_thenEserviceProbingResponseIsCreated()
+      throws EserviceNotFoundException {
+    Mockito.when(eserviceProbingResponseRepository.findById(eserviceRecordId))
+        .thenReturn(Optional.empty());
+    Mockito.when(eserviceRepository.findById(eserviceRecordId))
+        .thenReturn(Optional.of(testService));
+    Mockito.when(eserviceProbingResponseRepository.save(Mockito.any(EserviceProbingResponse.class)))
+        .thenReturn(eserviceProbingResponse);
+
+    service.updateResponseReceived(updateEserviceResponseReceivedDto);
+    verify(eserviceProbingResponseRepository).save(Mockito.any(EserviceProbingResponse.class));
 
   }
 }

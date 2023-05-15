@@ -33,10 +33,12 @@ import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateReq
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeLastRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.ChangeResponseReceived;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStatus;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.dtos.PollingEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
@@ -45,6 +47,7 @@ import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceLastRequestDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceResponseReceivedDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
@@ -73,6 +76,9 @@ class EserviceControllerTest {
   @Value("${api.updateLastRequest.url}")
   private String apiUpdateLastRequestUrl;
 
+  @Value("${api.updateResponseReceived.url}")
+  private String apiUpdateResponseReceivedUrl;
+
   @Autowired
   private MockMvc mockMvc;
 
@@ -95,6 +101,8 @@ class EserviceControllerTest {
 
   private ChangeLastRequest changeEserviceLastRequest;
 
+  private ChangeResponseReceived changeResponseReceived;
+
   private UpdateEserviceStateDto updateEserviceStateDto;
 
   private UpdateEserviceProbingStateDto updateEserviceProbingStateDto;
@@ -102,6 +110,8 @@ class EserviceControllerTest {
   private UpdateEserviceFrequencyDto updateEserviceFrequencyDto;
 
   private UpdateEserviceLastRequestDto updateEserviceLastRequestDto;
+
+  private UpdateEserviceResponseReceivedDto updateEserviceResponseReceivedDto;
 
   private SaveEserviceDto saveEserviceDto;
 
@@ -142,6 +152,14 @@ class EserviceControllerTest {
     updateEserviceLastRequestDto =
         UpdateEserviceLastRequestDto.builder().eserviceRecordId(eservicesRecordId)
             .lastRequest(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC)).build();
+
+    updateEserviceResponseReceivedDto = UpdateEserviceResponseReceivedDto.builder()
+        .eserviceRecordId(eservicesRecordId).status(EserviceStatus.OK)
+        .responseReceived(OffsetDateTime.of(2023, 8, 8, 10, 0, 0, 0, ZoneOffset.UTC)).build();
+
+    changeResponseReceived = ChangeResponseReceived.builder()
+        .responseReceived(OffsetDateTime.of(2023, 8, 8, 10, 0, 0, 0, ZoneOffset.UTC))
+        .status(EserviceStatus.OK).build();
 
     saveEserviceDto = SaveEserviceDto.builder().basePath(new String[] {"test-1"})
         .eserviceId(eServiceId).name("Eservice name test").producerName("Eservice producer test")
@@ -497,6 +515,55 @@ class EserviceControllerTest {
             .content(mapper.writeValueAsString(changeEserviceLastRequest));
     Mockito.doThrow(EserviceNotFoundException.class).when(service)
         .updateLastRequest(updateEserviceLastRequestDto);
+    mockMvc.perform(requestBuilder).andExpect(status().isNotFound());
+  }
+
+  @Test
+  @DisplayName("e-service response received gets updated")
+  void testUpdateResponseReceived_whenGivenValidEservicesRecordIdAndResponseReceived_thenEserviceProbingResponseIsUpdated()
+      throws Exception {
+    RequestBuilder requestBuilder =
+        MockMvcRequestBuilders.post(String.format(apiUpdateResponseReceivedUrl, eservicesRecordId))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(changeResponseReceived));
+    Mockito.doNothing().when(service).updateResponseReceived(updateEserviceResponseReceivedDto);
+    mockMvc.perform(requestBuilder).andExpect(status().isNoContent());
+  }
+
+  @Test
+  @DisplayName("e-service response received can't be updated because e-service record id request parameter is missing")
+  void testUpdateResponseReceived_whenEservicesRecordIdParameterIsMissing_thenThrows404Exception()
+      throws Exception {
+    RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/eservices/updateResponseReceived")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(mapper.writeValueAsString(changeResponseReceived));
+    Mockito.doThrow(EserviceNotFoundException.class).when(service)
+        .updateResponseReceived(updateEserviceResponseReceivedDto);
+    mockMvc.perform(requestBuilder).andExpect(status().isNotFound());
+  }
+
+  @Test
+  @DisplayName("e-service response received can't be updated because request body is missing")
+  void testUpdateResponseReceived_whenRequestBodyIsMissing_thenThrows400Exception()
+      throws Exception {
+    RequestBuilder requestBuilder =
+        MockMvcRequestBuilders.post(String.format(apiUpdateResponseReceivedUrl, eservicesRecordId))
+            .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(null));
+    Mockito.doThrow(EserviceNotFoundException.class).when(service)
+        .updateResponseReceived(updateEserviceResponseReceivedDto);
+    mockMvc.perform(requestBuilder).andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @DisplayName("e-service response received can't be updated because e-service does not exist")
+  void testUpdateResponseReceived_whenEserviceDoesNotExist_thenThrows404Exception()
+      throws Exception {
+    RequestBuilder requestBuilder =
+        MockMvcRequestBuilders.post(String.format(apiUpdateResponseReceivedUrl, eservicesRecordId))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(changeResponseReceived));
+    Mockito.doThrow(EserviceNotFoundException.class).when(service)
+        .updateResponseReceived(updateEserviceResponseReceivedDto);
     mockMvc.perform(requestBuilder).andExpect(status().isNotFound());
   }
 

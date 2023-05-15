@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingRequest;
+import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingResponse;
 import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +29,17 @@ public class LoggerImpl implements Logger {
         "e-service probing state has been updated to new state. eserviceId={}, versionId={}, probingEnabled={}",
         eServiceToUpdate.eserviceId(), eServiceToUpdate.versionId(),
         eServiceToUpdate.probingEnabled());
+  }
+
+  @Override
+  public void logMessageLastRequestUpdated(EserviceProbingRequest eServiceToUpdate) {
+    log.info("Last request has been updated. Service id={}", eServiceToUpdate.eserviceRecordId());
+  }
+
+  @Override
+  public void logMessageResponseReceivedUpdated(EserviceProbingResponse eServiceToUpdate) {
+    log.info("Response received has been updated. Service id={}",
+        eServiceToUpdate.eserviceRecordId());
   }
 
   @Override
@@ -62,11 +74,6 @@ public class LoggerImpl implements Logger {
   @Override
   public void logMessageException(Exception exception) {
     log.error(ExceptionUtils.getStackTrace(exception));
-  }
-
-  @Override
-  public void logMessageLastRequestUpdated(EserviceProbingRequest eServiceToUpdate) {
-    log.info("Last request has been updated. Service id={}", eServiceToUpdate.eserviceRecordId());
   }
 
   @Override

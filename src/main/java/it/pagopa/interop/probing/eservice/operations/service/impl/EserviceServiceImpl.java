@@ -1,6 +1,5 @@
 package it.pagopa.interop.probing.eservice.operations.service.impl;
 
-import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,12 +20,16 @@ import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceLastRequestDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceResponseReceivedDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingRequest;
+import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingResponse;
+import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceProbingRequestRepository;
+import it.pagopa.interop.probing.eservice.operations.repository.EserviceProbingResponseRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.query.builder.EserviceContentQueryBuilder;
@@ -36,7 +39,6 @@ import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 import it.pagopa.interop.probing.eservice.operations.util.EnumUtilities;
 import it.pagopa.interop.probing.eservice.operations.util.OffsetLimitPageable;
 import it.pagopa.interop.probing.eservice.operations.util.constant.ErrorMessages;
-import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;
 import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 
 @Service
@@ -56,6 +58,9 @@ public class EserviceServiceImpl implements EserviceService {
 
   @Autowired
   private EserviceProbingRequestRepository eserviceProbingRequestRepository;
+
+  @Autowired
+  private EserviceProbingResponseRepository eserviceProbingResponseRepository;
 
   @Autowired
   private EserviceViewQueryBuilder eserviceViewQueryBuilder;
@@ -134,8 +139,7 @@ public class EserviceServiceImpl implements EserviceService {
             && state.contains(EserviceMonitorState.OFFLINE))) {
       eserviceViewPagable = eserviceViewRepository.findAll(
           EserviceViewSpecs.searchSpecBuilder(eserviceName, producerName, versionNumber),
-          new OffsetLimitPageable(offset, limit,
-              Sort.by(Eservice_.ESERVICE_NAME).ascending()));
+          new OffsetLimitPageable(offset, limit, Sort.by(Eservice_.ESERVICE_NAME).ascending()));
     } else if (state.contains(EserviceMonitorState.N_D)) {
       eserviceViewPagable = eserviceViewQueryBuilder.findAllWithNDState(limit, offset, eserviceName,
           producerName, versionNumber, stateBE, toleranceMultiplierInMinutes);
@@ -199,6 +203,25 @@ public class EserviceServiceImpl implements EserviceService {
 
     eserviceProbingRequestRepository.save(eServiceToUpdate);
     logger.logMessageLastRequestUpdated(eServiceToUpdate);
+  }
+
+  @Override
+  public void updateResponseReceived(UpdateEserviceResponseReceivedDto inputData)
+      throws EserviceNotFoundException {
+    Optional<EserviceProbingResponse> queryResult =
+        eserviceProbingResponseRepository.findById(inputData.getEserviceRecordId());
+
+    EserviceProbingResponse eserviceToUpdate = queryResult.orElseGet(() -> {
+      Optional<Eservice> e = eserviceRepository.findById(inputData.getEserviceRecordId());
+
+      return EserviceProbingResponse.builder().eservice(e.get()).build();
+    });
+
+    eserviceToUpdate.responseReceived(inputData.getResponseReceived());
+    eserviceToUpdate.status(inputData.getStatus());
+
+    eserviceProbingResponseRepository.save(eserviceToUpdate);
+    logger.logMessageResponseReceivedUpdated(eserviceToUpdate);
   }
 
   @Override
