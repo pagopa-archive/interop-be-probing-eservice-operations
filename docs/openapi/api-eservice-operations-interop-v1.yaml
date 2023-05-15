@@ -675,12 +675,19 @@ components:
         producerName:
           title: Service name
           type: string
+        state:
+          $ref: '#/components/schemas/EserviceInteropState'
         responseReceived:
           title: last response date
           type: string
           format: date-time
-        state:
-          $ref: '#/components/schemas/EserviceMonitorState'
+        lastRequest:
+          title: last request date
+          type: string
+          format: date-time
+        responseStatus:
+          title: eservice last status
+          $ref: '#/components/schemas/EserviceStatus'
         versionNumber:
           title: the e-service's version
           type: integer
@@ -691,6 +698,12 @@ components:
             type: string
         technology:
           $ref: '#/components/schemas/EserviceTechnology'
+        pollingFrequency:
+          title: eservice polling frequency
+          type: integer
+        probingEnabled:
+          title: eservice probing enabled
+          type: boolean
     
     SearchEserviceResponse:
       type: object
@@ -731,14 +744,21 @@ components:
           title: probing activated
           type: boolean
         state:
-          $ref: '#/components/schemas/EserviceMonitorState'
+          $ref: '#/components/schemas/EserviceInteropState'
         responseReceived:
           title: last response date
           type: string
           format: date-time
-        eserviceActive:
-          title: eservice active
-          type: boolean
+        lastRequest:
+          title: last request date
+          type: string
+          format: date-time
+        responseStatus:
+          title: eservice last status
+          $ref: '#/components/schemas/EserviceStatus'
+        pollingFrequency:
+          title: eservice polling frequency
+          type: integer
 
     Producer:
       type: object
@@ -768,6 +788,12 @@ components:
       enum:
         - REST
         - SOAP
+        
+    EserviceStatus:
+      type: string
+      enum:
+        - OK
+        - KO
     
     Problem:
       properties:

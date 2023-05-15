@@ -1,9 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.unit.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -54,40 +51,6 @@ class EnumUtilitiesTest {
         enumUtilities.convertListFromMonitorToPdnd(
             List.of(EserviceMonitorState.N_D, EserviceMonitorState.ONLINE)),
         List.of(EserviceInteropState.ACTIVE.getValue()));
-  }
-
-  @Test
-  @DisplayName("From BE to FE state return OFFLINE when checkND return false ")
-  void testfromBEtoFEState_whenStateIsINACTIVE_thenReturnOFFLINEValue() {
-    view.setState(EserviceInteropState.INACTIVE);
-
-    assertEquals(EserviceMonitorState.N_D, enumUtilities.fromPdndToMonitorState(view));
-  }
-
-  @Test
-  @DisplayName("From BE to FE state return ONLINE when checkND return false ")
-  void testfromBEtoFEState_whenStateIsACTIVE_thenReturnOLINEValue() {
-    view.setState(EserviceInteropState.ACTIVE);
-
-    assertEquals(EserviceMonitorState.N_D, enumUtilities.fromPdndToMonitorState(view));
-  }
-
-  @Test
-  @DisplayName("CheckND returns true when probing is disabled")
-  void testCheckND_whenProbingIsNotEnabled_thenReturnsTrue() {
-    view.setProbingEnabled(false);
-    assertTrue(enumUtilities.checkND(view));
-  }
-
-  @Test
-  @DisplayName("CheckND returns true when response received is null")
-  void testCheckND_whenResponseReceivedIsNull_thenReturnsTrue() {
-    view.setProbingEnabled(true);
-    view.setLastRequest(OffsetDateTime.of(OffsetDateTime.now().getYear(),
-        OffsetDateTime.now().getMonthValue(), OffsetDateTime.now().getDayOfMonth(),
-        OffsetDateTime.now().getHour(), OffsetDateTime.now().getMinute(), 0, 0, ZoneOffset.UTC));
-    view.setPollingFrequency(5);
-    assertTrue(enumUtilities.checkND(view));
   }
 
 }
