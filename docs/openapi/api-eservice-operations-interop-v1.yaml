@@ -601,7 +601,7 @@ paths:
       responses:
         '204':
           description: >-
-            The last request of the eservice has been updated successfully
+            The response received of the eservice has been updated successfully
         '400':
           description: >-
             The provided input data is invalid
