@@ -79,4 +79,9 @@ public class LoggerImpl implements Logger {
   public void logMessageEserviceMainData(Long eserviceRecordId) {
     log.info("e-service main data. eserviceRecordId={}", eserviceRecordId);
   }
+
+  @Override
+  public void logMessageGetEserviceProbingData(Long eserviceRecordId) {
+    log.info("Getting eservice probing data. eserviceRecordId={}", eserviceRecordId);
+  }
 }

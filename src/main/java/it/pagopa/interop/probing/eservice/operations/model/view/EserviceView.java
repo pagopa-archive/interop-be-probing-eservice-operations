@@ -15,6 +15,7 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStatus;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.model.CustomStringArrayType;
 import lombok.AllArgsConstructor;
@@ -88,5 +89,9 @@ public class EserviceView implements Serializable {
   @Column(name = "base_path", columnDefinition = "varchar(2048) array")
   @Type(type = "basePathType")
   private String[] basePath;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status")
+  private EserviceStatus responseStatus;
 
 }

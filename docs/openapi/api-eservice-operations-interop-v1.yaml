@@ -312,6 +312,51 @@ paths:
                 traceId: 'string'
                 errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please ry again later.'}]
 
+  '/eservices/probingData/{eserviceRecordId}':
+    get:
+      summary: Retrive e-service probing data
+      description: Retrive e-service probing data 
+      tags:
+        - Read
+      operationId: getEserviceProbingData
+      parameters:
+        - name: eserviceRecordId
+          in: path
+          required: true
+          description: the e-service's record id
+          schema:
+           type: integer
+           format: int64
+      responses:
+        '200':
+          description: >-
+            The probing data of the service got successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProbingDataEserviceResponse'
+        '400':
+          description: >-
+            The provided input data is invalid
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':                  
+          description: >-
+            A managed error has occured during the request elaboration
+          content:                        
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: string
+                status: 500 
+                title: 'Internal Server Error'
+                detail: 'There is a problem processing the request on the server.'
+                traceId: 'string'
+                errors: [{'code':'000-1234', 'detail':'The server is currently down for maintenance. Please ry again later.'}]   
+                
   
   '/producers':
     get:
@@ -630,12 +675,19 @@ components:
         producerName:
           title: Service name
           type: string
+        state:
+          $ref: '#/components/schemas/EserviceInteropState'
         responseReceived:
           title: last response date
           type: string
           format: date-time
-        state:
-          $ref: '#/components/schemas/EserviceMonitorState'
+        lastRequest:
+          title: last request date
+          type: string
+          format: date-time
+        responseStatus:
+          title: eservice last status
+          $ref: '#/components/schemas/EserviceStatus'
         versionNumber:
           title: the e-service's version
           type: integer
@@ -646,6 +698,12 @@ components:
             type: string
         technology:
           $ref: '#/components/schemas/EserviceTechnology'
+        pollingFrequency:
+          title: eservice polling frequency
+          type: integer
+        probingEnabled:
+          title: eservice probing enabled
+          type: boolean
     
     SearchEserviceResponse:
       type: object
@@ -678,6 +736,29 @@ components:
         producerName:
           title: Service producer name
           type: string
+    
+    ProbingDataEserviceResponse:
+      type: object
+      properties:
+        probingEnabled:
+          title: probing activated
+          type: boolean
+        state:
+          $ref: '#/components/schemas/EserviceInteropState'
+        responseReceived:
+          title: last response date
+          type: string
+          format: date-time
+        lastRequest:
+          title: last request date
+          type: string
+          format: date-time
+        responseStatus:
+          title: eservice last status
+          $ref: '#/components/schemas/EserviceStatus'
+        pollingFrequency:
+          title: eservice polling frequency
+          type: integer
 
     Producer:
       type: object
@@ -707,6 +788,12 @@ components:
       enum:
         - REST
         - SOAP
+        
+    EserviceStatus:
+      type: string
+      enum:
+        - OK
+        - KO
     
     Problem:
       properties:

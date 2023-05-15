@@ -1,6 +1,5 @@
 package it.pagopa.interop.probing.eservice.operations.model;
 
-import it.pagopa.interop.probing.eservice.operations.util.EserviceStatus;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import javax.persistence.Column;
@@ -12,6 +11,7 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

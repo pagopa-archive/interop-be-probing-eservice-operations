@@ -1,6 +1,5 @@
 package it.pagopa.interop.probing.eservice.operations.service.impl;
 
-import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,6 +14,7 @@ import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.MainDataEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.PollingEserviceResponse;
+import it.pagopa.interop.probing.eservice.operations.dtos.ProbingDataEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
@@ -25,6 +25,7 @@ import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceS
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingRequest;
+import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceProbingRequestRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
@@ -36,7 +37,6 @@ import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 import it.pagopa.interop.probing.eservice.operations.util.EnumUtilities;
 import it.pagopa.interop.probing.eservice.operations.util.OffsetLimitPageable;
 import it.pagopa.interop.probing.eservice.operations.util.constant.ErrorMessages;
-import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;
 import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 
 @Service
@@ -134,8 +134,7 @@ public class EserviceServiceImpl implements EserviceService {
             && state.contains(EserviceMonitorState.OFFLINE))) {
       eserviceViewPagable = eserviceViewRepository.findAll(
           EserviceViewSpecs.searchSpecBuilder(eserviceName, producerName, versionNumber),
-          new OffsetLimitPageable(offset, limit,
-              Sort.by(Eservice_.ESERVICE_NAME).ascending()));
+          new OffsetLimitPageable(offset, limit, Sort.by(Eservice_.ESERVICE_NAME).ascending()));
     } else if (state.contains(EserviceMonitorState.N_D)) {
       eserviceViewPagable = eserviceViewQueryBuilder.findAllWithNDState(limit, offset, eserviceName,
           producerName, versionNumber, stateBE, toleranceMultiplierInMinutes);
@@ -206,9 +205,18 @@ public class EserviceServiceImpl implements EserviceService {
       throws EserviceNotFoundException {
     logger.logMessageEserviceMainData(eserviceRecordId);
     Eservice eService = eserviceRepository.findById(eserviceRecordId)
-        .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));;
+        .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
     return MainDataEserviceResponse.builder().eserviceName(eService.eserviceName())
         .versionNumber(eService.versionNumber()).producerName(eService.producerName()).build();
+  }
+
+  @Override
+  public ProbingDataEserviceResponse getEserviceProbingData(Long eserviceRecordId)
+      throws EserviceNotFoundException {
+    logger.logMessageGetEserviceProbingData(eserviceRecordId);
+    EserviceView eServiceView = eserviceViewRepository.findById(eserviceRecordId)
+        .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
+    return mapper.toProbingDataEserviceResponse(eServiceView);
   }
 
 }

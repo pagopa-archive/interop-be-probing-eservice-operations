@@ -27,4 +27,6 @@ public interface Logger {
   void logMessageLastRequestUpdated(EserviceProbingRequest eServiceToUpdate);
 
   void logMessageEserviceMainData(Long eserviceRecordId);
+
+  void logMessageGetEserviceProbingData(Long eserviceRecordId);
 }
