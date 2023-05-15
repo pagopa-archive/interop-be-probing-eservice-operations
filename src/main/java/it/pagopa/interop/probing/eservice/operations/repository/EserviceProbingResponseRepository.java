@@ -9,5 +9,6 @@ import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingRespon
 @Repository
 public interface EserviceProbingResponseRepository
     extends JpaRepository<EserviceProbingResponse, Long> {
-  Optional<EserviceProbingResponse> findById(@Param("eserviceRecordId") Long eserviceRecordId);
+  Optional<EserviceProbingResponse> findByEserviceRecordId(
+      @Param("eserviceRecordId") Long eserviceRecordId);
 }
