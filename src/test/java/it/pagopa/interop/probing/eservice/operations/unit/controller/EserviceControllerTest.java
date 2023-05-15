@@ -175,7 +175,7 @@ class EserviceControllerTest {
 
     EserviceContent eserviceViewDTO =
         EserviceContent.builder().eserviceName("Eservice-Name").versionNumber(1)
-            .producerName("Eservice-Producer-Name").state(EserviceMonitorState.ONLINE).build();
+            .producerName("Eservice-Producer-Name").state(EserviceInteropState.ACTIVE).build();
 
     List<EserviceContent> eservices = List.of(eserviceViewDTO);
     expectedSearchEserviceResponse.setContent(eservices);

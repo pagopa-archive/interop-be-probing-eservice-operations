@@ -14,6 +14,7 @@ import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.MainDataEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.PollingEserviceResponse;
+import it.pagopa.interop.probing.eservice.operations.dtos.ProbingDataEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
@@ -218,7 +219,7 @@ public class EserviceServiceImpl implements EserviceService {
     });
 
     eserviceToUpdate.responseReceived(inputData.getResponseReceived());
-    eserviceToUpdate.status(inputData.getStatus());
+    eserviceToUpdate.responseStatus(inputData.getStatus());
 
     eserviceProbingResponseRepository.save(eserviceToUpdate);
     logger.logMessageResponseReceivedUpdated(eserviceToUpdate);
@@ -229,9 +230,18 @@ public class EserviceServiceImpl implements EserviceService {
       throws EserviceNotFoundException {
     logger.logMessageEserviceMainData(eserviceRecordId);
     Eservice eService = eserviceRepository.findById(eserviceRecordId)
-        .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));;
+        .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
     return MainDataEserviceResponse.builder().eserviceName(eService.eserviceName())
         .versionNumber(eService.versionNumber()).producerName(eService.producerName()).build();
+  }
+
+  @Override
+  public ProbingDataEserviceResponse getEserviceProbingData(Long eserviceRecordId)
+      throws EserviceNotFoundException {
+    logger.logMessageGetEserviceProbingData(eserviceRecordId);
+    EserviceView eServiceView = eserviceViewRepository.findById(eserviceRecordId)
+        .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
+    return mapper.toProbingDataEserviceResponse(eServiceView);
   }
 
 }

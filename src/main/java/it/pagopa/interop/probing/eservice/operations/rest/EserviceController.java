@@ -15,6 +15,7 @@ import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.MainDataEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.PollingEserviceResponse;
+import it.pagopa.interop.probing.eservice.operations.dtos.ProbingDataEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
@@ -95,5 +96,11 @@ public class EserviceController implements EservicesApi {
   public ResponseEntity<MainDataEserviceResponse> getEserviceMainData(Long eserviceRecordId)
       throws EserviceNotFoundException {
     return ResponseEntity.ok(eserviceService.getEserviceMainData(eserviceRecordId));
+  }
+
+  @Override
+  public ResponseEntity<ProbingDataEserviceResponse> getEserviceProbingData(Long eserviceRecordId)
+      throws EserviceNotFoundException {
+    return ResponseEntity.ok(eserviceService.getEserviceProbingData(eserviceRecordId));
   }
 }

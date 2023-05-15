@@ -157,7 +157,7 @@ class EserviceServiceImplTest {
         .eservice(testService).build();
 
     eserviceProbingResponse = EserviceProbingResponse.builder().eserviceRecordId(eserviceRecordId)
-        .status(EserviceStatus.OK)
+        .responseStatus(EserviceStatus.OK)
         .responseReceived(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC))
         .eservice(testService).build();
 
@@ -280,10 +280,7 @@ class EserviceServiceImplTest {
         .thenReturn(EserviceContent.builder().eserviceName(eserviceView.getEserviceName())
             .producerName(eserviceView.getProducerName())
             .basePath(List.of(eserviceView.getBasePath())).technology(eserviceView.getTechnology())
-            .responseReceived(eserviceView.getResponseReceived())
-            .state(eserviceView.getState().equals(EserviceInteropState.ACTIVE)
-                ? EserviceMonitorState.ONLINE
-                : EserviceMonitorState.OFFLINE)
+            .responseReceived(eserviceView.getResponseReceived()).state(eserviceView.getState())
             .build());
 
     Mockito.when(enumUtilities.convertListFromMonitorToPdnd(List.of(EserviceMonitorState.values())))
@@ -294,9 +291,9 @@ class EserviceServiceImplTest {
         "Eservice-Producer-Name", 1, List.of(EserviceMonitorState.values()));
 
     assertTrue(eserviceView.getState().equals(EserviceInteropState.ACTIVE)
-        ? searchEserviceResponse.getContent().get(0).getState().equals(EserviceMonitorState.ONLINE)
+        ? searchEserviceResponse.getContent().get(0).getState().equals(EserviceInteropState.ACTIVE)
         : searchEserviceResponse.getContent().get(0).getState()
-            .equals(EserviceMonitorState.OFFLINE));
+            .equals(EserviceInteropState.INACTIVE));
   }
 
   @Test
@@ -339,19 +336,16 @@ class EserviceServiceImplTest {
         .thenReturn(EserviceContent.builder().eserviceName(eserviceView.getEserviceName())
             .producerName(eserviceView.getProducerName())
             .basePath(List.of(eserviceView.getBasePath())).technology(eserviceView.getTechnology())
-            .responseReceived(eserviceView.getResponseReceived())
-            .state(eserviceView.getState().equals(EserviceInteropState.ACTIVE)
-                ? EserviceMonitorState.ONLINE
-                : EserviceMonitorState.OFFLINE)
+            .responseReceived(eserviceView.getResponseReceived()).state(eserviceView.getState())
             .build());
 
     SearchEserviceResponse searchEserviceResponse = service.searchEservices(2, 0, "Eservice-Name",
         "Eservice-Producer-Name", 1, List.of(EserviceMonitorState.ONLINE));
 
     assertTrue(eserviceView.getState().equals(EserviceInteropState.ACTIVE)
-        ? searchEserviceResponse.getContent().get(0).getState().equals(EserviceMonitorState.ONLINE)
+        ? searchEserviceResponse.getContent().get(0).getState().equals(EserviceInteropState.ACTIVE)
         : searchEserviceResponse.getContent().get(0).getState()
-            .equals(EserviceMonitorState.OFFLINE));
+            .equals(EserviceInteropState.INACTIVE));
   }
 
   @Test

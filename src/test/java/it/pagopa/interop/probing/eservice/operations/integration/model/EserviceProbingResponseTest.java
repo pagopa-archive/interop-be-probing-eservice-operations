@@ -37,7 +37,7 @@ class EserviceProbingResponseTest {
         .producerName("producer1").versionNumber(1).build();
     probingResponse = EserviceProbingResponse.builder()
         .responseReceived(OffsetDateTime.of(2023, 12, 12, 1, 0, 0, 0, ZoneOffset.UTC))
-        .status(EserviceStatus.OK).eservice(eservice).build();
+        .responseStatus(EserviceStatus.OK).eservice(eservice).build();
   }
 
   @Test
@@ -65,7 +65,7 @@ class EserviceProbingResponseTest {
   @Test
   @DisplayName("Response isn't saved due to null response status")
   void testEserviceProbingResponseEntity_whenResponseStatusIsNull_throwsException() {
-    probingResponse.status(null);
+    probingResponse.responseStatus(null);
     assertThrows(ConstraintViolationException.class,
         () -> testEntityManager.persistAndFlush(probingResponse),
         "Response should not be saved because response received shouldn't be null");

@@ -40,7 +40,7 @@ CREATE TABLE ${schema_name}.eservice_probing_requests (
 ALTER TABLE ${schema_name}.eservice_probing_requests ADD CONSTRAINT FK_ESERVICE_ESERVICE_PROBING_REQUESTS FOREIGN KEY (eservices_record_id) REFERENCES ${schema_name}.eservices(id);
 
 CREATE VIEW ${schema_name}.eservice_view AS
-SELECT e.id, e.eservice_id , e.eservice_name, e.producer_name , e.version_id , e.state ,e.probing_enabled , e.version_number , epr.response_received, epreq.last_request, e.polling_frequency, e.polling_start_time, e.polling_end_time, e.base_path, e.eservice_technology
+SELECT e.id, e.eservice_id , e.eservice_name, e.producer_name , e.version_id , e.state , epr.status ,e.probing_enabled , e.version_number , epr.response_received  , epreq.last_request, e.polling_frequency, e.polling_start_time, e.polling_end_time, e.base_path, e.eservice_technology
 FROM ${schema_name}.eservices e
 LEFT JOIN ${schema_name}.eservice_probing_responses epr ON epr.eservices_record_id = e.id
 LEFT JOIN ${schema_name}.eservice_probing_requests epreq on epreq.eservices_record_id=e.id;

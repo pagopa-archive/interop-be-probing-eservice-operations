@@ -47,7 +47,7 @@ class EserviceProbingResponseRepositoryTest {
     EserviceProbingResponse eserviceProbingResponse =
         EserviceProbingResponse.builder().eservice(eservice)
             .responseReceived(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC))
-            .status(EserviceStatus.OK).build();
+            .responseStatus(EserviceStatus.OK).build();
     testEntityManager.persistAndFlush(eserviceProbingResponse);
   }
 

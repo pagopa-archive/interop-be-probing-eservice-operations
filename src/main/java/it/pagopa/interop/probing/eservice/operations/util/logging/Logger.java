@@ -30,4 +30,6 @@ public interface Logger {
   void logMessageEserviceReadyForPolling(Integer limit, Integer offset);
 
   void logMessageEserviceMainData(Long eserviceRecordId);
+
+  void logMessageGetEserviceProbingData(Long eserviceRecordId);
 }

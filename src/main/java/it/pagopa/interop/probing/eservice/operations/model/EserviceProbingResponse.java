@@ -41,7 +41,7 @@ public class EserviceProbingResponse implements Serializable {
   @NotNull(message = "must not be null")
   @Enumerated(EnumType.STRING)
   @Column(name = "status")
-  private EserviceStatus status;
+  private EserviceStatus responseStatus;
 
   @MapsId
   @OneToOne(fetch = FetchType.LAZY)
