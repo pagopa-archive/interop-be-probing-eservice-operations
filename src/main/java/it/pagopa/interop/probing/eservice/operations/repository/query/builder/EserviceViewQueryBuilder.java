@@ -1,6 +1,5 @@
 package it.pagopa.interop.probing.eservice.operations.repository.query.builder;
 
-import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView_;
-import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;
 
 @Repository
 public class EserviceViewQueryBuilder {
@@ -125,7 +123,6 @@ public class EserviceViewQueryBuilder {
   }
 
   private PageRequest getPageRequest(Integer limit, Integer offset) {
-    return PageRequest.of(offset, limit,
-        Sort.by(EserviceView_.ESERVICE_NAME).ascending());
+    return PageRequest.of(offset, limit, Sort.by(EserviceView_.ESERVICE_NAME).ascending());
   }
 }

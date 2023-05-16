@@ -4,12 +4,17 @@ import java.util.List;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingRequest;
+import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingResponse;
 
 public interface Logger {
 
   void logMessageEserviceStateUpdated(Eservice eServiceToUpdate);
 
   void logMessageEserviceProbingStateUpdated(Eservice eServiceToUpdate);
+
+  void logMessageLastRequestUpdated(EserviceProbingRequest eServiceToUpdate);
+
+  void logMessageResponseReceivedUpdated(EserviceProbingResponse eServiceToUpdate);
 
   void logMessageEservicePollingConfigUpdated(Eservice eServiceToUpdate);
 
@@ -23,8 +28,6 @@ public interface Logger {
   void logMessageException(Exception exception);
 
   void logMessageEserviceReadyForPolling(Integer limit, Integer offset);
-
-  void logMessageLastRequestUpdated(EserviceProbingRequest eServiceToUpdate);
 
   void logMessageEserviceMainData(Long eserviceRecordId);
 

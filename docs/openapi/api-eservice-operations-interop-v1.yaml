@@ -574,6 +574,55 @@ paths:
                 detail: 'There is a problem processing the request on the server.'
                 traceId: 'string'
                 errors: [ { 'code': '000-1234', 'detail': 'The server is currently down for maintenance. Please try again later.' } ]
+                
+  '/eservices/{eserviceRecordId}/updateResponseReceived':
+    post:
+      summary: Update response received of the eservice
+      description: >-
+        Update response received of the eservice
+      tags:
+        - Write
+      operationId: updateResponseReceived
+      parameters:
+        - name: eserviceRecordId
+          in: path
+          required: true
+          description: The e-service record id
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeResponseReceived'
+      
+      responses:
+        '204':
+          description: >-
+            The response received of the eservice has been updated successfully
+        '400':
+          description: >-
+            The provided input data is invalid
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':
+          description: >-
+            A managed error has occured during the request elaboration
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              example:
+                type: string
+                status: 500
+                title: 'Internal Server Error'
+                detail: 'There is a problem processing the request on the server.'
+                traceId: 'string'
+                errors: [ { 'code': '000-1234', 'detail': 'The server is currently down for maintenance. Please try again later.' } ]
 
 components:
   schemas:
@@ -585,7 +634,19 @@ components:
         lastRequest:
           type: string
           format: date-time
-  
+          
+    ChangeResponseReceived:
+      type: object
+      required:
+        - responseReceived
+        - status
+      properties:
+        responseReceived:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/EserviceStatus'
+                 
     EserviceSaveRequest:
       type: object
       required:
@@ -794,7 +855,7 @@ components:
       enum:
         - OK
         - KO
-    
+   
     Problem:
       properties:
         type:

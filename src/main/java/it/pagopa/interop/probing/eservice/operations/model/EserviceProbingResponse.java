@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.OffsetDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -37,6 +39,7 @@ public class EserviceProbingResponse implements Serializable {
   private OffsetDateTime responseReceived;
 
   @NotNull(message = "must not be null")
+  @Enumerated(EnumType.STRING)
   @Column(name = "status")
   private EserviceStatus responseStatus;
 
