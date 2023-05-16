@@ -10,6 +10,7 @@ import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateReq
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeLastRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingFrequencyRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeProbingStateRequest;
+import it.pagopa.interop.probing.eservice.operations.dtos.ChangeResponseReceived;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.MainDataEserviceResponse;
@@ -80,6 +81,14 @@ public class EserviceController implements EservicesApi {
       ChangeLastRequest changeLastRequest) throws EserviceNotFoundException {
     eserviceService
         .updateLastRequest(mapper.toUpdateEserviceLastRequest(eserviceRecordId, changeLastRequest));
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> updateResponseReceived(Long eserviceRecordId,
+      ChangeResponseReceived changeResponseReceived) throws EserviceNotFoundException {
+    eserviceService.updateResponseReceived(
+        mapper.toUpdateEserviceResponseReceivedDto(eserviceRecordId, changeResponseReceived));
     return ResponseEntity.noContent().build();
   }
 

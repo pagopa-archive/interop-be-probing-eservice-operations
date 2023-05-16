@@ -1,6 +1,5 @@
 package it.pagopa.interop.probing.eservice.operations.repository.query.builder;
 
-import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 import java.sql.Timestamp;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -21,7 +20,6 @@ import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.model.EserviceContentCriteria;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView_;
-import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;
 
 @Repository
 public class EserviceContentQueryBuilder {
@@ -61,8 +59,7 @@ public class EserviceContentQueryBuilder {
         q.getResultList().stream().map(e -> (EserviceContent) e).toList();
 
     return new PageImpl<>(pollingActiveEserviceContent,
-        PageRequest.of(offset, limit,
-            Sort.by(EserviceView_.ESERVICE_RECORD_ID).ascending()),
+        PageRequest.of(offset, limit, Sort.by(EserviceView_.ESERVICE_RECORD_ID).ascending()),
         pollingActiveEserviceContent.size());
   }
 }

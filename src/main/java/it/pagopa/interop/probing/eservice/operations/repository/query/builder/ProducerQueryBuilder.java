@@ -1,6 +1,5 @@
 package it.pagopa.interop.probing.eservice.operations.repository.query.builder;
 
-import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -12,7 +11,7 @@ import javax.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
-import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;
+import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 
 @Repository
 public class ProducerQueryBuilder {

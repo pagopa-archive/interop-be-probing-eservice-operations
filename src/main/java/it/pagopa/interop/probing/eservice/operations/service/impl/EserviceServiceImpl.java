@@ -21,13 +21,16 @@ import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceLastRequestDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceResponseReceivedDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingRequest;
+import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingResponse;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceProbingRequestRepository;
+import it.pagopa.interop.probing.eservice.operations.repository.EserviceProbingResponseRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.query.builder.EserviceContentQueryBuilder;
@@ -56,6 +59,9 @@ public class EserviceServiceImpl implements EserviceService {
 
   @Autowired
   private EserviceProbingRequestRepository eserviceProbingRequestRepository;
+
+  @Autowired
+  private EserviceProbingResponseRepository eserviceProbingResponseRepository;
 
   @Autowired
   private EserviceViewQueryBuilder eserviceViewQueryBuilder;
@@ -198,6 +204,25 @@ public class EserviceServiceImpl implements EserviceService {
 
     eserviceProbingRequestRepository.save(eServiceToUpdate);
     logger.logMessageLastRequestUpdated(eServiceToUpdate);
+  }
+
+  @Override
+  public void updateResponseReceived(UpdateEserviceResponseReceivedDto inputData)
+      throws EserviceNotFoundException {
+    Optional<EserviceProbingResponse> queryResult =
+        eserviceProbingResponseRepository.findById(inputData.getEserviceRecordId());
+
+    EserviceProbingResponse eserviceToUpdate = queryResult.orElseGet(() -> {
+      Optional<Eservice> e = eserviceRepository.findById(inputData.getEserviceRecordId());
+
+      return EserviceProbingResponse.builder().eservice(e.get()).build();
+    });
+
+    eserviceToUpdate.responseReceived(inputData.getResponseReceived());
+    eserviceToUpdate.responseStatus(inputData.getStatus());
+
+    eserviceProbingResponseRepository.save(eserviceToUpdate);
+    logger.logMessageResponseReceivedUpdated(eserviceToUpdate);
   }
 
   @Override

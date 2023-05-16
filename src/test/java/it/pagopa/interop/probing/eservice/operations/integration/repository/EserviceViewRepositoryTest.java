@@ -2,9 +2,6 @@ package it.pagopa.interop.probing.eservice.operations.integration.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
-import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView_;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,10 +16,10 @@ import org.springframework.data.jpa.domain.Specification;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
+import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView_;
 import it.pagopa.interop.probing.eservice.operations.repository.EserviceViewRepository;
 import it.pagopa.interop.probing.eservice.operations.repository.specs.EserviceViewSpecs;
 import it.pagopa.interop.probing.eservice.operations.util.OffsetLimitPageable;
-import it.pagopa.interop.probing.eservice.operations.util.constant.ProjectConstants;
 
 @DataJpaTest
 class EserviceViewRepositoryTest {

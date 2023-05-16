@@ -25,17 +25,10 @@ import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceLastRequestDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceResponseReceivedDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
 
 public interface EserviceService {
-
-  /**
-   * Updates the last request of the e-service identified by eserviceRecordId
-   * 
-   * @param inputData the input data DTO containing the eserviceRecordId
-   * @throws EserviceNotFoundException if the e-service isn't found in the database
-   */
-  void updateLastRequest(UpdateEserviceLastRequestDto inputData) throws EserviceNotFoundException;
 
   /**
    * Saves the e-service or updates it if already exists
@@ -62,6 +55,23 @@ public interface EserviceService {
    * @throws EserviceNotFoundException if the e-service isn't found in the database
    */
   void updateEserviceProbingState(UpdateEserviceProbingStateDto inputData)
+      throws EserviceNotFoundException;
+
+  /**
+   * Updates the last request of the e-service identified by eserviceRecordId
+   * 
+   * @param inputData the input data DTO containing the eserviceRecordId
+   * @throws EserviceNotFoundException if the e-service isn't found in the database
+   */
+  void updateLastRequest(UpdateEserviceLastRequestDto inputData) throws EserviceNotFoundException;
+
+  /**
+   * Updates response received of the e-service identified by eserviceRecordId
+   * 
+   * @param inputData the input data DTO containing the eserviceRecordId and responseReceived
+   * @throws EserviceNotFoundException if the e-service isn't found
+   */
+  void updateResponseReceived(UpdateEserviceResponseReceivedDto inputData)
       throws EserviceNotFoundException;
 
   /**
@@ -97,7 +107,6 @@ public interface EserviceService {
    * @return the eservices ready for polling
    */
   public PollingEserviceResponse getEservicesReadyForPolling(Integer limit, Integer offset);
-
 
   /**
    * Get the main data of the selected service.
