@@ -553,7 +553,7 @@ class EserviceControllerTest {
 
   @Test
   @DisplayName("e-service probing data are retrieved successfully")
-  void testgetEserviceProbingData_whenEserviceEcist_thenMainDataAreReturned() throws Exception {
+  void testgetEserviceProbingData_whenEserviceEcist_thenProbingDataAreReturned() throws Exception {
     Mockito.doReturn(probingDataEserviceResponse).when(service)
         .getEserviceProbingData(eservicesRecordId);
     MockHttpServletResponse response =
