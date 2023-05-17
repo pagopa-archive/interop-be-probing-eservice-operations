@@ -192,11 +192,10 @@ public class EserviceServiceImpl implements EserviceService {
   public void updateLastRequest(UpdateEserviceLastRequestDto inputData)
       throws EserviceNotFoundException {
     Optional<EserviceProbingRequest> queryResult =
-        eserviceProbingRequestRepository.findByEserviceRecordId(inputData.getEserviceRecordId());
+        eserviceProbingRequestRepository.findById(inputData.getEserviceRecordId());
 
     EserviceProbingRequest eServiceToUpdate = queryResult.orElseGet(() -> {
-      Optional<Eservice> e =
-          eserviceRepository.findByEserviceRecordId(inputData.getEserviceRecordId());
+      Optional<Eservice> e = eserviceRepository.findById(inputData.getEserviceRecordId());
 
       return EserviceProbingRequest.builder().eservice(e.get()).build();
     });
@@ -211,11 +210,10 @@ public class EserviceServiceImpl implements EserviceService {
   public void updateResponseReceived(UpdateEserviceResponseReceivedDto inputData)
       throws EserviceNotFoundException {
     Optional<EserviceProbingResponse> queryResult =
-        eserviceProbingResponseRepository.findByEserviceRecordId(inputData.getEserviceRecordId());
+        eserviceProbingResponseRepository.findById(inputData.getEserviceRecordId());
 
     EserviceProbingResponse eserviceToUpdate = queryResult.orElseGet(() -> {
-      Optional<Eservice> e =
-          eserviceRepository.findByEserviceRecordId(inputData.getEserviceRecordId());
+      Optional<Eservice> e = eserviceRepository.findById(inputData.getEserviceRecordId());
 
       return EserviceProbingResponse.builder().eservice(e.get()).build();
     });
@@ -231,7 +229,7 @@ public class EserviceServiceImpl implements EserviceService {
   public MainDataEserviceResponse getEserviceMainData(Long eserviceRecordId)
       throws EserviceNotFoundException {
     logger.logMessageEserviceMainData(eserviceRecordId);
-    Eservice eService = eserviceRepository.findByEserviceRecordId(eserviceRecordId)
+    Eservice eService = eserviceRepository.findById(eserviceRecordId)
         .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
     return MainDataEserviceResponse.builder().eserviceName(eService.eserviceName())
         .versionNumber(eService.versionNumber()).producerName(eService.producerName()).build();

@@ -26,7 +26,9 @@ import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStatus;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
+import it.pagopa.interop.probing.eservice.operations.dtos.MainDataEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.PollingEserviceResponse;
+import it.pagopa.interop.probing.eservice.operations.dtos.ProbingDataEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
@@ -108,12 +110,16 @@ class EserviceServiceImplTest {
 
   private EserviceContent eserviceContent;
 
+  private MainDataEserviceResponse mainDataEserviceResponse;
+
+  private ProbingDataEserviceResponse probingDataEserviceResponse;
+
   private EserviceProbingResponse eserviceProbingResponse;
 
   @BeforeEach
   void setup() {
     testService = Eservice.builder().state(EserviceInteropState.ACTIVE).lockVersion(1)
-        .eserviceRecordId(1L).build();
+        .eserviceRecordId(1L).probingEnabled(true).build();
 
     saveEserviceDto = SaveEserviceDto.builder().basePath(new String[] {"test-1"})
         .eserviceId(eServiceId).name("Eservice name test").producerName("Eservice producer test")
@@ -155,6 +161,12 @@ class EserviceServiceImplTest {
     testEserviceProbingRequest = EserviceProbingRequest.builder().eserviceRecordId(eserviceRecordId)
         .lastRequest(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC))
         .eservice(testService).build();
+
+    mainDataEserviceResponse = MainDataEserviceResponse.builder().eserviceName("service1")
+        .producerName("producer1").versionNumber(1).build();
+
+    probingDataEserviceResponse = ProbingDataEserviceResponse.builder()
+        .state(EserviceInteropState.INACTIVE).probingEnabled(true).pollingFrequency(5).build();
 
     eserviceProbingResponse = EserviceProbingResponse.builder().eserviceRecordId(eserviceRecordId)
         .responseStatus(EserviceStatus.OK)
@@ -366,10 +378,9 @@ class EserviceServiceImplTest {
   @DisplayName("e-service last request has correctly updated")
   void testUpdateLastRequest_whenEserviceIsFoundGivenCorrectEserviceRecordId_thenLastRequestIsUpdated()
       throws EserviceNotFoundException {
-    Mockito.when(eserviceProbingRequestRepository.findByEserviceRecordId(eserviceRecordId))
+    Mockito.when(eserviceProbingRequestRepository.findById(eserviceRecordId))
         .thenReturn(Optional.of(testEserviceProbingRequest));
-    Mockito.when(eserviceRepository.findByEserviceRecordId(eserviceRecordId))
-        .thenReturn(Optional.empty());
+    Mockito.when(eserviceRepository.findById(eserviceRecordId)).thenReturn(Optional.empty());
     service.updateLastRequest(updateEserviceLastRequestDto);
     Mockito.when(eserviceProbingRequestRepository.save(Mockito.any(EserviceProbingRequest.class)))
         .thenReturn(testEserviceProbingRequest);
@@ -381,9 +392,9 @@ class EserviceServiceImplTest {
   @DisplayName("eserviceProbingRequest has been created")
   void testUpdateLastRequest_whenEserviceIsFoundGivenCorrectEserviceRecordId_thenEserviceProbingRequestIsCreated()
       throws EserviceNotFoundException {
-    Mockito.when(eserviceProbingRequestRepository.findByEserviceRecordId(eserviceRecordId))
+    Mockito.when(eserviceProbingRequestRepository.findById(eserviceRecordId))
         .thenReturn(Optional.empty());
-    Mockito.when(eserviceRepository.findByEserviceRecordId(eserviceRecordId))
+    Mockito.when(eserviceRepository.findById(eserviceRecordId))
         .thenReturn(Optional.of(testService));
     Mockito.when(eserviceProbingRequestRepository.save(Mockito.any(EserviceProbingRequest.class)))
         .thenReturn(testEserviceProbingRequest);
@@ -393,10 +404,50 @@ class EserviceServiceImplTest {
   }
 
   @Test
+  @DisplayName("eService main data has been retrieved and MainDataEserviceResponse is created")
+  void testGetEserviceMainData_whenEserviceIsFoundGivenCorrectEserviceRecordId_thenMainDataEserviceResponseIsCreated()
+      throws EserviceNotFoundException {
+    Mockito.when(eserviceRepository.findById(eserviceRecordId))
+        .thenReturn(Optional.of(testService));
+    mainDataEserviceResponse = service.getEserviceMainData(eserviceRecordId);
+    assertEquals(mainDataEserviceResponse.getEserviceName(), testService.eserviceName());
+  }
+
+  @Test
+  @DisplayName("e-service to obtain main data is not found")
+  void testGetEserviceMainData_whenNoEServiceIsFound_thenThrowsException() {
+    Mockito.when(eserviceRepository.findById(eserviceRecordId)).thenReturn(Optional.empty());
+    assertThrows(EserviceNotFoundException.class,
+        () -> service.getEserviceMainData(eserviceRecordId),
+        "e-service should not be found and an EserviceNotFoundException should be thrown");
+  }
+
+  @Test
+  @DisplayName("eService probing data has been retrieved and MainDataEserviceResponse is created")
+  void testGetEserviceProbingData_whenEserviceIsFoundGivenCorrectEserviceRecordId_thenProbingDataEserviceResponseIsCreated()
+      throws EserviceNotFoundException {
+    Mockito.when(eserviceViewRepository.findById(eserviceRecordId))
+        .thenReturn(Optional.of(eserviceView));
+    Mockito.when(mapstructMapper.toProbingDataEserviceResponse(eserviceView))
+        .thenReturn(probingDataEserviceResponse);
+    probingDataEserviceResponse = service.getEserviceProbingData(eserviceRecordId);
+    assertEquals(probingDataEserviceResponse.getState(), eserviceView.getState());
+    assertEquals(probingDataEserviceResponse.getProbingEnabled(), eserviceView.isProbingEnabled());
+  }
+
+  @Test
+  @DisplayName("e-service to obtain probing data is not found")
+  void testGetEserviceProbingData_whenNoEServiceIsFound_thenThrowsException() {
+    Mockito.when(eserviceViewRepository.findById(eserviceRecordId)).thenReturn(Optional.empty());
+    assertThrows(EserviceNotFoundException.class,
+        () -> service.getEserviceProbingData(eserviceRecordId),
+        "e-service should not be found and an EserviceNotFoundException should be thrown");
+  }
+
   @DisplayName("e-service reponse received has correctly updated")
   void testUpdateResponseReceived_whenEserviceIsFoundGivenCorrectEserviceRecordId_thenResponseReceivedIsUpdated()
       throws EserviceNotFoundException {
-    Mockito.when(eserviceProbingResponseRepository.findByEserviceRecordId(eserviceRecordId))
+    Mockito.when(eserviceProbingResponseRepository.findById(eserviceRecordId))
         .thenReturn(Optional.of(eserviceProbingResponse));
     Mockito.when(eserviceProbingResponseRepository.save(Mockito.any(EserviceProbingResponse.class)))
         .thenReturn(eserviceProbingResponse);
@@ -411,15 +462,14 @@ class EserviceServiceImplTest {
   @DisplayName("eservice probing response object has been created")
   void testUpdateResponseReceived_whenEserviceIsFoundGivenCorrectEserviceRecordId_thenEserviceProbingResponseIsCreated()
       throws EserviceNotFoundException {
-    Mockito.when(eserviceProbingResponseRepository.findByEserviceRecordId(eserviceRecordId))
+    Mockito.when(eserviceProbingResponseRepository.findById(eserviceRecordId))
         .thenReturn(Optional.empty());
-    Mockito.when(eserviceRepository.findByEserviceRecordId(eserviceRecordId))
+    Mockito.when(eserviceRepository.findById(eserviceRecordId))
         .thenReturn(Optional.of(testService));
     Mockito.when(eserviceProbingResponseRepository.save(Mockito.any(EserviceProbingResponse.class)))
         .thenReturn(eserviceProbingResponse);
 
     service.updateResponseReceived(updateEserviceResponseReceivedDto);
     verify(eserviceProbingResponseRepository).save(Mockito.any(EserviceProbingResponse.class));
-
   }
 }

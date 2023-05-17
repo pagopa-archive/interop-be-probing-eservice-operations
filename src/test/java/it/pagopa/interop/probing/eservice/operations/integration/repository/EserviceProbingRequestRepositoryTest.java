@@ -53,7 +53,7 @@ class EserviceProbingRequestRepositoryTest {
   @Test
   void testFindByEserviceRecordId_whenGivenCorrectEserviceIdAndVersionId_ReturnsEserviceEntity() {
     Optional<EserviceProbingRequest> queryResult =
-        eserviceProbingRequestRepository.findByEserviceRecordId(eservice.eserviceRecordId());
+        eserviceProbingRequestRepository.findById(eservice.eserviceRecordId());
 
     assertNotNull(queryResult.get(), "e-service probing request object shouldn't be null");
   }
@@ -63,7 +63,7 @@ class EserviceProbingRequestRepositoryTest {
   void testFindByEserviceRecordId_whenGivenEserviceRecordId_ReturnsNoEntity() {
     final Long wrongEserviceRecordId = 2L;
     Optional<EserviceProbingRequest> queryResult =
-        eserviceProbingRequestRepository.findByEserviceRecordId(wrongEserviceRecordId);
+        eserviceProbingRequestRepository.findById(wrongEserviceRecordId);
 
     assertThrows(NoSuchElementException.class, () -> queryResult.get(),
         "There should be no e-service probing request object with eserviceRecordId "

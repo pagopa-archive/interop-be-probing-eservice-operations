@@ -11,6 +11,4 @@ import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 public interface EserviceRepository extends JpaRepository<Eservice, Long> {
   Optional<Eservice> findByEserviceIdAndVersionId(@Param("eserviceId") UUID eserviceId,
       @Param("versionId") UUID versionId);
-
-  Optional<Eservice> findByEserviceRecordId(@Param("eserviceRecordId") Long eserviceRecordId);
 }
