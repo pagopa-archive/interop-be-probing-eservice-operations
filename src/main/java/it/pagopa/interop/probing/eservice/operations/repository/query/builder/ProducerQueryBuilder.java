@@ -1,6 +1,5 @@
 package it.pagopa.interop.probing.eservice.operations.repository.query.builder;
 
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -9,7 +8,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
-import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 
@@ -18,22 +17,21 @@ public class ProducerQueryBuilder {
   @PersistenceContext
   private EntityManager entityManager;
 
-  public List<Producer> findAllProducersByProducerName(Integer limit, Integer offset,
+  public SearchProducerNameResponse findAllProducersByProducerName(Integer limit, Integer offset,
       String producerName) {
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-    CriteriaQuery<Producer> query = cb.createQuery(Producer.class);
+    CriteriaQuery<String> query = cb.createQuery(String.class);
     Root<Eservice> root = query.from(Eservice.class);
-    query.distinct(true).multiselect(root.get(Eservice_.PRODUCER_NAME),
-        root.get(Eservice_.PRODUCER_NAME));
+    query.distinct(true).multiselect(root.get(Eservice_.PRODUCER_NAME));
 
     Predicate predicate = cb.like(cb.upper(root.get(Eservice_.PRODUCER_NAME)),
         "%" + producerName.toUpperCase() + "%");
 
     query.where(predicate);
-    TypedQuery<Producer> q =
+    TypedQuery<String> q =
         entityManager.createQuery(query).setFirstResult(offset).setMaxResults(limit);
 
-    return q.getResultList();
+    return SearchProducerNameResponse.builder().content(q.getResultList()).build();
   }
 
 }

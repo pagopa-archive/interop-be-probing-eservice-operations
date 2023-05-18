@@ -2,7 +2,6 @@ package it.pagopa.interop.probing.eservice.operations.unit.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
-import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.service.ProducerService;
 
 @SpringBootTest
@@ -33,40 +32,58 @@ class ProducerControllerTest {
   @MockBean
   private ProducerService service;
 
-  private List<Producer> producerExpectedList;
+  private SearchProducerNameResponse producerExpectedList;
 
   @Test
   @DisplayName("given a valid producer name, then returns a non-empty list")
   void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseList()
       throws Exception {
-    Producer producer = Producer.builder().build();
 
-    producerExpectedList = List.of(producer);
-    Mockito.when(service.getEservicesProducers(2, 0, "ProducerName-Test"))
+    producerExpectedList =
+        SearchProducerNameResponse.builder().content(List.of("ProducerName-Test")).build();
+
+    Mockito.when(service.getEservicesProducers(2, 0, "ProducerName"))
         .thenReturn(producerExpectedList);
     MockHttpServletResponse response = mockMvc
         .perform(get(apiGetEservicesProducersUrl)
-            .params(getMockRequestParamsGetEservicesProducers("2", "0", "ProducerName-Test")))
+            .params(getMockRequestParamsGetEservicesProducers("2", "0", "ProducerName")))
         .andReturn().getResponse();
 
     assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     assertThat(response.getContentAsString()).isNotEmpty();
-    assertThat(response.getContentAsString()).contains("label");
-    assertThat(response.getContentAsString()).contains("value");
+    assertThat(response.getContentAsString()).contains("content");
   }
 
   @Test
   @DisplayName("given a valid producer name with no matching records, then returns an empty list")
   void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseListEmpty()
       throws Exception {
-    Mockito.when(service.getEservicesProducers(2, 0, "ProducerName-Test"))
-        .thenReturn(new ArrayList<Producer>());
+
+    producerExpectedList = SearchProducerNameResponse.builder().content(List.of()).build();
+
+    Mockito.when(service.getEservicesProducers(2, 0, "ProducerName-Test-1"))
+        .thenReturn(producerExpectedList);
+
     MockHttpServletResponse response = mockMvc
         .perform(get(apiGetEservicesProducersUrl)
-            .params(getMockRequestParamsGetEservicesProducers("2", "0", "ProducerName-Test")))
+            .params(getMockRequestParamsGetEservicesProducers("2", "0", "ProducerName-Test-1")))
         .andReturn().getResponse();
     assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-    assertThat(response.getContentAsString().equals("[]"));
+    assertThat(response.getContentAsString()).contains("[]");
+  }
+
+  @Test
+  @DisplayName("given a valid producer name with no matching records, then returns an empty object")
+  void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseNull()
+      throws Exception {
+    Mockito.when(service.getEservicesProducers(2, 0, "ProducerName-Test-1"))
+        .thenReturn(SearchProducerNameResponse.builder().build());
+    MockHttpServletResponse response = mockMvc
+        .perform(get(apiGetEservicesProducersUrl)
+            .params(getMockRequestParamsGetEservicesProducers("2", "0", "ProducerName-Test-1")))
+        .andReturn().getResponse();
+    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    assertThat(response.getContentAsString()).contains("null");
   }
 
   private LinkedMultiValueMap<String, String> getMockRequestParamsGetEservicesProducers(

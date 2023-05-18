@@ -3,7 +3,6 @@ package it.pagopa.interop.probing.eservice.operations.integration.repository.que
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
-import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +15,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.stereotype.Repository;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
-import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.repository.query.builder.ProducerQueryBuilder;
 
@@ -44,16 +43,17 @@ class ProducerQueryBuilderTest {
   @Test
   @DisplayName("given valid producer name, a producer is found ")
   void getEservicesProducers_givenValidProducerName_returnsProducerList() {
-    List<Producer> producers = producerQueryBuilder.findAllProducersByProducerName(10, 0, "PROD");
-    assertEquals(1, producers.size());
-    assertEquals("producer1", producers.get(0).getValue());
+    SearchProducerNameResponse producers =
+        producerQueryBuilder.findAllProducersByProducerName(10, 0, "PROD");
+    assertEquals(1, producers.getContent().size());
+    assertEquals("producer1", producers.getContent().get(0));
   }
 
   @Test
   @DisplayName("given a random producer name, no producer is found")
   void getEservicesProducers_givenProducerName_returnsProducerList() {
-    List<Producer> producers =
+    SearchProducerNameResponse producers =
         producerQueryBuilder.findAllProducersByProducerName(10, 0, "Eservice name");
-    assertEquals(0, producers.size(), "no producer with the given name was found");
+    assertEquals(0, producers.getContent().size(), "no producer with the given name was found");
   }
 }

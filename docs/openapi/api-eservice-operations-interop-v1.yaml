@@ -392,9 +392,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Producer'
+                $ref: '#/components/schemas/SearchProducerNameResponse'
         '400':
           description: The provided input data is invalid
           content:
@@ -685,7 +683,7 @@ components:
           title: total elements
           type: integer
           format: int64
-
+    
     ChangeProbingStateRequest:
       type: object
       required:
@@ -821,15 +819,14 @@ components:
           title: eservice polling frequency
           type: integer
 
-    Producer:
+    SearchProducerNameResponse:
       type: object
       properties:
-        label:
-          title: label of producer's name
-          type: string
-        value:
-          title: value of producer's name
-          type: string
+        content:
+          title: list of producers names
+          type: array
+          items:
+            type: string
     
     EserviceMonitorState:
       type: string

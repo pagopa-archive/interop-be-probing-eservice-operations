@@ -9,7 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.repository.query.builder.ProducerQueryBuilder;
 import it.pagopa.interop.probing.eservice.operations.service.ProducerService;
@@ -28,24 +28,23 @@ class ProducerServiceImplTest {
   @InjectMocks
   ProducerService service = new ProducerServiceImpl();
 
-  List<Producer> producerInput;
+  SearchProducerNameResponse producerInput;
 
   private String producerNameInput = "producer name";
 
   @BeforeEach
   void setup() {
-    producerInput =
-        List.of(Producer.builder().label("producer name").value("producer name").build());
+    producerInput = SearchProducerNameResponse.builder().content(List.of("producer name")).build();
   }
 
   @Test
-  @DisplayName("given producerName as parameter, service returns list of producers")
+  @DisplayName("given producerName as parameter, service returns list of producer names")
   void testGetEservicesProducers_whenProdcerNameAsParameter_thenReturnsListProducers()
       throws EserviceNotFoundException {
     Mockito.when(producerQueryBuilder.findAllProducersByProducerName(10, 0, producerNameInput))
         .thenReturn(producerInput);
 
-    List<Producer> producers = service.getEservicesProducers(10, 0, producerNameInput);
+    SearchProducerNameResponse producers = service.getEservicesProducers(10, 0, producerNameInput);
 
     assertEquals(producerInput, producers);
   }
