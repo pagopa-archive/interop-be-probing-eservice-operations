@@ -1,5 +1,6 @@
 package it.pagopa.interop.probing.eservice.operations.service.impl;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
@@ -20,8 +21,10 @@ public class ProducerServiceImpl implements ProducerService {
   public SearchProducerNameResponse getEservicesProducers(Integer limit, Integer offset,
       String producerName) {
     logger.logMessageSearchProducer(producerName);
+    List<String> producers =
+        producerQueryBuilder.findAllProducersByProducerName(limit, offset, producerName);
 
-    return producerQueryBuilder.findAllProducersByProducerName(limit, offset, producerName);
+    return SearchProducerNameResponse.builder().content(producers).build();
   }
 
 }

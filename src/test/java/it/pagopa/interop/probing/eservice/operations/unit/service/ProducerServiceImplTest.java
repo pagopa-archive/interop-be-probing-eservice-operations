@@ -28,13 +28,13 @@ class ProducerServiceImplTest {
   @InjectMocks
   ProducerService service = new ProducerServiceImpl();
 
-  SearchProducerNameResponse producerInput;
+  List<String> producerInput;
 
   private String producerNameInput = "producer name";
 
   @BeforeEach
   void setup() {
-    producerInput = SearchProducerNameResponse.builder().content(List.of("producer name")).build();
+    producerInput = List.of("producer name");
   }
 
   @Test
@@ -46,6 +46,6 @@ class ProducerServiceImplTest {
 
     SearchProducerNameResponse producers = service.getEservicesProducers(10, 0, producerNameInput);
 
-    assertEquals(producerInput, producers);
+    assertEquals(producerInput, producers.getContent());
   }
 }
