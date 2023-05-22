@@ -721,6 +721,13 @@ components:
           type: string
           format: time
 
+    Producer:
+      type: object
+      properties:
+        producerName:
+          title: Producer name
+          type: string
+          
     EserviceContent:
       type: object
       properties:
@@ -732,7 +739,7 @@ components:
           title: Service name
           type: string
         producerName:
-          title: Service name
+          title: Producer name
           type: string
         state:
           $ref: '#/components/schemas/EserviceInteropState'

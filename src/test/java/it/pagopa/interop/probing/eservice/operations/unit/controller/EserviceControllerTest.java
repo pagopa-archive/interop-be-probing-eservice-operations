@@ -582,6 +582,7 @@ class EserviceControllerTest {
     assertTrue(response.getContentAsString().contains("state"));
   }
 
+  @Test
   @DisplayName("e-service response received gets updated")
   void testUpdateResponseReceived_whenGivenValidEservicesRecordIdAndResponseReceived_thenEserviceProbingResponseIsUpdated()
       throws Exception {

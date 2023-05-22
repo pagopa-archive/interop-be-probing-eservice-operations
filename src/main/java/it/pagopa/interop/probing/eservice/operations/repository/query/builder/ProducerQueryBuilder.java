@@ -9,6 +9,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
+import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice_;
 
@@ -17,10 +18,10 @@ public class ProducerQueryBuilder {
   @PersistenceContext
   private EntityManager entityManager;
 
-  public List<String> findAllProducersByProducerName(Integer limit, Integer offset,
+  public List<Producer> findAllProducersByProducerName(Integer limit, Integer offset,
       String producerName) {
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-    CriteriaQuery<String> query = cb.createQuery(String.class);
+    CriteriaQuery<Producer> query = cb.createQuery(Producer.class);
     Root<Eservice> root = query.from(Eservice.class);
     query.distinct(true).multiselect(root.get(Eservice_.PRODUCER_NAME));
 
@@ -28,7 +29,7 @@ public class ProducerQueryBuilder {
         "%" + producerName.toUpperCase() + "%");
 
     query.where(predicate);
-    TypedQuery<String> q =
+    TypedQuery<Producer> q =
         entityManager.createQuery(query).setFirstResult(offset).setMaxResults(limit);
 
     return q.getResultList();

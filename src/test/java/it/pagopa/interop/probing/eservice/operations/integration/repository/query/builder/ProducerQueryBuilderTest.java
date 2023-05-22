@@ -16,6 +16,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.stereotype.Repository;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
+import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.repository.query.builder.ProducerQueryBuilder;
 
@@ -41,17 +42,17 @@ class ProducerQueryBuilderTest {
   }
 
   @Test
-  @DisplayName("given valid producer name, a producer is found ")
+  @DisplayName("given valid producer name, a producer is found")
   void getEservicesProducers_givenValidProducerName_returnsProducerList() {
-    List<String> producers = producerQueryBuilder.findAllProducersByProducerName(10, 0, "PROD");
+    List<Producer> producers = producerQueryBuilder.findAllProducersByProducerName(10, 0, "PROD");
     assertEquals(1, producers.size());
-    assertEquals("producer1", producers.get(0));
+    assertEquals("producer1", producers.get(0).getProducerName());
   }
 
   @Test
   @DisplayName("given a random producer name, no producer is found")
   void getEservicesProducers_givenProducerName_returnsProducerList() {
-    List<String> producers =
+    List<Producer> producers =
         producerQueryBuilder.findAllProducersByProducerName(10, 0, "Eservice name");
     assertEquals(0, producers.size(), "no producer with the given name was found");
   }
