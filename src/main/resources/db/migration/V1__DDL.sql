@@ -44,3 +44,11 @@ SELECT e.id, e.eservice_id , e.eservice_name, e.producer_name , e.version_id , e
 FROM ${schema_name}.eservices e
 LEFT JOIN ${schema_name}.eservice_probing_responses epr ON epr.eservices_record_id = e.id
 LEFT JOIN ${schema_name}.eservice_probing_requests epreq on epreq.eservices_record_id=e.id;
+
+--Grants
+GRANT CREATE, USAGE ON SCHEMA ${schema_name} TO "interop-be";
+GRANT SELECT, INSERT, UPDATE ON TABLE ${schema_name}.eservice_probing_requests TO "interop-be";
+GRANT SELECT, INSERT, UPDATE ON TABLE ${schema_name}.eservice_probing_responses TO "interop-be";
+GRANT SELECT, INSERT, UPDATE ON TABLE ${schema_name}.eservices TO "interop-be";
+GRANT SELECT ON TABLE ${schema_name}.eservice_view TO "interop-be";
+GRANT SELECT, USAGE ON SEQUENCE ${schema_name}.eservice_sequence TO "interop-be";
