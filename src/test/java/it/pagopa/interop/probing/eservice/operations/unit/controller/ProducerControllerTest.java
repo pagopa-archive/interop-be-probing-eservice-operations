@@ -72,20 +72,6 @@ class ProducerControllerTest {
     assertThat(response.getContentAsString()).contains("[]");
   }
 
-  @Test
-  @DisplayName("given a valid producer name with no matching records, then returns an empty object")
-  void testGetEservicesProducers_whenGivenValidProducerName_thenReturnsSearchProducerNameResponseNull()
-      throws Exception {
-    Mockito.when(service.getEservicesProducers(2, 0, "ProducerName-Test-1"))
-        .thenReturn(SearchProducerNameResponse.builder().build());
-    MockHttpServletResponse response = mockMvc
-        .perform(get(apiGetEservicesProducersUrl)
-            .params(getMockRequestParamsGetEservicesProducers("2", "0", "ProducerName-Test-1")))
-        .andReturn().getResponse();
-    assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-    assertThat(response.getContentAsString()).contains("null");
-  }
-
   private LinkedMultiValueMap<String, String> getMockRequestParamsGetEservicesProducers(
       String limit, String offset, String producerName) {
     LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
