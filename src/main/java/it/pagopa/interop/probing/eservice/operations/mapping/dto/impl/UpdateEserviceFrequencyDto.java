@@ -1,5 +1,6 @@
-package it.pagopa.interop.probing.eservice.operations.mapping.dto;
+package it.pagopa.interop.probing.eservice.operations.mapping.dto.impl;
 
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.Dto;
 import java.time.OffsetTime;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
@@ -13,7 +14,7 @@ import lombok.Setter;
 @Setter
 @Data
 @Builder
-public class UpdateEserviceFrequencyDto {
+public class UpdateEserviceFrequencyDto implements Dto {
 
   @NotNull(message = "must not be null")
   @JsonProperty("eserviceId")

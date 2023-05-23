@@ -1,19 +1,15 @@
-package it.pagopa.interop.probing.eservice.operations.mapping.dto;
+package it.pagopa.interop.probing.eservice.operations.mapping.dto.impl;
 
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.Dto;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Data
 @Builder
-public class UpdateEserviceStateDto {
+public class UpdateEserviceProbingStateDto implements Dto {
 
   @NotNull(message = "must not be null")
   @JsonProperty("eserviceId")
@@ -24,6 +20,5 @@ public class UpdateEserviceStateDto {
   private UUID versionId;
 
   @NotNull(message = "must not be null")
-  @JsonProperty("eServiceState")
-  private EserviceInteropState newEServiceState;
+  private boolean probingEnabled;
 }

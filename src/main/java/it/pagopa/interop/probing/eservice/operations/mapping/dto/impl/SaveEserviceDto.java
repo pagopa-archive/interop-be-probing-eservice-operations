@@ -1,5 +1,6 @@
-package it.pagopa.interop.probing.eservice.operations.mapping.dto;
+package it.pagopa.interop.probing.eservice.operations.mapping.dto.impl;
 
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.Dto;
 import java.util.UUID;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Setter
 @Data
 @Builder
-public class SaveEserviceDto {
+public class SaveEserviceDto implements Dto {
 
   @NotBlank(message = "must not be blank")
   @Size(max = 255, message = "must not be longer than 255 chars")
