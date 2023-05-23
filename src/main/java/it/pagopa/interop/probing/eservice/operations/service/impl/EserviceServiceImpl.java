@@ -167,7 +167,7 @@ public class EserviceServiceImpl implements EserviceService {
 
     eServiceToUpdate.eserviceName(inputData.getName()).producerName(inputData.getProducerName())
         .basePath(inputData.getBasePath()).technology(inputData.getTechnology())
-        .state(inputData.getState());
+        .state(inputData.getState()).audience(inputData.getAudience());
 
     Long id = eserviceRepository.save(eServiceToUpdate).eserviceRecordId();
 
