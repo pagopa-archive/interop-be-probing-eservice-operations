@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import it.pagopa.interop.probing.eservice.operations.dtos.Producer;
+import it.pagopa.interop.probing.eservice.operations.dtos.SearchProducerNameResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
 import it.pagopa.interop.probing.eservice.operations.repository.query.builder.ProducerQueryBuilder;
 import it.pagopa.interop.probing.eservice.operations.service.ProducerService;
@@ -34,8 +35,7 @@ class ProducerServiceImplTest {
 
   @BeforeEach
   void setup() {
-    producerInput =
-        List.of(Producer.builder().label("producer name").value("producer name").build());
+    producerInput = List.of(Producer.builder().producerName("producer name").build());
   }
 
   @Test
@@ -45,8 +45,8 @@ class ProducerServiceImplTest {
     Mockito.when(producerQueryBuilder.findAllProducersByProducerName(10, 0, producerNameInput))
         .thenReturn(producerInput);
 
-    List<Producer> producers = service.getEservicesProducers(10, 0, producerNameInput);
+    SearchProducerNameResponse producers = service.getEservicesProducers(10, 0, producerNameInput);
 
-    assertEquals(producerInput, producers);
+    assertEquals(producerInput.size(), producers.getContent().size());
   }
 }

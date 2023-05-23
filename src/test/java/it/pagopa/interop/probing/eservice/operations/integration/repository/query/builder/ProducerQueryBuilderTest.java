@@ -42,11 +42,11 @@ class ProducerQueryBuilderTest {
   }
 
   @Test
-  @DisplayName("given valid producer name, a producer is found ")
+  @DisplayName("given valid producer name, a producer is found")
   void getEservicesProducers_givenValidProducerName_returnsProducerList() {
     List<Producer> producers = producerQueryBuilder.findAllProducersByProducerName(10, 0, "PROD");
     assertEquals(1, producers.size());
-    assertEquals("producer1", producers.get(0).getValue());
+    assertEquals("producer1", producers.get(0).getProducerName());
   }
 
   @Test

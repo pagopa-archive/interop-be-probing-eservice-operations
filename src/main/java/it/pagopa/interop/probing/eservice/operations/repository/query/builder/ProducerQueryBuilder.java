@@ -23,8 +23,7 @@ public class ProducerQueryBuilder {
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<Producer> query = cb.createQuery(Producer.class);
     Root<Eservice> root = query.from(Eservice.class);
-    query.distinct(true).multiselect(root.get(Eservice_.PRODUCER_NAME),
-        root.get(Eservice_.PRODUCER_NAME));
+    query.distinct(true).multiselect(root.get(Eservice_.PRODUCER_NAME));
 
     Predicate predicate = cb.like(cb.upper(root.get(Eservice_.PRODUCER_NAME)),
         "%" + producerName.toUpperCase() + "%");
