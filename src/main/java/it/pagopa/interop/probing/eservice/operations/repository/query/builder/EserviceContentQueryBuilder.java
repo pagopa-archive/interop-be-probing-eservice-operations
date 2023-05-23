@@ -33,7 +33,8 @@ public class EserviceContentQueryBuilder {
     Root<EserviceView> root = query.from(EserviceView.class);
 
     query.distinct(true).multiselect(root.get(EserviceView_.ESERVICE_RECORD_ID),
-        root.get(EserviceView_.TECHNOLOGY), root.get(EserviceView_.BASE_PATH));
+        root.get(EserviceView_.TECHNOLOGY), root.get(EserviceView_.BASE_PATH),
+        root.get(EserviceView_.AUDIENCE));
 
     Expression<Timestamp> makeInterval = cb.function("make_interval", Timestamp.class,
         root.get(EserviceView_.LAST_REQUEST), root.get(EserviceView_.POLLING_FREQUENCY));
