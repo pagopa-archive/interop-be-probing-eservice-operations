@@ -232,7 +232,8 @@ public class EserviceServiceImpl implements EserviceService {
     Eservice eService = eserviceRepository.findById(eserviceRecordId)
         .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
     return MainDataEserviceResponse.builder().eserviceName(eService.eserviceName())
-        .versionNumber(eService.versionNumber()).producerName(eService.producerName()).build();
+        .versionNumber(eService.versionNumber()).producerName(eService.producerName())
+        .pollingFrequency(eService.pollingFrequency()).build();
   }
 
   @Override
