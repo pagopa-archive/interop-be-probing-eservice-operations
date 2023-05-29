@@ -11,12 +11,12 @@ import it.pagopa.interop.probing.eservice.operations.dtos.ChangeResponseReceived
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceContent;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceSaveRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ProbingDataEserviceResponse;
-import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceLastRequestDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceResponseReceivedDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.impl.SaveEserviceDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.impl.UpdateEserviceFrequencyDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.impl.UpdateEserviceLastRequestDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.impl.UpdateEserviceProbingStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.impl.UpdateEserviceResponseReceivedDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.impl.UpdateEserviceStateDto;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 
 @Mapper(componentModel = "spring")

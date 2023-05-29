@@ -17,12 +17,12 @@ import it.pagopa.interop.probing.eservice.operations.dtos.PollingEserviceRespons
 import it.pagopa.interop.probing.eservice.operations.dtos.ProbingDataEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.dtos.SearchEserviceResponse;
 import it.pagopa.interop.probing.eservice.operations.exception.EserviceNotFoundException;
-import it.pagopa.interop.probing.eservice.operations.mapping.dto.SaveEserviceDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceFrequencyDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceLastRequestDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceProbingStateDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceResponseReceivedDto;
-import it.pagopa.interop.probing.eservice.operations.mapping.dto.UpdateEserviceStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.impl.SaveEserviceDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.impl.UpdateEserviceFrequencyDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.impl.UpdateEserviceLastRequestDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.impl.UpdateEserviceProbingStateDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.impl.UpdateEserviceResponseReceivedDto;
+import it.pagopa.interop.probing.eservice.operations.mapping.dto.impl.UpdateEserviceStateDto;
 import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapper;
 import it.pagopa.interop.probing.eservice.operations.model.Eservice;
 import it.pagopa.interop.probing.eservice.operations.model.EserviceProbingRequest;
@@ -232,7 +232,8 @@ public class EserviceServiceImpl implements EserviceService {
     Eservice eService = eserviceRepository.findById(eserviceRecordId)
         .orElseThrow(() -> new EserviceNotFoundException(ErrorMessages.ELEMENT_NOT_FOUND));
     return MainDataEserviceResponse.builder().eserviceName(eService.eserviceName())
-        .versionNumber(eService.versionNumber()).producerName(eService.producerName()).build();
+        .versionNumber(eService.versionNumber()).producerName(eService.producerName())
+        .pollingFrequency(eService.pollingFrequency()).build();
   }
 
   @Override
