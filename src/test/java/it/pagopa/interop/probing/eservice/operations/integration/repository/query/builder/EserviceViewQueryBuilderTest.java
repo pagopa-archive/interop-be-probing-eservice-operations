@@ -17,6 +17,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceTechnology;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.repository.query.builder.EserviceViewQueryBuilder;
@@ -50,7 +51,7 @@ class EserviceViewQueryBuilderTest {
   @DisplayName("given state n/d, service returns e-service view entity")
   void testFindAll_whenGivenStateND_ReturnsEserviceEntity() {
     Page<EserviceView> e = eserviceViewQueryBuilder.findAllWithNDState(1, 0, "e-service1",
-        "producer1", null, List.of("N_D"), 0);
+        "producer1", null, List.of(EserviceMonitorState.N_D), 0);
 
     assertNotNull(e.getContent(), "e-service object shouldn't be null");
   }
@@ -59,7 +60,7 @@ class EserviceViewQueryBuilderTest {
   @DisplayName("given state active, service returns e-service view entity")
   void testFindAll_whenGivenStateActive_ReturnsEserviceViewEntity() {
     Page<EserviceView> e = eserviceViewQueryBuilder.findAllWithoutNDState(1, 0, "e-service1",
-        "producer1", null, List.of("ACTIVE"), 0);
+        "producer1", null, List.of(EserviceMonitorState.ONLINE), 0);
 
     assertNotNull(e.getContent(), "e-service object shouldn't be null");
   }
