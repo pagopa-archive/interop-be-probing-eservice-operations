@@ -2,7 +2,6 @@ package it.pagopa.interop.probing.eservice.operations.integration.repository;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
 import java.util.NoSuchElementException;
@@ -36,9 +35,10 @@ class EserviceRepositoryTest {
     Eservice eservice = Eservice.builder().eserviceId(eServiceId).versionId(versionId)
         .eserviceName("e-service1").pollingEndTime(OffsetTime.of(1, 0, 0, 0, ZoneOffset.UTC))
         .pollingStartTime(OffsetTime.of(1, 0, 0, 0, ZoneOffset.UTC))
-        .basePath(new String[]{"test1", "test2"}).technology(EserviceTechnology.REST)
+        .basePath(new String[] {"test1", "test2"}).technology(EserviceTechnology.REST)
         .pollingFrequency(5).producerName("producer1").probingEnabled(true)
-        .state(EserviceInteropState.ACTIVE).versionNumber(1).build();
+        .state(EserviceInteropState.ACTIVE).versionNumber(1).audience(new String[] {"test-1"})
+        .build();
     testEntityManager.persistAndFlush(eservice);
   }
 

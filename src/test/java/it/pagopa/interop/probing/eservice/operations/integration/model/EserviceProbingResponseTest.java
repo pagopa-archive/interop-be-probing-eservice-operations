@@ -34,7 +34,7 @@ class EserviceProbingResponseTest {
     eservice = Eservice.builder().state(EserviceInteropState.INACTIVE).eserviceId(UUID.randomUUID())
         .versionId(UUID.randomUUID()).eserviceName("e-service1")
         .basePath(new String[] {"test1", "test2"}).technology(EserviceTechnology.REST)
-        .producerName("producer1").versionNumber(1).build();
+        .producerName("producer1").versionNumber(1).audience(new String[] {"test-1"}).build();
     probingResponse = EserviceProbingResponse.builder()
         .responseReceived(OffsetDateTime.of(2023, 12, 12, 1, 0, 0, 0, ZoneOffset.UTC))
         .responseStatus(EserviceStatus.OK).eservice(eservice).build();

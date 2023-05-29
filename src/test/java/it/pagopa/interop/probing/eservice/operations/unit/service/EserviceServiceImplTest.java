@@ -119,7 +119,7 @@ class EserviceServiceImplTest {
   @BeforeEach
   void setup() {
     testService = Eservice.builder().state(EserviceInteropState.ACTIVE).lockVersion(1)
-        .eserviceRecordId(1L).probingEnabled(true).build();
+        .eserviceRecordId(1L).probingEnabled(true).audience(new String[] {"audience"}).build();
 
     saveEserviceDto = SaveEserviceDto.builder().basePath(new String[] {"test-1"})
         .eserviceId(eServiceId).name("Eservice name test").producerName("Eservice producer test")

@@ -175,18 +175,19 @@ class EserviceControllerTest {
     saveEserviceDto = SaveEserviceDto.builder().basePath(new String[] {"test-1"})
         .eserviceId(eServiceId).name("Eservice name test").producerName("Eservice producer test")
         .technology(EserviceTechnology.fromValue("REST")).versionId(versionId).versionNumber(1)
-        .state(EserviceInteropState.fromValue("INACTIVE")).build();
+        .state(EserviceInteropState.fromValue("INACTIVE")).audience(new String[] {"audience"})
+        .build();
 
-    eserviceSaveRequest =
-        EserviceSaveRequest.builder().basePath(List.of("test-1")).name("Eservice name test")
-            .producerName("Eservice producer test").technology(EserviceTechnology.fromValue("REST"))
-            .versionNumber(1).state(EserviceInteropState.INACTIVE).build();
+    eserviceSaveRequest = EserviceSaveRequest.builder().basePath(List.of("test-1"))
+        .name("Eservice name test").producerName("Eservice producer test")
+        .technology(EserviceTechnology.fromValue("REST")).versionNumber(1)
+        .state(EserviceInteropState.INACTIVE).audience(List.of("audience")).build();
 
     expectedSearchEserviceResponse = SearchEserviceResponse.builder().limit(2).offset(0).build();
 
-    EserviceContent eserviceViewDTO =
-        EserviceContent.builder().eserviceName("Eservice-Name").versionNumber(1)
-            .producerName("Eservice-Producer-Name").state(EserviceInteropState.ACTIVE).build();
+    EserviceContent eserviceViewDTO = EserviceContent.builder().eserviceName("Eservice-Name")
+        .versionNumber(1).producerName("Eservice-Producer-Name").state(EserviceInteropState.ACTIVE)
+        .audience(List.of("audience")).build();
 
     List<EserviceContent> eservices = List.of(eserviceViewDTO);
     expectedSearchEserviceResponse.setContent(eservices);
