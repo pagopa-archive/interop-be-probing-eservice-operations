@@ -654,6 +654,7 @@ components:
         - technology
         - state
         - versionNumber
+        - audience
       properties:
         name:
           type: string
@@ -670,6 +671,10 @@ components:
         versionNumber:
           title: the e-service's version
           type: integer
+        audience:
+          type: array
+          items:
+            type: string
     
     PollingEserviceResponse:
       type: object
@@ -770,6 +775,10 @@ components:
         probingEnabled:
           title: eservice probing enabled
           type: boolean
+        audience:
+          type: array
+          items:
+            type: string
     
     SearchEserviceResponse:
       type: object

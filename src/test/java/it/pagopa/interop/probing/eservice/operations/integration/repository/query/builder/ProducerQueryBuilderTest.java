@@ -37,7 +37,7 @@ class ProducerQueryBuilderTest {
             .pollingStartTime(OffsetTime.of(1, 0, 0, 0, ZoneOffset.UTC)).versionNumber(1)
             .basePath(new String[] {"test1", "test2"}).technology(EserviceTechnology.REST)
             .pollingFrequency(5).producerName("producer1").probingEnabled(true)
-            .state(EserviceInteropState.ACTIVE).build();
+            .state(EserviceInteropState.ACTIVE).audience(new String[] {"test-1"}).build();
     testEntityManager.persistAndFlush(eservice);
   }
 

@@ -56,4 +56,9 @@ public class SaveEserviceDto implements Dto {
   @Min(value = 1, message = "must be at least 1")
   @JsonProperty("versionNumber")
   private Integer versionNumber;
+
+  @NotNull(message = "must not be null")
+  @ValidateStringArraySize(maxSize = 2048)
+  @JsonProperty("audience")
+  private String[] audience;
 }

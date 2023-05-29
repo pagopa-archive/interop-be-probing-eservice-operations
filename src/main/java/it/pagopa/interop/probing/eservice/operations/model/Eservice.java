@@ -39,6 +39,7 @@ import lombok.experimental.Accessors;
 @Table(name = "eservices",
     uniqueConstraints = @UniqueConstraint(columnNames = {"eservice_id", "version_id"}))
 @TypeDef(name = "basePathType", typeClass = CustomStringArrayType.class)
+@TypeDef(name = "audienceType", typeClass = CustomStringArrayType.class)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -120,5 +121,12 @@ public class Eservice implements Serializable {
   @Min(value = 1, message = "must be at least 1")
   @Column(name = "version_number")
   private Integer versionNumber;
+
+  @NotNull(message = "must not be null")
+  @ValidateStringArraySize(maxSize = 2048)
+  @Basic(optional = false)
+  @Column(name = "audience", columnDefinition = "varchar(2048) array")
+  @Type(type = "audienceType")
+  private String[] audience;
 
 }

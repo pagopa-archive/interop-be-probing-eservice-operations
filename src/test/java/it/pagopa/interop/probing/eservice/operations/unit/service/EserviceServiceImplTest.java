@@ -119,12 +119,13 @@ class EserviceServiceImplTest {
   @BeforeEach
   void setup() {
     testService = Eservice.builder().state(EserviceInteropState.ACTIVE).lockVersion(1)
-        .eserviceRecordId(1L).probingEnabled(true).build();
+        .eserviceRecordId(1L).probingEnabled(true).audience(new String[] {"audience"}).build();
 
     saveEserviceDto = SaveEserviceDto.builder().basePath(new String[] {"test-1"})
         .eserviceId(eServiceId).name("Eservice name test").producerName("Eservice producer test")
         .technology(EserviceTechnology.fromValue("REST")).versionId(versionId).versionNumber(1)
-        .state(EserviceInteropState.fromValue("INACTIVE")).build();
+        .state(EserviceInteropState.fromValue("INACTIVE")).audience(new String[] {"test-1"})
+        .build();
 
     updateEserviceStateDto = UpdateEserviceStateDto.builder().eserviceId(eServiceId)
         .versionId(versionId).newEServiceState(EserviceInteropState.fromValue("INACTIVE")).build();
@@ -156,8 +157,7 @@ class EserviceServiceImplTest {
         .pollingEndTime(OffsetTime.of(20, 0, 0, 0, ZoneOffset.UTC)).build();
 
     eserviceContent = EserviceContent.builder().basePath(List.of("base-path")).eserviceRecordId(1L)
-        .technology(EserviceTechnology.REST).build();
-
+        .technology(EserviceTechnology.REST).audience(List.of("audience")).build();
     testEserviceProbingRequest = EserviceProbingRequest.builder().eserviceRecordId(eserviceRecordId)
         .lastRequest(OffsetDateTime.of(2023, 5, 8, 10, 0, 0, 0, ZoneOffset.UTC))
         .eservice(testService).build();

@@ -41,7 +41,8 @@ class EserviceProbingRequestRepositoryTest {
         .pollingStartTime(OffsetTime.of(1, 0, 0, 0, ZoneOffset.UTC))
         .basePath(new String[] {"test1", "test2"}).technology(EserviceTechnology.REST)
         .pollingFrequency(5).producerName("producer1").probingEnabled(true)
-        .state(EserviceInteropState.ACTIVE).versionNumber(1).build();
+        .state(EserviceInteropState.ACTIVE).versionNumber(1).audience(new String[] {"test-1"})
+        .build();
 
     EserviceProbingRequest eserviceProbingRequest =
         EserviceProbingRequest.builder().eservice(eservice)

@@ -34,6 +34,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Builder
 @TypeDef(name = "basePathType", typeClass = CustomStringArrayType.class)
+@TypeDef(name = "audienceType", typeClass = CustomStringArrayType.class)
 @Accessors(chain = true)
 public class EserviceView implements Serializable {
 
@@ -93,5 +94,9 @@ public class EserviceView implements Serializable {
   @Enumerated(EnumType.STRING)
   @Column(name = "status")
   private EserviceStatus responseStatus;
+
+  @Column(name = "audience", columnDefinition = "varchar(2048) array")
+  @Type(type = "audienceType")
+  private String[] audience;
 
 }
