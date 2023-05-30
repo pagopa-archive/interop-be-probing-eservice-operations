@@ -108,9 +108,8 @@ public class EserviceViewQueryBuilder {
 
     List<Predicate> predicates = new ArrayList<>();
     if (stateList.contains(EserviceMonitorState.OFFLINE)) {
-      predicates
-          .add(cb.and(cb.or(cb.equal(root.get(EserviceView_.STATE), EserviceInteropState.INACTIVE),
-              cb.equal(root.get(EserviceView_.RESPONSE_STATUS), EserviceStatus.KO))));
+      predicates.add(cb.or(cb.equal(root.get(EserviceView_.STATE), EserviceInteropState.INACTIVE),
+          cb.equal(root.get(EserviceView_.RESPONSE_STATUS), EserviceStatus.KO)));
     }
     if (stateList.contains(EserviceMonitorState.ONLINE)) {
       predicates.add(cb.and(cb.equal(root.get(EserviceView_.STATE), EserviceInteropState.ACTIVE),
