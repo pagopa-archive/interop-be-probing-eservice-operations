@@ -37,16 +37,12 @@ import it.pagopa.interop.probing.eservice.operations.repository.query.builder.Es
 import it.pagopa.interop.probing.eservice.operations.repository.query.builder.EserviceViewQueryBuilder;
 import it.pagopa.interop.probing.eservice.operations.repository.specs.EserviceViewSpecs;
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
-import it.pagopa.interop.probing.eservice.operations.util.EnumUtilities;
 import it.pagopa.interop.probing.eservice.operations.util.OffsetLimitPageable;
 import it.pagopa.interop.probing.eservice.operations.util.constant.ErrorMessages;
 import it.pagopa.interop.probing.eservice.operations.util.logging.Logger;
 
 @Service
 public class EserviceServiceImpl implements EserviceService {
-
-  @Autowired
-  private EnumUtilities enumUtilities;
 
   @Autowired
   private Logger logger;
@@ -132,8 +128,6 @@ public class EserviceServiceImpl implements EserviceService {
         state);
 
     Page<EserviceView> eserviceViewPagable;
-    List<String> stateBE = Objects.isNull(state) || state.isEmpty() ? List.of()
-        : enumUtilities.convertListFromMonitorToPdnd(state);
 
     if (Objects.isNull(state) || state.isEmpty()
         || (state.contains(EserviceMonitorState.N_D) && state.contains(EserviceMonitorState.ONLINE)
@@ -143,10 +137,10 @@ public class EserviceServiceImpl implements EserviceService {
           new OffsetLimitPageable(offset, limit, Sort.by(Eservice_.ESERVICE_NAME).ascending()));
     } else if (state.contains(EserviceMonitorState.N_D)) {
       eserviceViewPagable = eserviceViewQueryBuilder.findAllWithNDState(limit, offset, eserviceName,
-          producerName, versionNumber, stateBE, toleranceMultiplierInMinutes);
+          producerName, versionNumber, state, toleranceMultiplierInMinutes);
     } else {
       eserviceViewPagable = eserviceViewQueryBuilder.findAllWithoutNDState(limit, offset,
-          eserviceName, producerName, versionNumber, stateBE, toleranceMultiplierInMinutes);
+          eserviceName, producerName, versionNumber, state, toleranceMultiplierInMinutes);
     }
 
     List<EserviceContent> eserviceContentList = eserviceViewPagable.getContent().stream()

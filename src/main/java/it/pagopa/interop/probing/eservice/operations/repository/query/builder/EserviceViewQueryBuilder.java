@@ -16,6 +16,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
+import it.pagopa.interop.probing.eservice.operations.dtos.EserviceStatus;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView;
 import it.pagopa.interop.probing.eservice.operations.model.view.EserviceView_;
 
@@ -26,8 +29,8 @@ public class EserviceViewQueryBuilder {
   private EntityManager entityManager;
 
   public Page<EserviceView> findAllWithoutNDState(Integer limit, Integer offset,
-      String eserviceName, String producerName, Integer versionNumber, List<String> stateList,
-      int minOfTolleranceMultiplier) {
+      String eserviceName, String producerName, Integer versionNumber,
+      List<EserviceMonitorState> stateList, int minOfTolleranceMultiplier) {
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<EserviceView> query = cb.createQuery(EserviceView.class);
     Root<EserviceView> root = query.from(EserviceView.class);
@@ -58,8 +61,8 @@ public class EserviceViewQueryBuilder {
   }
 
   private Predicate buildQueryWithoutNDState(CriteriaBuilder cb, Root<EserviceView> root,
-      String eserviceName, String producerName, Integer versionNumber, List<String> stateList,
-      int minOfTolleranceMultiplier) {
+      String eserviceName, String producerName, Integer versionNumber,
+      List<EserviceMonitorState> stateList, int minOfTolleranceMultiplier) {
     Expression<Integer> extractMinute =
         cb.function("extract_minute", Integer.class, root.get(EserviceView_.LAST_REQUEST));
     return cb.and(
@@ -70,7 +73,7 @@ public class EserviceViewQueryBuilder {
   }
 
   public Page<EserviceView> findAllWithNDState(Integer limit, Integer offset, String eserviceName,
-      String producerName, Integer versionNumber, List<String> stateList,
+      String producerName, Integer versionNumber, List<EserviceMonitorState> stateList,
       int minOfTolleranceMultiplier) {
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<EserviceView> query = cb.createQuery(EserviceView.class);
@@ -86,7 +89,7 @@ public class EserviceViewQueryBuilder {
   }
 
   private Predicate buildPredicate(CriteriaBuilder cb, Root<EserviceView> root, String eserviceName,
-      String producerName, Integer versionNumber, List<String> stateList,
+      String producerName, Integer versionNumber, List<EserviceMonitorState> stateList,
       int minOfTolleranceMultiplier) {
     Expression<Integer> extractMinute =
         cb.function("extract_minute", Integer.class, root.get(EserviceView_.LAST_REQUEST));
@@ -100,8 +103,19 @@ public class EserviceViewQueryBuilder {
   }
 
   private Predicate buildProbingEnabledPredicate(CriteriaBuilder cb, Root<EserviceView> root,
-      List<String> stateList, Expression<Integer> extractMinute, int minOfTolleranceMultiplier) {
-    return cb.and(root.get(EserviceView_.STATE).as(String.class).in(stateList),
+      List<EserviceMonitorState> stateList, Expression<Integer> extractMinute,
+      int minOfTolleranceMultiplier) {
+
+    List<Predicate> predicates = new ArrayList<>();
+    if (stateList.contains(EserviceMonitorState.OFFLINE)) {
+      predicates.add(cb.or(cb.equal(root.get(EserviceView_.STATE), EserviceInteropState.INACTIVE),
+          cb.equal(root.get(EserviceView_.RESPONSE_STATUS), EserviceStatus.KO)));
+    }
+    if (stateList.contains(EserviceMonitorState.ONLINE)) {
+      predicates.add(cb.and(cb.equal(root.get(EserviceView_.STATE), EserviceInteropState.ACTIVE),
+          cb.equal(root.get(EserviceView_.RESPONSE_STATUS), EserviceStatus.OK)));
+    }
+    return cb.and(cb.or(predicates.toArray(new Predicate[] {})),
         cb.isTrue(root.get(EserviceView_.PROBING_ENABLED)),
         cb.isNotNull(root.get(EserviceView_.LAST_REQUEST)),
         cb.or(
