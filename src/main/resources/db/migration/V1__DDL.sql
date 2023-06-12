@@ -47,9 +47,9 @@ LEFT JOIN ${schema_name}.eservice_probing_responses epr ON epr.eservices_record_
 LEFT JOIN ${schema_name}.eservice_probing_requests epreq on epreq.eservices_record_id=e.id;
 
 --Grants
-GRANT CREATE, USAGE ON SCHEMA ${schema_name} TO "interop-db";
-GRANT SELECT, INSERT, UPDATE ON TABLE ${schema_name}.eservice_probing_requests TO "interop-db";
-GRANT SELECT, INSERT, UPDATE ON TABLE ${schema_name}.eservice_probing_responses TO "interop-db";
-GRANT SELECT, INSERT, UPDATE ON TABLE ${schema_name}.eservices TO "interop-db";
-GRANT SELECT ON TABLE ${schema_name}.eservice_view TO "interop-db";
-GRANT SELECT, USAGE ON SEQUENCE ${schema_name}.eservice_sequence TO "interop-db";
+GRANT CREATE, USAGE ON SCHEMA ${schema_name} TO "interop-be";
+GRANT SELECT, INSERT, UPDATE ON TABLE ${schema_name}.eservice_probing_requests TO "interop-be";
+GRANT SELECT, INSERT, UPDATE ON TABLE ${schema_name}.eservice_probing_responses TO "interop-be";
+GRANT SELECT, INSERT, UPDATE ON TABLE ${schema_name}.eservices TO "interop-be";
+GRANT SELECT ON TABLE ${schema_name}.eservice_view TO "interop-be";
+GRANT SELECT, USAGE ON SEQUENCE ${schema_name}.eservice_sequence TO "interop-be";
