@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import it.pagopa.interop.probing.eservice.operations.api.EservicesApi;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeEserviceStateRequest;
 import it.pagopa.interop.probing.eservice.operations.dtos.ChangeLastRequest;
@@ -22,6 +23,7 @@ import it.pagopa.interop.probing.eservice.operations.mapping.mapper.AbstractMapp
 import it.pagopa.interop.probing.eservice.operations.service.EserviceService;
 
 @RestController
+@XRayEnabled
 public class EserviceController implements EservicesApi {
 
   @Autowired
