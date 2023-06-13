@@ -11,10 +11,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceInteropState;
 import it.pagopa.interop.probing.eservice.operations.dtos.EserviceMonitorState;
@@ -28,7 +24,7 @@ public class EserviceViewQueryBuilder {
   @PersistenceContext
   private EntityManager entityManager;
 
-  public Page<EserviceView> findAllWithoutNDState(Integer limit, Integer offset,
+  public List<EserviceView> findAllWithoutNDState(Integer limit, Integer offset,
       String eserviceName, String producerName, Integer versionNumber,
       List<EserviceMonitorState> stateList, int minOfTolleranceMultiplier) {
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -39,10 +35,12 @@ public class EserviceViewQueryBuilder {
     Predicate predicate = buildQueryWithoutNDState(cb, root, eserviceName, producerName,
         versionNumber, stateList, minOfTolleranceMultiplier);
 
-    query.where(predicate);
-    TypedQuery<EserviceView> q = entityManager.createQuery(query);
-    List<EserviceView> content = q.getResultList();
-    return new PageImpl<>(content, getPageRequest(limit, offset), content.size());
+    query.where(predicate).orderBy(cb.asc(root.get(EserviceView_.ESERVICE_RECORD_ID)));
+
+    TypedQuery<EserviceView> q =
+        entityManager.createQuery(query).setFirstResult(offset).setMaxResults(limit);
+
+    return q.getResultList();
   }
 
   public Predicate buildQueryEserviceNameProducerNameVersionNumberEquals(CriteriaBuilder cb,
@@ -72,7 +70,21 @@ public class EserviceViewQueryBuilder {
             minOfTolleranceMultiplier));
   }
 
-  public Page<EserviceView> findAllWithNDState(Integer limit, Integer offset, String eserviceName,
+  public Long getTotalCountWithoutNDState(String eserviceName, String producerName,
+      Integer versionNumber, List<EserviceMonitorState> stateList, int minOfTolleranceMultiplier) {
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
+    Root<EserviceView> root = criteriaQuery.from(EserviceView.class);
+
+    Predicate predicate = buildQueryWithoutNDState(cb, root, eserviceName, producerName,
+        versionNumber, stateList, minOfTolleranceMultiplier);
+
+    criteriaQuery.select(cb.count(root.get(EserviceView_.ESERVICE_RECORD_ID))).where(predicate);
+
+    return entityManager.createQuery(criteriaQuery).getSingleResult();
+  }
+
+  public List<EserviceView> findAllWithNDState(Integer limit, Integer offset, String eserviceName,
       String producerName, Integer versionNumber, List<EserviceMonitorState> stateList,
       int minOfTolleranceMultiplier) {
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -82,10 +94,10 @@ public class EserviceViewQueryBuilder {
     Predicate predicate = buildPredicate(cb, root, eserviceName, producerName, versionNumber,
         stateList, minOfTolleranceMultiplier);
 
-    query.where(cb.or(predicate));
-    TypedQuery<EserviceView> q = entityManager.createQuery(query);
-    List<EserviceView> content = q.getResultList();
-    return new PageImpl<>(content, getPageRequest(limit, offset), content.size());
+    query.where(cb.or(predicate)).orderBy(cb.asc(root.get(EserviceView_.ESERVICE_RECORD_ID)));
+    TypedQuery<EserviceView> q =
+        entityManager.createQuery(query).setFirstResult(offset).setMaxResults(limit);
+    return q.getResultList();
   }
 
   private Predicate buildPredicate(CriteriaBuilder cb, Root<EserviceView> root, String eserviceName,
@@ -136,7 +148,17 @@ public class EserviceViewQueryBuilder {
         cb.isNull(root.get(EserviceView_.RESPONSE_RECEIVED)));
   }
 
-  private PageRequest getPageRequest(Integer limit, Integer offset) {
-    return PageRequest.of(offset, limit, Sort.by(EserviceView_.ESERVICE_NAME).ascending());
+  public Long getTotalCountWithNDState(String eserviceName, String producerName,
+      Integer versionNumber, List<EserviceMonitorState> stateList, int minOfTolleranceMultiplier) {
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
+    Root<EserviceView> root = criteriaQuery.from(EserviceView.class);
+
+    Predicate predicate = buildPredicate(cb, root, eserviceName, producerName, versionNumber,
+        stateList, minOfTolleranceMultiplier);
+
+    criteriaQuery.select(cb.count(root.get(EserviceView_.ESERVICE_RECORD_ID))).where(predicate);
+
+    return entityManager.createQuery(criteriaQuery).getSingleResult();
   }
 }

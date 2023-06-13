@@ -28,7 +28,7 @@ public class ProducerQueryBuilder {
     Predicate predicate = cb.like(cb.upper(root.get(Eservice_.PRODUCER_NAME)),
         "%" + producerName.toUpperCase() + "%");
 
-    query.where(predicate);
+    query.where(predicate).orderBy(cb.asc(root.get(Eservice_.PRODUCER_NAME)));
     TypedQuery<Producer> q =
         entityManager.createQuery(query).setFirstResult(offset).setMaxResults(limit);
 
