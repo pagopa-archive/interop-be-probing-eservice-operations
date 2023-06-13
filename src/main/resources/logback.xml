@@ -8,7 +8,7 @@
 			<onMatch>DENY</onMatch>
 		</filter>
 		<encoder>
-			<pattern>%d{YYYY-MM-dd HH:mm:ss:SSS} %(%-5level) [%(%logger{20})] %X{trace_id} - %X{AWS-XRAY-TRACE-ID} - %msg %n</pattern>
+			<pattern>%d{YYYY-MM-dd HH:mm:ss:SSS} %(%-5level) [%(%logger{20})] %X{AWS-XRAY-TRACE-ID} %X{trace_id} - %msg %n</pattern>
 		</encoder>
 	</appender>
 
@@ -18,7 +18,7 @@
 			<level>ERROR</level>
 		</filter>
 		<encoder>
-			<pattern>%d{YYYY-MM-dd HH:mm:ss:SSS} %(%-5level) [%(%logger{20})] - %X{AWS-XRAY-TRACE-ID} [%X{trace_id}] - %msg %n</pattern>
+			<pattern>%d{YYYY-MM-dd HH:mm:ss:SSS} %(%-5level) [%(%logger{20})] %X{AWS-XRAY-TRACE-ID} [%X{trace_id}] - %msg %n</pattern>
 		</encoder>
 		<target>System.err</target>
 	</appender>

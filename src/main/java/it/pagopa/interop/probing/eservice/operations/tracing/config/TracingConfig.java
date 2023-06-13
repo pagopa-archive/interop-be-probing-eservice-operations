@@ -11,11 +11,11 @@ import com.amazonaws.xray.proxies.apache.http.HttpClientBuilder;
 public class TracingConfig {
 
   @Value("${spring.application.name}")
-  private String AWSXRAY_SEGMENT_NAME;
+  private String awsXraySegmentName;
 
   @Bean
   public Filter tracingFilter() {
-    return new AWSXRayServletFilter(AWSXRAY_SEGMENT_NAME);
+    return new AWSXRayServletFilter(awsXraySegmentName);
   }
 
   @Bean
