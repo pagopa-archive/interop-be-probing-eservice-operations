@@ -127,28 +127,33 @@ public class EserviceServiceImpl implements EserviceService {
     logger.logMessageSearchEservice(limit, offset, eserviceName, producerName, versionNumber,
         state);
 
-    Page<EserviceView> eserviceViewPagable;
+    List<EserviceView> eserviceViewContent;
+    Long totalEserviceViewContent = null;
 
     if (Objects.isNull(state) || state.isEmpty()
         || (state.contains(EserviceMonitorState.N_D) && state.contains(EserviceMonitorState.ONLINE)
             && state.contains(EserviceMonitorState.OFFLINE))) {
-      eserviceViewPagable = eserviceViewRepository.findAll(
+      Page<EserviceView> eserviceViewPagable = eserviceViewRepository.findAll(
           EserviceViewSpecs.searchSpecBuilder(eserviceName, producerName, versionNumber),
           new OffsetLimitPageable(offset, limit, Sort.by(Eservice_.ESERVICE_NAME).ascending()));
+      eserviceViewContent = eserviceViewPagable.getContent();
+      totalEserviceViewContent = eserviceViewPagable.getTotalElements();
     } else if (state.contains(EserviceMonitorState.N_D)) {
-      eserviceViewPagable = eserviceViewQueryBuilder.findAllWithNDState(limit, offset, eserviceName,
+      eserviceViewContent = eserviceViewQueryBuilder.findAllWithNDState(limit, offset, eserviceName,
+          producerName, versionNumber, state, toleranceMultiplierInMinutes);
+      totalEserviceViewContent = eserviceViewQueryBuilder.getTotalCountWithoutNDState(eserviceName,
           producerName, versionNumber, state, toleranceMultiplierInMinutes);
     } else {
-      eserviceViewPagable = eserviceViewQueryBuilder.findAllWithoutNDState(limit, offset,
+      eserviceViewContent = eserviceViewQueryBuilder.findAllWithoutNDState(limit, offset,
           eserviceName, producerName, versionNumber, state, toleranceMultiplierInMinutes);
+      totalEserviceViewContent = eserviceViewQueryBuilder.getTotalCountWithNDState(eserviceName,
+          producerName, versionNumber, state, toleranceMultiplierInMinutes);
     }
+    List<EserviceContent> eserviceContentList =
+        eserviceViewContent.stream().map(e -> mapper.toSearchEserviceContent(e)).toList();
 
-    List<EserviceContent> eserviceContentList = eserviceViewPagable.getContent().stream()
-        .map(e -> mapper.toSearchEserviceContent(e)).toList();
-
-    return SearchEserviceResponse.builder().content(eserviceContentList)
-        .offset(eserviceViewPagable.getNumber()).limit(eserviceViewPagable.getSize())
-        .totalElements(eserviceViewPagable.getTotalElements()).build();
+    return SearchEserviceResponse.builder().content(eserviceContentList).offset(offset).limit(limit)
+        .totalElements(totalEserviceViewContent).build();
   }
 
   @Override
@@ -175,11 +180,13 @@ public class EserviceServiceImpl implements EserviceService {
 
     logger.logMessageEserviceReadyForPolling(limit, offset);
 
-    Page<EserviceContent> pollingActiveEservicePagable =
+    List<EserviceContent> pollingActiveEserviceContent =
         eserviceContentQueryBuilder.findAllEservicesReadyForPolling(limit, offset);
 
-    return PollingEserviceResponse.builder().content(pollingActiveEservicePagable.getContent())
-        .totalElements(pollingActiveEservicePagable.getTotalElements()).build();
+    Long totalPollingActiveEservice = eserviceContentQueryBuilder.getTotalCount();
+
+    return PollingEserviceResponse.builder().content(pollingActiveEserviceContent)
+        .totalElements(totalPollingActiveEservice).build();
   }
 
   @Override

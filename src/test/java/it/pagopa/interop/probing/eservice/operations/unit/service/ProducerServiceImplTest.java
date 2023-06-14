@@ -35,7 +35,7 @@ class ProducerServiceImplTest {
 
   @BeforeEach
   void setup() {
-    producerInput = List.of(Producer.builder().producerName("producer name").build());
+    producerInput = List.of(Producer.builder().producerName(producerNameInput).build());
   }
 
   @Test
