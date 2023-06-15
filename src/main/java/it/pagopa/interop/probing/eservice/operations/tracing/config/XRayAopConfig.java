@@ -22,8 +22,7 @@ public class XRayAopConfig {
 
   @Before("execution(* it.pagopa.interop.probing.eservice.operations.repository.query.builder..*(..))")
   public void beforeQueryOperation(JoinPoint joinPoint) {
-    AWSXRay.beginSubsegment(
-        LoggingPlaceholders.AURORA_SUBSEGMENT_NAME + " - " + joinPoint.getSignature());
+    AWSXRay.beginSubsegment(LoggingPlaceholders.AURORA_SUBSEGMENT_NAME);
   }
 
   @After("execution(* it.pagopa.interop.probing.eservice.operations.repository.query.builder..*(..))")
