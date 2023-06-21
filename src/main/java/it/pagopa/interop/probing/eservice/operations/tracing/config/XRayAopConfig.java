@@ -20,12 +20,13 @@ public class XRayAopConfig {
             + AWSXRay.getCurrentSegment().getTraceId().toString() + "]");
   }
 
-  @Before("execution(* it.pagopa.interop.probing.eservice.operations.repository.query.builder..*(..))")
+  @Before("@within(org.springframework.stereotype.Repository)")
   public void beforeQueryOperation(JoinPoint joinPoint) {
-    AWSXRay.beginSubsegment(LoggingPlaceholders.AURORA_SUBSEGMENT_NAME);
+    AWSXRay.beginSubsegment(
+        LoggingPlaceholders.AURORA_SUBSEGMENT_NAME + " " + joinPoint.getSignature().getName());
   }
 
-  @After("execution(* it.pagopa.interop.probing.eservice.operations.repository.query.builder..*(..))")
+  @After("@within(org.springframework.stereotype.Repository)")
   public void afterQueryOperation(JoinPoint joinPoint) {
     AWSXRay.endSubsegment();
   }
