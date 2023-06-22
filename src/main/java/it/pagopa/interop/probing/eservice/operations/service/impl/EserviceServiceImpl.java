@@ -141,12 +141,12 @@ public class EserviceServiceImpl implements EserviceService {
     } else if (state.contains(EserviceMonitorState.N_D)) {
       eserviceViewContent = eserviceViewQueryBuilder.findAllWithNDState(limit, offset, eserviceName,
           producerName, versionNumber, state, toleranceMultiplierInMinutes);
-      totalEserviceViewContent = eserviceViewQueryBuilder.getTotalCountWithoutNDState(eserviceName,
+      totalEserviceViewContent = eserviceViewQueryBuilder.getTotalCountWithNDState(eserviceName,
           producerName, versionNumber, state, toleranceMultiplierInMinutes);
     } else {
       eserviceViewContent = eserviceViewQueryBuilder.findAllWithoutNDState(limit, offset,
           eserviceName, producerName, versionNumber, state, toleranceMultiplierInMinutes);
-      totalEserviceViewContent = eserviceViewQueryBuilder.getTotalCountWithNDState(eserviceName,
+      totalEserviceViewContent = eserviceViewQueryBuilder.getTotalCountWithoutNDState(eserviceName,
           producerName, versionNumber, state, toleranceMultiplierInMinutes);
     }
     List<EserviceContent> eserviceContentList =
