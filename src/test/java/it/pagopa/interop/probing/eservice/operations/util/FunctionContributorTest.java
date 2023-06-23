@@ -1,4 +1,4 @@
-package it.pagopa.interop.probing.eservice.operations;
+package it.pagopa.interop.probing.eservice.operations.util;
 
 import org.hibernate.boot.MetadataBuilder;
 import org.hibernate.boot.spi.MetadataBuilderContributor;
