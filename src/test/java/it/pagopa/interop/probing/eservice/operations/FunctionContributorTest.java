@@ -1,4 +1,4 @@
-package it.pagopa.interop.probing.eservice.operations.util;
+package it.pagopa.interop.probing.eservice.operations;
 
 import org.hibernate.boot.MetadataBuilder;
 import org.hibernate.boot.spi.MetadataBuilderContributor;
@@ -7,7 +7,7 @@ import org.hibernate.type.BooleanType;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.TimestampType;
 
-public class FunctionContributor implements MetadataBuilderContributor {
+public class FunctionContributorTest implements MetadataBuilderContributor {
 
   @Override
   public void contribute(MetadataBuilder metadataBuilder) {
@@ -18,7 +18,6 @@ public class FunctionContributor implements MetadataBuilderContributor {
         new SQLFunctionTemplate(BooleanType.INSTANCE, "CURRENT_TIME between ?1 and ?2"));
 
     metadataBuilder.applySqlFunction("extract_minute", new SQLFunctionTemplate(IntegerType.INSTANCE,
-        "TRUNC(EXTRACT(EPOCH from (CURRENT_TIMESTAMP - ?1))/60)"));
+        "EXTRACT(MINUTE from (CURRENT_TIMESTAMP - ?1))"));
   }
-
 }
