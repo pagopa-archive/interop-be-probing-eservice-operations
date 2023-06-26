@@ -17,7 +17,7 @@ public class FunctionContributorTest implements MetadataBuilderContributor {
     metadataBuilder.applySqlFunction("compare_timestamp_interval",
         new SQLFunctionTemplate(BooleanType.INSTANCE, "CURRENT_TIME between ?1 and ?2"));
 
-    metadataBuilder.applySqlFunction("extract_minute", new SQLFunctionTemplate(IntegerType.INSTANCE,
-        "EXTRACT(MINUTE from (CURRENT_TIMESTAMP - ?1))"));
+    metadataBuilder.applySqlFunction("extract_minute",
+        new SQLFunctionTemplate(IntegerType.INSTANCE, "TRUNC(DATEDIFF(mi,CURRENT_TIMESTAMP,?1))"));
   }
 }
