@@ -7,7 +7,7 @@ import org.hibernate.type.BooleanType;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.TimestampType;
 
-public class FunctionContributor implements MetadataBuilderContributor {
+public class FunctionContributorTest implements MetadataBuilderContributor {
 
   @Override
   public void contribute(MetadataBuilder metadataBuilder) {
@@ -17,8 +17,7 @@ public class FunctionContributor implements MetadataBuilderContributor {
     metadataBuilder.applySqlFunction("compare_timestamp_interval",
         new SQLFunctionTemplate(BooleanType.INSTANCE, "CURRENT_TIME between ?1 and ?2"));
 
-    metadataBuilder.applySqlFunction("extract_minute", new SQLFunctionTemplate(IntegerType.INSTANCE,
-        "TRUNC(EXTRACT(EPOCH from (CURRENT_TIMESTAMP - ?1))/60)"));
+    metadataBuilder.applySqlFunction("extract_minute",
+        new SQLFunctionTemplate(IntegerType.INSTANCE, "TRUNC(DATEDIFF(mi,CURRENT_TIMESTAMP,?1))"));
   }
-
 }
