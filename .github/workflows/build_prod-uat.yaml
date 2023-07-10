@@ -1,0 +1,36 @@
+name: "CI RCs - PROD"
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - '*-rc'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: normalize branch name for tagging
+        run: |
+          NORM_TAG=$(echo "$GITHUB_REF_NAME" | tr -s "/" "-")
+          echo "NORM_TAG=$NORM_TAG" >> $GITHUB_ENV
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push on GitHub packages
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ env.NORM_TAG }}
