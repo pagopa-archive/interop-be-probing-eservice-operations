@@ -1,13 +1,10 @@
-name: "CI Develop"
+name: "CI RCs - PROD"
 
 on:
   push:
-    branches:
-      - '**'
-      - '!main'
-      - '!master'
-    paths:
-      - '**'
+    tags:
+      - 'v*'
+      - '*-rc'
 
 jobs:
   build-and-push:
@@ -28,6 +25,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push on GitHub packages
         uses: docker/build-push-action@v2
         with:
