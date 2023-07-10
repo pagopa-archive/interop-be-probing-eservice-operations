@@ -36,29 +36,3 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}:${{ env.NORM_TAG }}
-  restart-deployment:
-    if: ${{ github.ref == 'refs/heads/develop' }}
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Configure AWS Credentials        
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
-        uses: aws-actions/configure-aws-credentials@67fbcbb121271f7775d2e7715933280b06314838
-        with:
-          role-to-assume: ${{ secrets.IAM_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: ${{ vars.KUBECTL_VERSION}}
-      - name: Get kubeconfig
-        run: |
-          aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
-      - name: Restart deployment after build
-        run: |
-          kubectl rollout restart deployment interop-be-probing-eservice-operations -n dev
