@@ -46,7 +46,7 @@ FROM ${schema_name}.eservices e
 LEFT JOIN ${schema_name}.eservice_probing_responses epr ON epr.eservices_record_id = e.id
 LEFT JOIN ${schema_name}.eservice_probing_requests epreq on epreq.eservices_record_id=e.id;
 
-CREATE ROLE "interop-be" WITH 
+CREATE ROLE ${DATABASE_USERNAME} WITH 
 	NOSUPERUSER
 	NOCREATEDB
 	NOCREATEROLE
@@ -54,7 +54,9 @@ CREATE ROLE "interop-be" WITH
 	LOGIN
 	NOREPLICATION
 	NOBYPASSRLS
-	CONNECTION LIMIT -1;
+	CONNECTION LIMIT -1
+	PASSWORD ${DATABASE_PASSWORD};
+
 
 --Grants
 GRANT CREATE, USAGE ON SCHEMA ${schema_name} TO "interop-be";
