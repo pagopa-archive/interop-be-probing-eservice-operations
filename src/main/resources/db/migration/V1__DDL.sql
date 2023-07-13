@@ -46,8 +46,6 @@ FROM ${schema_name}.eservices e
 LEFT JOIN ${schema_name}.eservice_probing_responses epr ON epr.eservices_record_id = e.id
 LEFT JOIN ${schema_name}.eservice_probing_requests epreq on epreq.eservices_record_id=e.id;
 
-SET ROLE root;
-
 CREATE ROLE "interop-be" WITH 
 	NOSUPERUSER
 	NOCREATEDB
