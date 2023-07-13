@@ -55,7 +55,7 @@ CREATE ROLE "interop-be" WITH
 	NOREPLICATION
 	NOBYPASSRLS
 	CONNECTION LIMIT -1
-	PASSWORD ${DATABASE_PASSWORD};
+	PASSWORD ${database_password};
 
 --Grants
 GRANT CREATE, USAGE ON SCHEMA ${schema_name} TO "interop-be";
