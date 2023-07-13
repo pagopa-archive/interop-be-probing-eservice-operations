@@ -1,24 +1,4 @@
-CREATE ROLE flyway_user WITH 
-	NOSUPERUSER
-	CREATEDB
-	CREATEROLE
-	NOINHERIT
-	LOGIN
-	NOREPLICATION
-	NOBYPASSRLS
-	CONNECTION LIMIT -1;
-
 CREATE SCHEMA IF NOT EXISTS ${schema_name};
-
-CREATE ROLE "interop-be" WITH 
-	NOSUPERUSER
-	NOCREATEDB
-	NOCREATEROLE
-	NOINHERIT
-	LOGIN
-	NOREPLICATION
-	NOBYPASSRLS
-	CONNECTION LIMIT -1;
 
 CREATE SEQUENCE IF NOT EXISTS ${schema_name}.eservice_sequence START WITH 1 INCREMENT BY 1;
 
@@ -65,6 +45,18 @@ SELECT e.id, e.eservice_id , e.eservice_name, e.producer_name , e.version_id , e
 FROM ${schema_name}.eservices e
 LEFT JOIN ${schema_name}.eservice_probing_responses epr ON epr.eservices_record_id = e.id
 LEFT JOIN ${schema_name}.eservice_probing_requests epreq on epreq.eservices_record_id=e.id;
+
+SET ROLE root;
+
+CREATE ROLE "interop-be" WITH 
+	NOSUPERUSER
+	NOCREATEDB
+	NOCREATEROLE
+	NOINHERIT
+	LOGIN
+	NOREPLICATION
+	NOBYPASSRLS
+	CONNECTION LIMIT -1;
 
 --Grants
 GRANT CREATE, USAGE ON SCHEMA ${schema_name} TO "interop-be";
