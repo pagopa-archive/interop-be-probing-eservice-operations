@@ -64,3 +64,4 @@ GRANT SELECT, INSERT, UPDATE ON TABLE ${schema_name}.eservice_probing_responses 
 GRANT SELECT, INSERT, UPDATE ON TABLE ${schema_name}.eservices TO "${database_username}";
 GRANT SELECT ON TABLE ${schema_name}.eservice_view TO "${database_username}";
 GRANT SELECT, USAGE ON SEQUENCE ${schema_name}.eservice_sequence TO "${database_username}";
+
