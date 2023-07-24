@@ -13,6 +13,6 @@
 	  NOREPLICATION
 	  NOBYPASSRLS
 	  CONNECTION LIMIT -1
-	  PASSWORD 'flyway';
+	  PASSWORD '{PASSWORD}';
    
     GRANT rds_superuser TO flyway_user;
