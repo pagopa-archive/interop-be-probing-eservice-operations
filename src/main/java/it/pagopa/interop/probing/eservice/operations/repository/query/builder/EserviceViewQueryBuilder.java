@@ -47,7 +47,7 @@ public class EserviceViewQueryBuilder {
       Root<EserviceView> root, String eserviceName, String producerName, Integer versionNumber) {
     List<Predicate> predicates = new ArrayList<>();
     if (Objects.nonNull(eserviceName)) {
-      predicates.add(cb.equal(root.get(EserviceView_.ESERVICE_NAME), eserviceName));
+      predicates.add(cb.like(root.get(EserviceView_.ESERVICE_NAME), "%" + eserviceName + "%"));
     }
     if (Objects.nonNull(producerName)) {
       predicates.add(cb.equal(root.get(EserviceView_.PRODUCER_NAME), producerName));
