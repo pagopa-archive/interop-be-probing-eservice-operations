@@ -1,3 +1,6 @@
+## Deprecated
+Replaced by [new implementation](https://github.com/pagopa/interop-probing-core)
+
 **PDND Interoperabilità: interop-be-probing-eservice-operations microservice**
 
 **_Installation steps_**:
